@@ -20,8 +20,22 @@ environment:
 
   matrix:
     - TARGET_ARCH: x86
+      BLAS_VARIANT: mkl
 
     - TARGET_ARCH: x64
+      BLAS_VARIANT: mkl
+
+    - TARGET_ARCH: x86
+      BLAS_VARIANT: noblas
+
+    - TARGET_ARCH: x64
+      BLAS_VARIANT: noblas
+
+    - TARGET_ARCH: x86
+      BLAS_VARIANT: openblas
+
+    - TARGET_ARCH: x64
+      BLAS_VARIANT: openblas
 
 
 # We always use a 64-bit machine, but can build x86 distributions
