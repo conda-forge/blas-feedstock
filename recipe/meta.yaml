@@ -2,9 +2,12 @@
 
 {% set variant = os.environ.get('BLAS_VARIANT', 'openblas') %}
 
+# The version should be in the form X.Y, where X denotes major infrastructural change to how blas is managed,
+# and Y denoting blas priority. Currently Y=0 not default, Y=1 default blas.
+{% set Y = 1 if variant == 'openblas' else 0 %}
 package:
   name: blas
-  version: 1.0
+  version: 1.{{ Y }}
 
 build:
   # We mustn't use the build number in the blas package - because we are defining the string,
@@ -16,7 +19,7 @@ build:
     # prioritised over all others.
     - blas_{{ variant }}
 
-{% if variant != "none" %}
+{% if variant != "noblas" %}
 requirements:
   run:
     - {{ variant }}

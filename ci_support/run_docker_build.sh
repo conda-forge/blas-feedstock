@@ -43,7 +43,22 @@ conda update --yes --all
 conda install --yes conda-build
 conda info
 
-# Embarking on 1 case(s).
+# Embarking on 3 case(s).
+    set -x
+    export BLAS_VARIANT=mkl
+    set +x
+    conda build /recipe_root --quiet || exit 1
+    /feedstock_root/ci_support/upload_or_check_non_existence.py /recipe_root conda-forge --channel=main || exit 1
+
+    set -x
+    export BLAS_VARIANT=noblas
+    set +x
+    conda build /recipe_root --quiet || exit 1
+    /feedstock_root/ci_support/upload_or_check_non_existence.py /recipe_root conda-forge --channel=main || exit 1
+
+    set -x
+    export BLAS_VARIANT=openblas
+    set +x
     conda build /recipe_root --quiet || exit 1
     /feedstock_root/ci_support/upload_or_check_non_existence.py /recipe_root conda-forge --channel=main || exit 1
 EOF
