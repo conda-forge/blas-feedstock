@@ -12,7 +12,7 @@ package:
 build:
   # We mustn't use the build number in the blas package - because we are defining the string,
   # manually we would not be producing unique filenames.
-  number: 0
+  number: 1
   string: {{ variant }}
   track_features:
     # The "blas" package must always track a feature, else it will be
