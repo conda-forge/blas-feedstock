@@ -7,7 +7,7 @@
 {% set Y = 1 if variant == 'openblas' else 0 %}
 package:
   name: blas
-  version: 1.{{ Y }}
+  version: 2.{{ Y }}
 
 build:
   # We mustn't use the build number in the blas package - because we are defining the string,
@@ -30,6 +30,7 @@ test: {}
 about:
   home: https://github.com/conda-forge/blas-feedstock
   license: BSD 3-clause
+  license_file: {{ RECIPE_DIR if RECIPE_DIR is defined else '' }}/LICENSE.txt
   summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism in your environment to control which variant you want.
 
 extra:
