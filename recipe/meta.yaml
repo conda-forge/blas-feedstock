@@ -3,8 +3,8 @@
 {% set variant = os.environ.get('BLAS_VARIANT', 'openblas') %}
 
 # The version should be in the form X.Y, where X denotes major infrastructural change to how blas is managed,
-# and Y denoting blas priority. Currently Y=0 not default, Y=1 default blas.
-{% set Y = 1 if variant == 'openblas' else 0 %}
+# and Y denoting blas priority. Currently Y=0 not default, Y=2 default blas.
+{% set Y = 2 if variant == 'openblas' else 0 %}
 package:
   name: blas
   version: 1.{{ Y }}
@@ -18,9 +18,17 @@ build:
     # The "blas" package must always track a feature, else it will be
     # prioritised over all others.
     - blas_{{ variant }}
+  {% if variant == "openblas" %}
+  script:                                             # [unix]
+    - bash {{ RECIPE_DIR }}/symlink_{{ variant }}.sh  # [unix]
+  {% endif %}
 
 {% if variant != "noblas" %}
 requirements:
+  {% if variant == "openblas" %}
+  build:              # [unix]
+    - {{ variant }}   # [unix]
+  {% endif %}
   run:
     - {{ variant }}
 {% endif %}
