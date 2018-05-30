@@ -14,14 +14,16 @@ Summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism i
 Current build status
 ====================
 
-Linux: [![Circle CI](https://circleci.com/gh/conda-forge/blas-feedstock.svg?style=shield)](https://circleci.com/gh/conda-forge/blas-feedstock)
-OSX: [![TravisCI](https://travis-ci.org/conda-forge/blas-feedstock.svg?branch=master)](https://travis-ci.org/conda-forge/blas-feedstock)
-Windows: [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/conda-forge/blas-feedstock?svg=True)](https://ci.appveyor.com/project/conda-forge/blas-feedstock/branch/master)
+[![Linux](https://img.shields.io/circleci/project/github/conda-forge/blas-feedstock/master.svg?label=Linux)](https://circleci.com/gh/conda-forge/blas-feedstock)
+[![OSX](https://img.shields.io/travis/conda-forge/blas-feedstock/master.svg?label=macOS)](https://travis-ci.org/conda-forge/blas-feedstock)
+[![Windows](https://img.shields.io/appveyor/ci/conda-forge/blas-feedstock/master.svg?label=Windows)](https://ci.appveyor.com/project/conda-forge/blas-feedstock/branch/master)
 
 Current release info
 ====================
-Version: [![Anaconda-Server Badge](https://anaconda.org/conda-forge/blas/badges/version.svg)](https://anaconda.org/conda-forge/blas)
-Downloads: [![Anaconda-Server Badge](https://anaconda.org/conda-forge/blas/badges/downloads.svg)](https://anaconda.org/conda-forge/blas)
+
+| Name | Downloads | Version | Platforms |
+| --- | --- | --- | --- |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-blas-green.svg)](https://anaconda.org/conda-forge/blas) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/blas.svg)](https://anaconda.org/conda-forge/blas) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/blas.svg)](https://anaconda.org/conda-forge/blas) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/blas.svg)](https://anaconda.org/conda-forge/blas) |
 
 Installing blas
 ===============
@@ -66,6 +68,7 @@ To manage the continuous integration and simplify feedstock maintenance
 Using the ``conda-forge.yml`` within this repository, it is possible to re-render all of
 this feedstock's supporting files (e.g. the CI configuration files) with ``conda smithy rerender``.
 
+For more information please check the [conda-forge documentation](https://conda-forge.org/docs/).
 
 Terminology
 ===========
