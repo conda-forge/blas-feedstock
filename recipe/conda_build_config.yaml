@@ -1,0 +1,4 @@
+blas:
+  - openblas
+  - mkl
+  - noblas
