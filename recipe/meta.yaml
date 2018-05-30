@@ -15,7 +15,9 @@ build:
 
 requirements: {}
 
-test: {}
+test:
+  commands:
+    - echo "I'm a metapackage"
 
 about:
   home: https://github.com/conda-forge/blas-feedstock
