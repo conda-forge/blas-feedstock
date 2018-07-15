@@ -1,11 +1,8 @@
 # Some useful notes can be found at https://conda-forge.hackpad.com/BLAS-Numpy-Friends-86De62hoNdT
 
-# The version should be in the form X.Y, where X denotes major infrastructural change to how blas is managed,
-# and Y denoting blas priority. Currently Y=0 not default, Y=1 default blas.
-{% set Y = 1 if blas == 'openblas' else 0 %}
 package:
   name: blas
-  version: 2.{{ Y }}
+  version: 2.0
 
 build:
   # We mustn't use the build number in the blas package - because we are defining the string,
