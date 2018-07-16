@@ -9,6 +9,8 @@ build:
   # manually we would not be producing unique filenames.
   number: 0
   string: {{ blas }}
+  run_exports:
+    - {{ pin_subpackage("blas", exact=True) }}
 
 requirements: {}
 
