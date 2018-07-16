@@ -11,6 +11,10 @@ build:
   string: {{ blas }}
   run_exports:
     - {{ pin_subpackage("blas", exact=True) }}
+  # track_features to deprioritize non-openblas blas
+  # *no packages* should have this feature
+  track_features:
+    - blas_{{ blas }}  # [blas != 'openblas']
 
 requirements: {}
 
