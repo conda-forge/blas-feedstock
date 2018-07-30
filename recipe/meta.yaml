@@ -10,7 +10,7 @@ build:
   number: 0
   string: {{ blas }}
   run_exports:
-    - {{ pin_subpackage("blas", min_pin='x', max_pin='x') }}
+    - blas 2.0.*={{ blas }}
   # track_features to deprioritize non-openblas blas
   # *no packages* should have this feature
   track_features:
