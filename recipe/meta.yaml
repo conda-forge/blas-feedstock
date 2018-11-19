@@ -9,8 +9,6 @@ build:
   # manually we would not be producing unique filenames.
   number: 0
   string: {{ blas }}
-  run_exports:
-    - blas 2.0.*={{ blas }}
   # track_features to deprioritize non-openblas blas
   # *no packages* should have this feature
   track_features:
