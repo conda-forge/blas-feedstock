@@ -8,6 +8,9 @@ package:
   name: blas-split
   version: "{{ blas_major }}.{{ build_num }}"
 
+build:
+  number: "{{ build_num }}"
+
 requirements:
   host:
     - openblas 0.3.3   # [blas_impl == 'openblas']
