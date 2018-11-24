@@ -1,31 +1,112 @@
-# Some useful notes can be found at https://conda-forge.hackpad.com/BLAS-Numpy-Friends-86De62hoNdT
+{% set version = "3.8.0" %}
+{% set build_num = "0" %}
+{% set version_major = version.split(".")[0] %}
+{% set blas_major = "2" %}
 
-{% set variant = os.environ.get('BLAS_VARIANT', 'openblas') %}
-
-# The version should be in the form X.Y, where X denotes major infrastructural change to how blas is managed,
-# and Y denoting blas priority. Currently Y=0 not default, Y=1 default blas.
-{% set Y = 1 if variant == 'openblas' else 0 %}
+# blas_major denotes major infrastructural change to how blas is managed
 package:
-  name: blas
-  version: 1.{{ Y }}
+  name: blas-split
+  version: "{{ blas_major }}.{{ build_num }}"
 
-build:
-  # We mustn't use the build number in the blas package - because we are defining the string,
-  # manually we would not be producing unique filenames.
-  number: 0
-  string: {{ variant }}
-  track_features:
-    # The "blas" package must always track a feature, else it will be
-    # prioritised over all others.
-    - blas_{{ variant }}
-
-{% if variant != "noblas" %}
 requirements:
-  run:
-    - {{ variant }}
-{% endif %}
+  host:
+    - openblas 0.3.3   # [blas_impl == 'openblas']
+    - mkl 2019.1       # [blas_impl == 'mkl']
+    - blis 0.5.0       # [blas_impl == 'blis']
 
-test: {}
+outputs:
+  - name: libblas
+    build:
+      string: "{{ build_num }}_{{ blas_impl }}"
+      run_exports:
+        - {{ pin_subpackage("libblas", max_pin="x") }}
+      track_features:
+       - blas_{{ blas_impl }}     # [blas_impl != blas_default_impl]
+    requirements:
+      host:
+        - openblas 0.3.3   # [blas_impl == 'openblas']
+        - mkl 2019.1       # [blas_impl == 'mkl']
+        - blis 0.5.0       # [blas_impl == 'blis']
+      run:
+        - openblas 0.3.3   # [blas_impl == 'openblas']
+        - mkl 2019.1       # [blas_impl == 'mkl']
+        - blis 0.5.0       # [blas_impl == 'blis']
+      run_constrained:
+        - {{ pin_subpackage("libcblas", exact=True) }}
+        - {{ pin_subpackage("liblapack", exact=True) }}    # [blas_impl != 'blis']
+        - {{ pin_subpackage("liblapacke", exact=True) }}   # [blas_impl != 'blis']
+    files:
+      - lib/libblas.so.{{ version_major }}      # [linux]
+      - lib/libblas.{{ version_major }}.dylib   # [osx]
+
+  - name: libcblas
+    build:
+      string: "{{ build_num }}_{{ blas_impl }}"
+      run_exports:
+        - {{ pin_subpackage("libcblas", max_pin="x") }}
+      track_features:
+       - blas_{{ blas_impl }}     # [blas_impl != 'openblas']
+    requirements:
+      host:
+        - {{ pin_subpackage("libblas", exact=True) }}
+      run:
+        - {{ pin_subpackage("libblas", exact=True) }}
+      run_constrained:
+        - {{ pin_subpackage("liblapack", exact=True) }}    # [blas_impl != 'blis']
+        - {{ pin_subpackage("liblapacke", exact=True) }}   # [blas_impl != 'blis']
+    files:
+      - lib/libcblas.so.{{ version_major }}      # [linux]
+      - lib/libcblas.{{ version_major }}.dylib   # [osx]
+
+  {% if blas_impl != 'blis' %}
+  - name: liblapack
+    build:
+      string: "{{ build_num }}_{{ blas_impl }}"
+      run_exports:
+        - {{ pin_subpackage("liblapack", max_pin="x.x") }}
+      track_features:
+       - blas_{{ blas_impl }}     # [blas_impl != 'openblas']
+    requirements:
+      host:
+        - {{ pin_subpackage("libblas", exact=True) }}
+      run:
+        - {{ pin_subpackage("libblas", exact=True) }}
+      run_constrained:
+        - {{ pin_subpackage("libcblas", exact=True) }}
+        - {{ pin_subpackage("liblapacke", exact=True) }}
+    files:
+      - lib/liblapack.so.{{ version_major }}      # [linux]
+      - lib/liblapack.{{ version_major }}.dylib   # [osx]
+
+  - name: liblapacke
+    build:
+      string: "{{ build_num }}_{{ blas_impl }}"
+      run_exports:
+        - {{ pin_subpackage("liblapacke", max_pin="x.x") }}
+      track_features:
+       - blas_{{ blas_impl }}     # [blas_impl != 'openblas']
+    requirements:
+      - {{ pin_subpackage("libblas", exact=True) }}
+      - {{ pin_subpackage("libcblas", exact=True) }}
+      - {{ pin_subpackage("liblapack", exact=True) }}
+    files:
+      - lib/liblapacke.so.{{ version_major }}      # [linux]
+      - lib/liblapacke.{{ version_major }}.dylib   # [osx]
+  {% endif %}
+
+  # For compatiblity
+  - name: blas
+    version: "{{ blas_major }}.{{ build_num }}"
+    build:
+      string: "{{ blas_impl }}"
+    requirements:
+      run:
+        - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
+        - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
+        - liblapack  {{ version }} *netlib                   # [blas_impl == 'blis']
+        - liblapacke {{ version }} *netlib                   # [blas_impl == 'blis']
+        - {{ pin_subpackage("libcblas", exact=True) }}
+        - {{ pin_subpackage("libblas", exact=True) }}
 
 about:
   home: https://github.com/conda-forge/blas-feedstock
@@ -36,3 +117,4 @@ extra:
   recipe-maintainers:
     - jakirkham
     - pelson
+    - isuruf

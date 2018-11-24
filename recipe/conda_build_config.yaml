@@ -1,0 +1,7 @@
+blas_impl:
+- openblas
+- mkl
+- blis
+blas_default_impl:
+- openblas   # [unix]
+- mkl        # [win]
