@@ -48,7 +48,7 @@ outputs:
       run_exports:
         - {{ pin_subpackage("libcblas", max_pin="x") }}
       track_features:
-       - blas_{{ blas_impl }}     # [blas_impl != 'openblas']
+       - blas_{{ blas_impl }}     # [blas_impl != blas_default_impl]
     requirements:
       host:
         - {{ pin_subpackage("libblas", exact=True) }}
@@ -68,7 +68,7 @@ outputs:
       run_exports:
         - {{ pin_subpackage("liblapack", max_pin="x.x") }}
       track_features:
-       - blas_{{ blas_impl }}     # [blas_impl != 'openblas']
+       - blas_{{ blas_impl }}     # [blas_impl != blas_default_impl]
     requirements:
       host:
         - {{ pin_subpackage("libblas", exact=True) }}
@@ -87,7 +87,7 @@ outputs:
       run_exports:
         - {{ pin_subpackage("liblapacke", max_pin="x.x") }}
       track_features:
-       - blas_{{ blas_impl }}     # [blas_impl != 'openblas']
+       - blas_{{ blas_impl }}     # [blas_impl != blas_default_impl]
     requirements:
       - {{ pin_subpackage("libblas", exact=True) }}
       - {{ pin_subpackage("libcblas", exact=True) }}
