@@ -8,7 +8,9 @@ osx_image: xcode6.4
 
 env:
   matrix:
-    - CONFIG=osx_
+    - CONFIG=osx_blas_implblis
+    - CONFIG=osx_blas_implmkl
+    - CONFIG=osx_blas_implopenblas
 
   global:
     # The BINSTAR_TOKEN secure variable. This is defined canonically in conda-forge.yml.

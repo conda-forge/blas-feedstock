@@ -1,0 +1,4 @@
+blas_default_impl:
+- mkl
+blas_impl:
+- openblas
