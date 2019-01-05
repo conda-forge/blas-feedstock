@@ -16,7 +16,7 @@ build:
   number: "{{ build_num }}"
   script:
   {% for each_lib in ['blas', 'cblas', 'lapack', 'lapacke'] %}
-    - mklink "%LIBRARY_BIN%/lib{{ each_lib }}.dll" "%LIBRARY_BIN%/{{ libblas_impl }}.dll"                       # [win]
+    - copy "%LIBRARY_BIN%\\{{ libblas_impl }}.dll" "%LIBRARY_BIN%\\lib{{ each_lib }}.dll"                       # [win]
     - ln -s $PREFIX/lib/lib{{ libblas_impl }}.so $PREFIX/lib/lib{{ each_lib }}.so.{{ version_major }}           # [linux]
     - ln -s $PREFIX/lib/lib{{ libblas_impl }}.dylib $PREFIX/lib/lib{{ each_lib }}.{{ version_major }}.dylib     # [osx]
   {% endfor %}
