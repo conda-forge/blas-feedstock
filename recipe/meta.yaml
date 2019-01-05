@@ -25,7 +25,7 @@ requirements:
   host:
     - openblas 0.3.3   # [blas_impl == 'openblas']
     - mkl 2019.1       # [blas_impl == 'mkl']
-    - blis 0.5.0       # [blas_impl == 'blis']
+    - blis 0.5.1       # [blas_impl == 'blis']
 
 outputs:
   - name: libblas
@@ -39,11 +39,11 @@ outputs:
       host:
         - openblas 0.3.3   # [blas_impl == 'openblas']
         - mkl 2019.1       # [blas_impl == 'mkl']
-        - blis 0.5.0       # [blas_impl == 'blis']
+        - blis 0.5.1       # [blas_impl == 'blis']
       run:
         - openblas 0.3.3   # [blas_impl == 'openblas']
         - mkl 2019.1       # [blas_impl == 'mkl']
-        - blis 0.5.0       # [blas_impl == 'blis']
+        - blis 0.5.1       # [blas_impl == 'blis']
       run_constrained:
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("liblapack", exact=True) }}    # [blas_impl != 'blis']
