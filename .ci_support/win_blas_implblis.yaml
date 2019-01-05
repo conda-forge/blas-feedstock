@@ -3,6 +3,6 @@ blas_default_impl:
 blas_impl:
 - blis
 channel_sources:
-- conda-forge,defaults
+- isuruf,conda-forge,defaults
 channel_targets:
 - conda-forge main
