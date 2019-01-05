@@ -51,6 +51,7 @@ outputs:
     files:
       - lib/libblas.so.{{ version_major }}      # [linux]
       - lib/libblas.{{ version_major }}.dylib   # [osx]
+      - Library/bin/libblas.dll                 # [win]
 
   - name: libcblas
     build:
@@ -70,6 +71,7 @@ outputs:
     files:
       - lib/libcblas.so.{{ version_major }}      # [linux]
       - lib/libcblas.{{ version_major }}.dylib   # [osx]
+      - Library/bin/libcblas.dll                 # [win]
 
   {% if blas_impl != 'blis' %}
   - name: liblapack
@@ -90,6 +92,7 @@ outputs:
     files:
       - lib/liblapack.so.{{ version_major }}      # [linux]
       - lib/liblapack.{{ version_major }}.dylib   # [osx]
+      - Library/bin/liblapack.dll                 # [win]
 
   - name: liblapacke
     build:
@@ -105,6 +108,7 @@ outputs:
     files:
       - lib/liblapacke.so.{{ version_major }}      # [linux]
       - lib/liblapacke.{{ version_major }}.dylib   # [osx]
+      - Library/bin/liblapacke.dll                 # [win]
   {% endif %}
 
   # For compatiblity
