@@ -10,7 +10,7 @@
 # blas_major denotes major infrastructural change to how blas is managed
 package:
   name: blas-split
-  version: "{{ blas_major }}.{{ build_num }}"
+  version: "{{ version }}"
 
 build:
   number: "{{ build_num }}"
