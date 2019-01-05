@@ -3,6 +3,10 @@
 {% set version_major = version.split(".")[0] %}
 {% set blas_major = "2" %}
 
+{% set libblas_impl = blas_impl %}
+{% set libblas_impl = "mkl_rt" %}     # [blas_impl == 'mkl']
+{% set libblas_impl = "blis.2" %}     # [blas_impl == 'blis' and win]
+
 # blas_major denotes major infrastructural change to how blas is managed
 package:
   name: blas-split

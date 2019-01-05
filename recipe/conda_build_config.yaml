@@ -5,12 +5,3 @@ blas_impl:
 blas_default_impl:
 - openblas   # [unix]
 - mkl        # [win]
-libblas_impl:
-- openblas
-- mkl_rt
-- blis.2     # [win]
-- blis       # [unix]
-zip_keys:
-  -
-    - blas_impl
-    - libblas_impl

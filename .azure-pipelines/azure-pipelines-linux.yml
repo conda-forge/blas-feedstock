@@ -1,0 +1,22 @@
+jobs:
+- job: linux_64
+  pool:
+    vmImage: ubuntu-16.04
+  timeoutInMinutes: 240
+  strategy:
+    maxParallel: 8
+    matrix:
+      linux_blas_implblis:
+        CONFIG: linux_blas_implblis
+      linux_blas_implmkl:
+        CONFIG: linux_blas_implmkl
+      linux_blas_implopenblas:
+        CONFIG: linux_blas_implopenblas
+  steps:
+  - script: |
+      sudo pip install --upgrade pip
+      sudo pip install setuptools shyaml
+    displayName: Install dependencies
+
+  - script: .azure-pipelines/run_docker_build.sh
+    displayName: Run docker build
