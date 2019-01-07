@@ -2,6 +2,15 @@ blas_impl:
 - openblas
 - mkl
 - blis
+blas_impl_lib:
+- openblas
+- mkl_rt
+- blis       # [not win]
+- libblis.2  # [win]
 blas_default_impl:
-- openblas   # [unix]
+- openblas   # [not win]
 - mkl        # [win]
+zip_keys:
+-
+  - blas_impl
+  - blas_impl_lib
