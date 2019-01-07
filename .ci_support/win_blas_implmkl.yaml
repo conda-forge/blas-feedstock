@@ -1,8 +1,0 @@
-blas_default_impl:
-- mkl
-blas_impl:
-- mkl
-channel_sources:
-- conda-forge,defaults
-channel_targets:
-- conda-forge main

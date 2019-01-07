@@ -6,14 +6,14 @@ jobs:
   strategy:
     maxParallel: 4
     matrix:
-      win_blas_implblis:
-        CONFIG: win_blas_implblis
+      win_blas_implblisblas_impl_liblibblis.2:
+        CONFIG: win_blas_implblisblas_impl_liblibblis.2
         CONDA_BLD_PATH: D:\\bld\\
-      win_blas_implmkl:
-        CONFIG: win_blas_implmkl
+      win_blas_implmklblas_impl_libmkl_rt:
+        CONFIG: win_blas_implmklblas_impl_libmkl_rt
         CONDA_BLD_PATH: D:\\bld\\
-      win_blas_implopenblas:
-        CONFIG: win_blas_implopenblas
+      win_blas_implopenblasblas_impl_libopenblas:
+        CONFIG: win_blas_implopenblasblas_impl_libopenblas
         CONDA_BLD_PATH: D:\\bld\\
   steps:
     # TODO: Fast finish on azure pipelines?

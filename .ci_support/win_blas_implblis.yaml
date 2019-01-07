@@ -1,8 +1,0 @@
-blas_default_impl:
-- mkl
-blas_impl:
-- blis
-channel_sources:
-- isuruf,conda-forge,defaults
-channel_targets:
-- conda-forge main
