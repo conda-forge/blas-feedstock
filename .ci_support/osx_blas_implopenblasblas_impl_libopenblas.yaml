@@ -9,7 +9,7 @@ blas_impl_lib:
 c_compiler:
 - toolchain_c
 channel_sources:
-- isuruf,conda-forge,defaults
+- isuruf/label/netlib,conda-forge,defaults
 channel_targets:
 - conda-forge main
 fortran_compiler:

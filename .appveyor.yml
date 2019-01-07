@@ -41,7 +41,7 @@ install:
     - cmd: set PYTHONUNBUFFERED=1
 
     # Configure the VM.
-    - cmd: conda.exe install -n root -c conda-forge --quiet --yes conda-forge-ci-setup=2 conda-build
+    - cmd: conda.exe install -n root -c conda-forge --quiet --yes conda-forge-ci-setup=2
     - cmd: setup_conda_rc .\ .\recipe .\.ci_support\%CONFIG%.yaml
     - cmd: run_conda_forge_build_setup
 
@@ -49,6 +49,6 @@ install:
 build: off
 
 test_script:
-    - conda.exe build recipe -m .ci_support\%CONFIG%.yaml
+    - conda.exe build recipe -m .ci_support\%CONFIG%.yaml --quiet
 deploy_script:
     - cmd: upload_package .\ .\recipe .ci_support\%CONFIG%.yaml
