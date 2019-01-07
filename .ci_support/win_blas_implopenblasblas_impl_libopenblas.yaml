@@ -5,7 +5,7 @@ blas_impl:
 blas_impl_lib:
 - openblas
 channel_sources:
-- conda-forge,defaults
+- isuruf,conda-forge,defaults
 channel_targets:
 - conda-forge main
 m2w64_c_compiler:
