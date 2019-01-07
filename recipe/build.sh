@@ -11,7 +11,7 @@ cmake .. \
     "-DBLAS_LIBRARIES=${PREFIX}/lib/libblas${SHLIB_EXT};${PREFIX}/lib/libcblas${SHLIB_EXT}" \
     "-DLAPACK_LIBRARIES=${PREFIX}/lib/liblapack${SHLIB_EXT};${PREFIX}/lib/liblapacke${SHLIB_EXT}" \
     -DBUILD_TESTING=yes \
-    -DCMAKE_BUILD_TYPE=shared
+    -DCMAKE_BUILD_TYPE=Release \
 
 make -j${CPU_COUNT}
 

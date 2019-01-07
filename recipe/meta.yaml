@@ -17,6 +17,8 @@ source:
 
 build:
   number: "{{ build_num }}"
+  # Without this conda-build gets confused.
+  features: blas_netlib
 
 requirements:
   build:
