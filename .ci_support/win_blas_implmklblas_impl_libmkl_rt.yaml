@@ -6,6 +6,7 @@ blas_impl_lib:
 - mkl_rt
 channel_sources:
 - isuruf/label/netlib,conda-forge,defaults
+- isuruf/label/netlib,conda-forge/label/gcc7,defaults
 channel_targets:
 - conda-forge main
 m2w64_c_compiler:

@@ -16,3 +16,4 @@ zip_keys:
   - blas_impl_lib
 channel_sources:
 - isuruf/label/netlib,conda-forge,defaults
+- isuruf/label/netlib,conda-forge/label/gcc7,defaults

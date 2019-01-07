@@ -6,12 +6,18 @@ jobs:
   strategy:
     maxParallel: 8
     matrix:
-      osx_blas_implblisblas_impl_libblis:
-        CONFIG: osx_blas_implblisblas_impl_libblis
-      osx_blas_implmklblas_impl_libmkl_rt:
-        CONFIG: osx_blas_implmklblas_impl_libmkl_rt
-      osx_blas_implopenblasblas_impl_libopenblas:
-        CONFIG: osx_blas_implopenblasblas_impl_libopenblas
+      osx_blas_implblisblas_impl_libblisc_compilerclangfortran_compilergfortran:
+        CONFIG: osx_blas_implblisblas_impl_libblisc_compilerclangfortran_compilergfortran
+      osx_blas_implblisblas_impl_libblisc_compilertoolchain_cfortran_compilertoolchain_fort:
+        CONFIG: osx_blas_implblisblas_impl_libblisc_compilertoolchain_cfortran_compilertoolchain_fort
+      osx_blas_implmklblas_impl_libmkl_rtc_compilerclangfortran_compilergfortran:
+        CONFIG: osx_blas_implmklblas_impl_libmkl_rtc_compilerclangfortran_compilergfortran
+      osx_blas_implmklblas_impl_libmkl_rtc_compilertoolchain_cfortran_compilertoolchain_fort:
+        CONFIG: osx_blas_implmklblas_impl_libmkl_rtc_compilertoolchain_cfortran_compilertoolchain_fort
+      osx_blas_implopenblasblas_impl_libopenblasc_compilerclangfortran_compilergfortran:
+        CONFIG: osx_blas_implopenblasblas_impl_libopenblasc_compilerclangfortran_compilergfortran
+      osx_blas_implopenblasblas_impl_libopenblasc_compilertoolchain_cfortran_compilertoolchain_fort:
+        CONFIG: osx_blas_implopenblasblas_impl_libopenblasc_compilertoolchain_cfortran_compilertoolchain_fort
 
   steps:
   # TODO: Fast finish on azure pipelines?

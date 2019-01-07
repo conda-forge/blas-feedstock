@@ -1,9 +1,11 @@
 blas_default_impl:
 - openblas
 blas_impl:
-- openblas
+- blis
 blas_impl_lib:
-- openblas
+- blis
+build_number_decrement:
+- '1000'
 c_compiler:
 - toolchain_c
 channel_sources:
@@ -17,3 +19,9 @@ fortran_compiler:
 zip_keys:
 - - blas_impl
   - blas_impl_lib
+- - c_compiler
+  - fortran_compiler
+  - channel_sources
+  - channel_targets
+  - docker_image
+  - build_number_decrement

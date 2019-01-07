@@ -3,17 +3,19 @@ MACOSX_DEPLOYMENT_TARGET:
 blas_default_impl:
 - openblas
 blas_impl:
-- blis
+- mkl
 blas_impl_lib:
-- blis
+- mkl_rt
+build_number_decrement:
+- '0'
 c_compiler:
-- toolchain_c
+- clang
 channel_sources:
-- isuruf/label/netlib,conda-forge,defaults
+- isuruf/label/netlib,conda-forge/label/gcc7,defaults
 channel_targets:
-- conda-forge main
+- conda-forge gcc7
 fortran_compiler:
-- toolchain_fort
+- gfortran
 macos_machine:
 - x86_64-apple-darwin13.4.0
 macos_min_version:
@@ -21,3 +23,8 @@ macos_min_version:
 zip_keys:
 - - blas_impl
   - blas_impl_lib
+- - c_compiler
+  - fortran_compiler
+  - channel_sources
+  - channel_targets
+  - build_number_decrement

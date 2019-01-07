@@ -6,12 +6,18 @@ jobs:
   strategy:
     maxParallel: 8
     matrix:
-      linux_blas_implblisblas_impl_libblis:
-        CONFIG: linux_blas_implblisblas_impl_libblis
-      linux_blas_implmklblas_impl_libmkl_rt:
-        CONFIG: linux_blas_implmklblas_impl_libmkl_rt
-      linux_blas_implopenblasblas_impl_libopenblas:
-        CONFIG: linux_blas_implopenblasblas_impl_libopenblas
+      linux_blas_implblisblas_impl_libblisc_compilergccfortran_compilergfortran:
+        CONFIG: linux_blas_implblisblas_impl_libblisc_compilergccfortran_compilergfortran
+      linux_blas_implblisblas_impl_libblisc_compilertoolchain_cfortran_compilertoolchain_fort:
+        CONFIG: linux_blas_implblisblas_impl_libblisc_compilertoolchain_cfortran_compilertoolchain_fort
+      linux_blas_implmklblas_impl_libmkl_rtc_compilergccfortran_compilergfortran:
+        CONFIG: linux_blas_implmklblas_impl_libmkl_rtc_compilergccfortran_compilergfortran
+      linux_blas_implmklblas_impl_libmkl_rtc_compilertoolchain_cfortran_compilertoolchain_fort:
+        CONFIG: linux_blas_implmklblas_impl_libmkl_rtc_compilertoolchain_cfortran_compilertoolchain_fort
+      linux_blas_implopenblasblas_impl_libopenblasc_compilergccfortran_compilergfortran:
+        CONFIG: linux_blas_implopenblasblas_impl_libopenblasc_compilergccfortran_compilergfortran
+      linux_blas_implopenblasblas_impl_libopenblasc_compilertoolchain_cfortran_compilertoolchain_fort:
+        CONFIG: linux_blas_implopenblasblas_impl_libopenblasc_compilertoolchain_cfortran_compilertoolchain_fort
   steps:
   - script: |
       sudo pip install --upgrade pip
