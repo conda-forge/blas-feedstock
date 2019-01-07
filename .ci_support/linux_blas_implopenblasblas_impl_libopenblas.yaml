@@ -1,7 +1,9 @@
 blas_default_impl:
 - openblas
 blas_impl:
-- blis
+- openblas
+blas_impl_lib:
+- openblas
 c_compiler:
 - toolchain_c
 channel_sources:
@@ -12,3 +14,6 @@ docker_image:
 - condaforge/linux-anvil
 fortran_compiler:
 - toolchain_fort
+zip_keys:
+- - blas_impl
+  - blas_impl_lib

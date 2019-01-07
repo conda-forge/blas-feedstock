@@ -6,12 +6,12 @@ jobs:
   strategy:
     maxParallel: 8
     matrix:
-      linux_blas_implblis:
-        CONFIG: linux_blas_implblis
-      linux_blas_implmkl:
-        CONFIG: linux_blas_implmkl
-      linux_blas_implopenblas:
-        CONFIG: linux_blas_implopenblas
+      linux_blas_implblisblas_impl_libblis:
+        CONFIG: linux_blas_implblisblas_impl_libblis
+      linux_blas_implmklblas_impl_libmkl_rt:
+        CONFIG: linux_blas_implmklblas_impl_libmkl_rt
+      linux_blas_implopenblasblas_impl_libopenblas:
+        CONFIG: linux_blas_implopenblasblas_impl_libopenblas
   steps:
   - script: |
       sudo pip install --upgrade pip
