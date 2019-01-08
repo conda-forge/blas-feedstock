@@ -10,6 +10,8 @@ if [[ "${blas_impl}" == "blis" ]]; then
   exit 0
 fi
 
+ulimit -s unlimited
+
 if [[ $(uname) == "Darwin" ]]; then
   # testing with shared libraries does not work. skip them.
   # to test that program exits if wrong parameters are given, what the testsuite
