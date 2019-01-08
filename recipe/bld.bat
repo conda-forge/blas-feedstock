@@ -6,7 +6,6 @@ dir %LIBRARY_LIB%
 REM Trick to avoid CMake/sh.exe error
 ren "C:\Program Files\Git\usr\bin\sh.exe" _sh.exe
 
-set CPATH="%CPATH%;%LIBRARY_INC%"
 set LIBRARY_PATH="%LIBRARY_PATH%;%LIBRARY_LIB%"
 
 REM Link against the netlib libraries
