@@ -29,9 +29,7 @@ if [[ "${blas_impl}" == "mkl" ]]; then
   SKIP_TESTS="${SKIP_TESTS}|LAPACK-xlintstc_ctest_in|LAPACK-xlintstrfc_ctest_rfp_in|LAPACK-xeigtstc_sep_in|LAPACK-xeigtstc_se2_in|LAPACK-xeigtstc_ced_in"
   SKIP_TESTS="${SKIP_TESTS}|LAPACK-xeigtstc_csb_in|LAPACK-xeigtstc_csg_in|LAPACK-xeigtstz_zed_in|LAPACK-xeigtstz_zsg_in|LAPACK-xlintstzc_zctest_in"
 
-  if [[ "$(uname)" == "Darwin" ]]; then
-    SKIP_TEST="${SKIP_TESTS}|BLAS-xblat1c|BLAS-xblat1z"
-  fi
+  SKIP_TESTS="${SKIP_TESTS}|BLAS-xblat1c|BLAS-xblat1z|example_DGELS_rowmajor|example_DGELS_colmajor"
 fi
 
 
