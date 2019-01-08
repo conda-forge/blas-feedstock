@@ -16,5 +16,5 @@ cmake -G"MinGW Makefiles" .. ^
     -DBUILD_TESTING=yes ^
     -DCMAKE_BUILD_TYPE=Release
 
-mingw32-make -j%CPU_COUNT%
+mingw32-make VERBOSE=1
 
