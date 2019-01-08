@@ -62,7 +62,7 @@ outputs:
     test:
       commands:
         # Following line is just to help conda-build's used variables detection
-        - echo hello # [blas_impl_lib == 'blas']
+        - echo hello  # [blas_impl_lib == 'blas']
         - test -f $PREFIX/lib/libblas.so.{{ version_major }}      # [linux]
         - test -f $PREFIX/lib/libblas.{{ version_major }}.dylib   # [osx]
         - if not exist %LIBRARY_BIN%/libblas.dll                  # [win]
@@ -177,6 +177,11 @@ outputs:
         - liblapacke {{ version }} *netlib                   # [blas_impl == 'blis']
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("libblas", exact=True) }}
+    test:
+      commands:
+        - test -f $PREFIX/lib/liblapacke.so.{{ version_major }}      # [linux]
+        - test -f $PREFIX/lib/liblapacke.{{ version_major }}.dylib   # [osx]
+        - if not exist %LIBRARY_BIN%/liblapacke.dll                  # [win]
 
 about:
   home: https://github.com/conda-forge/blas-feedstock
