@@ -11,9 +11,9 @@ build_number_decrement:
 c_compiler:
 - clang
 channel_sources:
-- isuruf/label/netlib,conda-forge/label/gcc7,defaults
+- conda-forge/label/blasdev-gcc7,conda-forge/label/gcc7,defaults
 channel_targets:
-- conda-forge gcc7
+- conda-forge blasdev-gcc7
 fortran_compiler:
 - gfortran
 macos_machine:

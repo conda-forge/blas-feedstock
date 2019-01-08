@@ -11,9 +11,9 @@ build_number_decrement:
 c_compiler:
 - toolchain_c
 channel_sources:
-- isuruf/label/netlib,conda-forge,defaults
+- conda-forge/label/blasdev-main,conda-forge,defaults
 channel_targets:
-- conda-forge main
+- conda-forge blasdev-main
 fortran_compiler:
 - toolchain_fort
 macos_machine:

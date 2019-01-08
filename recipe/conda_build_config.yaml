@@ -15,5 +15,9 @@ zip_keys:
   - blas_impl
   - blas_impl_lib
 channel_sources:
-- isuruf/label/netlib,conda-forge,defaults
-- isuruf/label/netlib,conda-forge/label/gcc7,defaults
+- conda-forge/label/blasdev-main,conda-forge,defaults
+- conda-forge/label/blasdev-gcc7,conda-forge/label/gcc7,defaults  # [(linux or osx)     and (environ.get('CF_COMPILER_STACK') == 'comp7')]
+channel_targets:
+- conda-forge blasdev-main
+- conda-forge blasdev-gcc7  # [(linux or osx)     and (environ.get('CF_COMPILER_STACK') == 'comp7')]
+
