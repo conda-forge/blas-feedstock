@@ -10,7 +10,9 @@ if [[ "${blas_impl}" == "blis" ]]; then
   exit 0
 fi
 
-ulimit -s unlimited
+if [[ $(uname) == "Linux" ]]; then
+  ulimit -s unlimited
+fi
 
 if [[ $(uname) == "Darwin" ]]; then
   # testing with shared libraries does not work. skip them.
