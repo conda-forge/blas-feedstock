@@ -10,11 +10,11 @@ if [[ "${blas_impl}" == "blis" ]]; then
   exit 0
 fi
 
-if [[ $(uname) == "Linux" ]]; then
+if [[ "$(uname)" != "Darwin" ]]; then
   ulimit -s unlimited
 fi
 
-if [[ $(uname) == "Darwin" ]]; then
+if [[ "$(uname)" == "Darwin" ]]; then
   # testing with shared libraries does not work. skip them.
   # to test that program exits if wrong parameters are given, what the testsuite
   # do is that the symbol xerbla (xerbla logs the error and exits) is overriden
