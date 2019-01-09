@@ -16,8 +16,8 @@ fi
 
 # Link against the netlib libraries
 cmake -G "${CMAKE_GENERATOR}" .. \
-    "-DBLAS_LIBRARIES=${PREFIX}/lib/${SHLIB_PREFIX}blas${SHLIB_EXT};${PREFIX}/lib/${SHLIB_PREFIX}cblas${SHLIB_EXT}" \
-    "-DLAPACK_LIBRARIES=${PREFIX}/lib/${SHLIB_PREFIX}lapack${SHLIB_EXT};${PREFIX}/lib/${SHLIB_PREFIX}lapacke${SHLIB_EXT}" \
+    "-DBLAS_LIBRARIES=${SHLIB_PREFIX}blas${SHLIB_EXT};${SHLIB_PREFIX}cblas${SHLIB_EXT}" \
+    "-DLAPACK_LIBRARIES=${SHLIB_PREFIX}lapack${SHLIB_EXT};${SHLIB_PREFIX}lapacke${SHLIB_EXT}" \
     -DBUILD_TESTING=yes \
     -DCMAKE_BUILD_TYPE=Release
 
