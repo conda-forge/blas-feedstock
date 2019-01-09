@@ -25,7 +25,8 @@ requirements:
     - {{ compiler("m2w64_c") }}         # [win]
     - {{ compiler("m2w64_fortran") }}   # [win]
     - cmake
-    - m2w64-make   # [win]
+    - m2-make   # [win]
+    - posix     # [win]
   host:
     - libblas    {{ version }} *netlib
     - libcblas   {{ version }} *netlib
@@ -161,7 +162,8 @@ outputs:
         - {{ compiler('m2w64_c') }}           # [win]
         - {{ compiler('m2w64_fortran') }}     # [win]
         - cmake
-        - m2w64-make   # [win]
+        - m2-make   # [win]
+        - posix     # [win]
       host:
       # Building with blis fails due to a conda-build bug
       {% if blas_impl != 'blis' %}

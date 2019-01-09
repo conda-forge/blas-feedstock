@@ -10,10 +10,14 @@ ls -al ${PREFIX}/include
 export CPATH="${CPATH}:${PREFIX}/include"
 export LIBRARY_PATH="${LIBRARY_PATH}:${PREFIX}/lib"
 
+if [[ "$(uname)" == "Linux" || "$(uname)" == "Darwin" ]]; then
+    export SHLIB_PREFIX=lib
+fi
+
 # Link against the netlib libraries
-cmake .. \
-    "-DBLAS_LIBRARIES=${PREFIX}/lib/libblas${SHLIB_EXT};${PREFIX}/lib/libcblas${SHLIB_EXT}" \
-    "-DLAPACK_LIBRARIES=${PREFIX}/lib/liblapack${SHLIB_EXT};${PREFIX}/lib/liblapacke${SHLIB_EXT}" \
+cmake ${CMAKE_GENERATOR_G} .. \
+    "-DBLAS_LIBRARIES=${PREFIX}/lib/${SHLIB_PREFIX}blas${SHLIB_EXT};${PREFIX}/lib/${SHLIB_PREFIX}cblas${SHLIB_EXT}" \
+    "-DLAPACK_LIBRARIES=${PREFIX}/lib/${SHLIB_PREFIX}lapack${SHLIB_EXT};${PREFIX}/lib/${SHLIB_PREFIX}lapacke${SHLIB_EXT}" \
     -DBUILD_TESTING=yes \
     -DCMAKE_BUILD_TYPE=Release
 
