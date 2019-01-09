@@ -7,15 +7,15 @@ cd build
 ls -al ${PREFIX}/lib
 ls -al ${PREFIX}/include
 
-export CPATH="${CPATH}:${PREFIX}/include"
-export LIBRARY_PATH="${LIBRARY_PATH}:${PREFIX}/lib"
+export CPATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
 
 if [[ "$(uname)" == "Linux" || "$(uname)" == "Darwin" ]]; then
     export SHLIB_PREFIX=lib
 fi
 
 # Link against the netlib libraries
-cmake ${CMAKE_GENERATOR_G} .. \
+cmake -G "${CMAKE_GENERATOR}" .. \
     "-DBLAS_LIBRARIES=${PREFIX}/lib/${SHLIB_PREFIX}blas${SHLIB_EXT};${PREFIX}/lib/${SHLIB_PREFIX}cblas${SHLIB_EXT}" \
     "-DLAPACK_LIBRARIES=${PREFIX}/lib/${SHLIB_PREFIX}lapack${SHLIB_EXT};${PREFIX}/lib/${SHLIB_PREFIX}lapacke${SHLIB_EXT}" \
     -DBUILD_TESTING=yes \

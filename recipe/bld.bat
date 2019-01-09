@@ -7,7 +7,7 @@ copy "%RECIPE_DIR%\build.sh" .
 FOR /F "delims=" %%i IN ('cygpath.exe -u -p "%PATH%"') DO set "PATH_OVERRIDE=%%i"
 FOR /F "delims=" %%i IN ('cygpath.exe -u "%LIBRARY_PREFIX%"') DO set "PREFIX=%%i"
 set "SHLIB_EXT=.lib"
-set "CMAKE_GENERATOR_G=-G 'MSYS Makefiles'"
+set "CMAKE_GENERATOR=MSYS Makefiles"
 set MSYSTEM=MINGW%ARCH%
 set MSYS2_PATH_TYPE=inherit
 set CHERE_INVOKING=1
