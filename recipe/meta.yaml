@@ -66,7 +66,7 @@ outputs:
         - echo hello  # [blas_impl_lib == 'blas']
         - test -f $PREFIX/lib/libblas.so.{{ version_major }}      # [linux]
         - test -f $PREFIX/lib/libblas.{{ version_major }}.dylib   # [osx]
-        - if not exist %LIBRARY_BIN%/libblas.dll                  # [win]
+        - if not exist %LIBRARY_BIN%/libblas.dll exit 1           # [win]
 
   - name: libcblas
     script: build_pkg.sh     # [unix]
@@ -93,7 +93,7 @@ outputs:
       commands:
         - test -f $PREFIX/lib/libcblas.so.{{ version_major }}      # [linux]
         - test -f $PREFIX/lib/libcblas.{{ version_major }}.dylib   # [osx]
-        - if not exist %LIBRARY_BIN%/libcblas.dll                  # [win]
+        - if not exist %LIBRARY_BIN%/libcblas.dll exit 1           # [win]
 
   {% if blas_impl != 'blis' %}
   - name: liblapack
@@ -121,7 +121,7 @@ outputs:
       commands:
         - test -f $PREFIX/lib/liblapack.so.{{ version_major }}      # [linux]
         - test -f $PREFIX/lib/liblapack.{{ version_major }}.dylib   # [osx]
-        - if not exist %LIBRARY_BIN%/liblapack.dll                  # [win]
+        - if not exist %LIBRARY_BIN%/liblapack.dll exit 1           # [win]
 
   - name: liblapacke
     script: build_pkg.sh     # [unix]
@@ -144,7 +144,7 @@ outputs:
       commands:
         - test -f $PREFIX/lib/liblapacke.so.{{ version_major }}      # [linux]
         - test -f $PREFIX/lib/liblapacke.{{ version_major }}.dylib   # [osx]
-        - if not exist %LIBRARY_BIN%/liblapacke.dll                  # [win]
+        - if not exist %LIBRARY_BIN%/liblapacke.dll exit 1           # [win]
   {% endif %}
 
   # For compatiblity
@@ -183,7 +183,7 @@ outputs:
       commands:
         - test -f $PREFIX/lib/liblapacke.so.{{ version_major }}      # [linux]
         - test -f $PREFIX/lib/liblapacke.{{ version_major }}.dylib   # [osx]
-        - if not exist %LIBRARY_BIN%/liblapacke.dll                  # [win]
+        - if not exist %LIBRARY_BIN%/liblapacke.dll exit 1           # [win]
 
 about:
   home: https://github.com/conda-forge/blas-feedstock
