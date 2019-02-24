@@ -1,3 +1,5 @@
+BLAS_VARIANT:
+- mkl
 MACOSX_DEPLOYMENT_TARGET:
 - '10.9'
 build_number_decrement:

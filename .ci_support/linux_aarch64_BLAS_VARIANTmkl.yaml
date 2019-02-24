@@ -1,3 +1,5 @@
+BLAS_VARIANT:
+- mkl
 BUILD:
 - aarch64-conda_cos7-linux-gnu
 build_number_decrement:

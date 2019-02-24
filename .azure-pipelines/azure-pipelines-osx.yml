@@ -10,8 +10,14 @@ jobs:
   strategy:
     maxParallel: 8
     matrix:
-      osx_:
-        CONFIG: osx_
+      osx_BLAS_VARIANTmkl:
+        CONFIG: osx_BLAS_VARIANTmkl
+        UPLOAD_PACKAGES: False
+      osx_BLAS_VARIANTnoblas:
+        CONFIG: osx_BLAS_VARIANTnoblas
+        UPLOAD_PACKAGES: False
+      osx_BLAS_VARIANTopenblas:
+        CONFIG: osx_BLAS_VARIANTopenblas
         UPLOAD_PACKAGES: False
 
   steps:

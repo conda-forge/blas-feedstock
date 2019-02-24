@@ -10,8 +10,16 @@ jobs:
   strategy:
     maxParallel: 4
     matrix:
-      win_:
-        CONFIG: win_
+      win_BLAS_VARIANTmkl:
+        CONFIG: win_BLAS_VARIANTmkl
+        CONDA_BLD_PATH: D:\\bld\\
+        UPLOAD_PACKAGES: False
+      win_BLAS_VARIANTnoblas:
+        CONFIG: win_BLAS_VARIANTnoblas
+        CONDA_BLD_PATH: D:\\bld\\
+        UPLOAD_PACKAGES: False
+      win_BLAS_VARIANTopenblas:
+        CONFIG: win_BLAS_VARIANTopenblas
         CONDA_BLD_PATH: D:\\bld\\
         UPLOAD_PACKAGES: False
   steps:

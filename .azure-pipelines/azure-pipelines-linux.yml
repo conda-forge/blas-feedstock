@@ -10,14 +10,32 @@ jobs:
   strategy:
     maxParallel: 8
     matrix:
-      linux_:
-        CONFIG: linux_
+      linux_BLAS_VARIANTmkl:
+        CONFIG: linux_BLAS_VARIANTmkl
         UPLOAD_PACKAGES: False
-      linux_aarch64_:
-        CONFIG: linux_aarch64_
+      linux_BLAS_VARIANTnoblas:
+        CONFIG: linux_BLAS_VARIANTnoblas
+        UPLOAD_PACKAGES: False
+      linux_BLAS_VARIANTopenblas:
+        CONFIG: linux_BLAS_VARIANTopenblas
+        UPLOAD_PACKAGES: False
+      linux_aarch64_BLAS_VARIANTmkl:
+        CONFIG: linux_aarch64_BLAS_VARIANTmkl
         UPLOAD_PACKAGES: True
-      linux_ppc64le_:
-        CONFIG: linux_ppc64le_
+      linux_aarch64_BLAS_VARIANTnoblas:
+        CONFIG: linux_aarch64_BLAS_VARIANTnoblas
+        UPLOAD_PACKAGES: True
+      linux_aarch64_BLAS_VARIANTopenblas:
+        CONFIG: linux_aarch64_BLAS_VARIANTopenblas
+        UPLOAD_PACKAGES: True
+      linux_ppc64le_BLAS_VARIANTmkl:
+        CONFIG: linux_ppc64le_BLAS_VARIANTmkl
+        UPLOAD_PACKAGES: True
+      linux_ppc64le_BLAS_VARIANTnoblas:
+        CONFIG: linux_ppc64le_BLAS_VARIANTnoblas
+        UPLOAD_PACKAGES: True
+      linux_ppc64le_BLAS_VARIANTopenblas:
+        CONFIG: linux_ppc64le_BLAS_VARIANTopenblas
         UPLOAD_PACKAGES: True
   steps:
   - script: |
