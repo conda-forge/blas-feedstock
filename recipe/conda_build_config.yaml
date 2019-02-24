@@ -1,0 +1,4 @@
+BLAS_VARIANT:
+- openblas
+- noblas
+- mkl
