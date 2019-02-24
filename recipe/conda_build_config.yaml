@@ -1,4 +1,4 @@
 BLAS_VARIANT:
 - openblas
 - noblas
-- mkl
+- mkl  # [not (ppc64le or aarch64)]
