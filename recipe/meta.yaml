@@ -23,7 +23,9 @@ requirements:
     - {{ BLAS_VARIANT }}
 {% endif %}
 
-test: {}
+test:
+  commands: 
+    - echo 'test'  # [unix]    
 
 about:
   home: https://github.com/conda-forge/blas-feedstock
