@@ -1,0 +1,6 @@
+BLAS_VARIANT:
+- noblas
+channel_sources:
+- conda-forge,defaults
+channel_targets:
+- conda-forge main

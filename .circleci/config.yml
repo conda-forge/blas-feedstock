@@ -1,0 +1,66 @@
+# This file was generated automatically from conda-smithy. To update this configuration,
+# update the conda-forge.yml and/or the recipe/meta.yaml.
+# -*- mode: yaml -*-
+
+version: 2
+
+jobs:
+  build_linux_BLAS_VARIANTmkl:
+    working_directory: ~/test
+    machine: true
+    environment:
+      - CONFIG: "linux_BLAS_VARIANTmkl"
+    steps:
+      - checkout
+      - run:
+          name: Fast finish outdated PRs and merge PRs
+          command: |
+            ./.circleci/fast_finish_ci_pr_build.sh
+            ./.circleci/checkout_merge_commit.sh
+      - run:
+          command: docker pull condaforge/linux-anvil-comp7
+      - run:
+          # Run, test and (if we have a BINSTAR_TOKEN) upload the distributions.
+          command: ./.circleci/run_docker_build.sh
+  build_linux_BLAS_VARIANTnoblas:
+    working_directory: ~/test
+    machine: true
+    environment:
+      - CONFIG: "linux_BLAS_VARIANTnoblas"
+    steps:
+      - checkout
+      - run:
+          name: Fast finish outdated PRs and merge PRs
+          command: |
+            ./.circleci/fast_finish_ci_pr_build.sh
+            ./.circleci/checkout_merge_commit.sh
+      - run:
+          command: docker pull condaforge/linux-anvil-comp7
+      - run:
+          # Run, test and (if we have a BINSTAR_TOKEN) upload the distributions.
+          command: ./.circleci/run_docker_build.sh
+  build_linux_BLAS_VARIANTopenblas:
+    working_directory: ~/test
+    machine: true
+    environment:
+      - CONFIG: "linux_BLAS_VARIANTopenblas"
+    steps:
+      - checkout
+      - run:
+          name: Fast finish outdated PRs and merge PRs
+          command: |
+            ./.circleci/fast_finish_ci_pr_build.sh
+            ./.circleci/checkout_merge_commit.sh
+      - run:
+          command: docker pull condaforge/linux-anvil-comp7
+      - run:
+          # Run, test and (if we have a BINSTAR_TOKEN) upload the distributions.
+          command: ./.circleci/run_docker_build.sh
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build_linux_BLAS_VARIANTmkl
+      - build_linux_BLAS_VARIANTnoblas
+      - build_linux_BLAS_VARIANTopenblas
