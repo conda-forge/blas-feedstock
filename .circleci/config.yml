@@ -1,11 +1,15 @@
+# This file was generated automatically from conda-smithy. To update this configuration,
+# update the conda-forge.yml and/or the recipe/meta.yaml.
+# -*- mode: yaml -*-
+
 version: 2
 
 jobs:
-  build_linux_blas_implblisblas_impl_libblisc_compilergccfortran_compilergfortran:
+  build_linux_:
     working_directory: ~/test
     machine: true
     environment:
-      - CONFIG: "linux_blas_implblisblas_impl_libblisc_compilergccfortran_compilergfortran"
+      - CONFIG: "linux_"
     steps:
       - checkout
       - run:
@@ -14,92 +18,7 @@ jobs:
             ./.circleci/fast_finish_ci_pr_build.sh
             ./.circleci/checkout_merge_commit.sh
       - run:
-          command: docker pull condaforge/linux-anvil
-      - run:
-          # Run, test and (if we have a BINSTAR_TOKEN) upload the distributions.
-          command: ./.circleci/run_docker_build.sh
-  build_linux_blas_implblisblas_impl_libblisc_compilertoolchain_cfortran_compilertoolchain_fort:
-    working_directory: ~/test
-    machine: true
-    environment:
-      - CONFIG: "linux_blas_implblisblas_impl_libblisc_compilertoolchain_cfortran_compilertoolchain_fort"
-    steps:
-      - checkout
-      - run:
-          name: Fast finish outdated PRs and merge PRs
-          command: |
-            ./.circleci/fast_finish_ci_pr_build.sh
-            ./.circleci/checkout_merge_commit.sh
-      - run:
-          command: docker pull condaforge/linux-anvil
-      - run:
-          # Run, test and (if we have a BINSTAR_TOKEN) upload the distributions.
-          command: ./.circleci/run_docker_build.sh
-  build_linux_blas_implmklblas_impl_libmkl_rtc_compilergccfortran_compilergfortran:
-    working_directory: ~/test
-    machine: true
-    environment:
-      - CONFIG: "linux_blas_implmklblas_impl_libmkl_rtc_compilergccfortran_compilergfortran"
-    steps:
-      - checkout
-      - run:
-          name: Fast finish outdated PRs and merge PRs
-          command: |
-            ./.circleci/fast_finish_ci_pr_build.sh
-            ./.circleci/checkout_merge_commit.sh
-      - run:
-          command: docker pull condaforge/linux-anvil
-      - run:
-          # Run, test and (if we have a BINSTAR_TOKEN) upload the distributions.
-          command: ./.circleci/run_docker_build.sh
-  build_linux_blas_implmklblas_impl_libmkl_rtc_compilertoolchain_cfortran_compilertoolchain_fort:
-    working_directory: ~/test
-    machine: true
-    environment:
-      - CONFIG: "linux_blas_implmklblas_impl_libmkl_rtc_compilertoolchain_cfortran_compilertoolchain_fort"
-    steps:
-      - checkout
-      - run:
-          name: Fast finish outdated PRs and merge PRs
-          command: |
-            ./.circleci/fast_finish_ci_pr_build.sh
-            ./.circleci/checkout_merge_commit.sh
-      - run:
-          command: docker pull condaforge/linux-anvil
-      - run:
-          # Run, test and (if we have a BINSTAR_TOKEN) upload the distributions.
-          command: ./.circleci/run_docker_build.sh
-  build_linux_blas_implopenblasblas_impl_libopenblasc_compilergccfortran_compilergfortran:
-    working_directory: ~/test
-    machine: true
-    environment:
-      - CONFIG: "linux_blas_implopenblasblas_impl_libopenblasc_compilergccfortran_compilergfortran"
-    steps:
-      - checkout
-      - run:
-          name: Fast finish outdated PRs and merge PRs
-          command: |
-            ./.circleci/fast_finish_ci_pr_build.sh
-            ./.circleci/checkout_merge_commit.sh
-      - run:
-          command: docker pull condaforge/linux-anvil
-      - run:
-          # Run, test and (if we have a BINSTAR_TOKEN) upload the distributions.
-          command: ./.circleci/run_docker_build.sh
-  build_linux_blas_implopenblasblas_impl_libopenblasc_compilertoolchain_cfortran_compilertoolchain_fort:
-    working_directory: ~/test
-    machine: true
-    environment:
-      - CONFIG: "linux_blas_implopenblasblas_impl_libopenblasc_compilertoolchain_cfortran_compilertoolchain_fort"
-    steps:
-      - checkout
-      - run:
-          name: Fast finish outdated PRs and merge PRs
-          command: |
-            ./.circleci/fast_finish_ci_pr_build.sh
-            ./.circleci/checkout_merge_commit.sh
-      - run:
-          command: docker pull condaforge/linux-anvil
+          command: docker pull condaforge/linux-anvil-comp7
       - run:
           # Run, test and (if we have a BINSTAR_TOKEN) upload the distributions.
           command: ./.circleci/run_docker_build.sh
@@ -108,9 +27,4 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - build_linux_blas_implblisblas_impl_libblisc_compilergccfortran_compilergfortran
-      - build_linux_blas_implblisblas_impl_libblisc_compilertoolchain_cfortran_compilertoolchain_fort
-      - build_linux_blas_implmklblas_impl_libmkl_rtc_compilergccfortran_compilergfortran
-      - build_linux_blas_implmklblas_impl_libmkl_rtc_compilertoolchain_cfortran_compilertoolchain_fort
-      - build_linux_blas_implopenblasblas_impl_libopenblasc_compilergccfortran_compilergfortran
-      - build_linux_blas_implopenblasblas_impl_libopenblasc_compilertoolchain_cfortran_compilertoolchain_fort
+      - build_linux_

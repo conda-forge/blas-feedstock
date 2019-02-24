@@ -1,27 +1,21 @@
 blas_default_impl:
 - openblas
 blas_impl:
-- mkl
+- openblas
 blas_impl_lib:
-- mkl_rt
-build_number_decrement:
-- '1000'
+- openblas
 c_compiler:
-- toolchain_c
+- gcc
 channel_sources:
+- conda-forge/label/blasdev-gcc7,conda-forge/label/gcc7,defaults
 - conda-forge/label/blasdev-main,conda-forge,defaults
 channel_targets:
+- conda-forge blasdev-gcc7
 - conda-forge blasdev-main
 docker_image:
-- condaforge/linux-anvil
+- condaforge/linux-anvil-comp7
 fortran_compiler:
-- toolchain_fort
+- gfortran
 zip_keys:
 - - blas_impl
   - blas_impl_lib
-- - c_compiler
-  - fortran_compiler
-  - channel_sources
-  - channel_targets
-  - docker_image
-  - build_number_decrement
