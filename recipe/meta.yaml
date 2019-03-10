@@ -26,6 +26,7 @@ requirements:
     - {{ compiler("m2w64_fortran") }}   # [win]
     - cmake
     - m2-make   # [win]
+    - make      # [not win]
     - posix     # [win]
   host:
     - libblas    {{ version }} *netlib
