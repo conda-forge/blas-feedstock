@@ -1,11 +1,11 @@
 blas_impl:
 - openblas
-- mkl
-- blis
+- mkl        # [x86 or x86_64]
+- blis       # [x86 or x86_64]
 blas_impl_lib:
 - openblas
-- mkl_rt
-- blis       # [not win]
+- mkl_rt     # [x86 or x86_64]
+- blis       # [not win and (x86 or x86_64)]
 - libblis.2  # [win]
 blas_default_impl:
 - openblas   # [not win]
@@ -14,10 +14,3 @@ zip_keys:
 -
   - blas_impl
   - blas_impl_lib
-channel_sources:
-- conda-forge/label/blasdev-main,conda-forge,defaults
-- conda-forge/label/blasdev-gcc7,conda-forge/label/gcc7,defaults  # [(linux or osx)     and (environ.get('CF_COMPILER_STACK') == 'comp7')]
-channel_targets:
-- conda-forge blasdev-main
-- conda-forge blasdev-gcc7  # [(linux or osx)     and (environ.get('CF_COMPILER_STACK') == 'comp7')]
-

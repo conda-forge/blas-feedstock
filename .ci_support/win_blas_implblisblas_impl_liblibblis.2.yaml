@@ -1,13 +1,13 @@
 blas_default_impl:
 - mkl
 blas_impl:
-- openblas
+- blis
 blas_impl_lib:
-- openblas
+- libblis.2
 channel_sources:
-- conda-forge/label/blasdev-main,conda-forge,defaults
+- conda-forge,defaults
 channel_targets:
-- conda-forge blasdev-main
+- conda-forge main
 m2w64_c_compiler:
 - m2w64-toolchain
 m2w64_fortran_compiler:

@@ -1,6 +1,0 @@
-BLAS_VARIANT:
-- mkl
-channel_sources:
-- conda-forge,defaults
-channel_targets:
-- conda-forge main

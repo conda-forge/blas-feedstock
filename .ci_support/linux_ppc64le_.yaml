@@ -7,13 +7,11 @@ blas_impl_lib:
 c_compiler:
 - gcc
 channel_sources:
-- conda-forge/label/blasdev-gcc7,conda-forge/label/gcc7,defaults
-- conda-forge/label/blasdev-main,conda-forge,defaults
+- conda-forge,defaults
 channel_targets:
-- conda-forge blasdev-gcc7
-- conda-forge blasdev-main
+- conda-forge main
 docker_image:
-- condaforge/linux-anvil-comp7
+- condaforge/linux-anvil-ppc64le
 fortran_compiler:
 - gfortran
 zip_keys:
