@@ -44,8 +44,8 @@ if [[ "${blas_impl}" == "openblas" && "$(uname)" == MINGW* ]]; then
   SKIP_TESTS="${SKIP_TESTS}|LAPACK-xeigtstz_glm_in|LAPACK-xeigtstz_gsv_in|LAPACK-xeigtstz_lse_in|BLAS-xblat1c"
 fi
 
-if [[ ! "$(uname -m)" != "x86_64" ]]; then
-  SKIP_TESTS="${SKIP_TESTS}|LAPACK-xeigtstz*"
+if [[ ! "$(uname -m)" == "x86_64" ]]; then
+  SKIP_TESTS="${SKIP_TESTS}|LAPACK-xeigtstz"
 fi
 
 ctest --output-on-failure -E "${SKIP_TESTS}"
