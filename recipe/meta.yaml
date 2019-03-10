@@ -45,11 +45,11 @@ outputs:
        - blas_{{ blas_impl }}     # [blas_impl != blas_default_impl]
     requirements:
       host:
-        - openblas 0.3.3   # [blas_impl == 'openblas']
+        - openblas 0.3.5   # [blas_impl == 'openblas']
         - mkl 2019.1       # [blas_impl == 'mkl']
         - blis 0.5.1       # [blas_impl == 'blis']
       run:
-        - openblas 0.3.3   # [blas_impl == 'openblas']
+        - openblas 0.3.5   # [blas_impl == 'openblas']
         - mkl 2019.1       # [blas_impl == 'mkl']
         - blis 0.5.1       # [blas_impl == 'blis']
       run_constrained:
