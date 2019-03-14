@@ -1,5 +1,4 @@
 #!/bin/bash
-set +e
 
 mkdir build
 cd build
@@ -15,12 +14,19 @@ conda create -p ${NEW_ENV} --yes --quiet \
 ls -al ${PREFIX}/lib
 ls -al ${PREFIX}/include
 
-export CPATH="${NEW_ENV}/include"
-export LIBRARY_PATH="${NEW_ENV}/lib"
 
 if [[ "$(uname)" == "Linux" || "$(uname)" == "Darwin" ]]; then
     export SHLIB_PREFIX=lib
+    export LIBRARY_PREFIX=$NEW_ENV
+else
+    export LIBRARY_PREFIX=$NEW_ENV/Library
 fi
+
+export CPATH="${LIBRARY_PREFIX}/include"
+export LIBRARY_PATH="${LIBRARY_PREFIX}/lib"
+
+export FFLAGS="-I${LIBRARY_PREFIX}/include $FFLAGS"
+export LDFLAGS="-L${LIBRARY_PREFIX}/lib $LDFLAGS"
 
 # Link against the netlib libraries
 cmake -G "${CMAKE_GENERATOR}" .. \
@@ -28,8 +34,6 @@ cmake -G "${CMAKE_GENERATOR}" .. \
     "-DLAPACK_LIBRARIES=${SHLIB_PREFIX}lapack${SHLIB_EXT};${SHLIB_PREFIX}lapacke${SHLIB_EXT}" \
     -DBUILD_TESTING=yes \
     -DCMAKE_BUILD_TYPE=Release
-
-cat CMakeFiles/CMakeOutput.log CMakeFiles/CMakeError.log
 
 make -j${CPU_COUNT}
 
