@@ -10,14 +10,14 @@ jobs:
   strategy:
     maxParallel: 8
     matrix:
-      osx_BLAS_VARIANTmkl:
-        CONFIG: osx_BLAS_VARIANTmkl
+      osx_blas_implblisblas_impl_libblis:
+        CONFIG: osx_blas_implblisblas_impl_libblis
         UPLOAD_PACKAGES: False
-      osx_BLAS_VARIANTnoblas:
-        CONFIG: osx_BLAS_VARIANTnoblas
+      osx_blas_implmklblas_impl_libmkl_rt:
+        CONFIG: osx_blas_implmklblas_impl_libmkl_rt
         UPLOAD_PACKAGES: False
-      osx_BLAS_VARIANTopenblas:
-        CONFIG: osx_BLAS_VARIANTopenblas
+      osx_blas_implopenblasblas_impl_libopenblas:
+        CONFIG: osx_blas_implopenblasblas_impl_libopenblas
         UPLOAD_PACKAGES: False
 
   steps:

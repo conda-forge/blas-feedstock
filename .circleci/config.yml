@@ -5,11 +5,11 @@
 version: 2
 
 jobs:
-  build_linux_BLAS_VARIANTmkl:
+  build_linux_blas_implblisblas_impl_libblis:
     working_directory: ~/test
     machine: true
     environment:
-      - CONFIG: "linux_BLAS_VARIANTmkl"
+      - CONFIG: "linux_blas_implblisblas_impl_libblis"
     steps:
       - checkout
       - run:
@@ -22,11 +22,11 @@ jobs:
       - run:
           # Run, test and (if we have a BINSTAR_TOKEN) upload the distributions.
           command: ./.circleci/run_docker_build.sh
-  build_linux_BLAS_VARIANTnoblas:
+  build_linux_blas_implmklblas_impl_libmkl_rt:
     working_directory: ~/test
     machine: true
     environment:
-      - CONFIG: "linux_BLAS_VARIANTnoblas"
+      - CONFIG: "linux_blas_implmklblas_impl_libmkl_rt"
     steps:
       - checkout
       - run:
@@ -39,11 +39,11 @@ jobs:
       - run:
           # Run, test and (if we have a BINSTAR_TOKEN) upload the distributions.
           command: ./.circleci/run_docker_build.sh
-  build_linux_BLAS_VARIANTopenblas:
+  build_linux_blas_implopenblasblas_impl_libopenblas:
     working_directory: ~/test
     machine: true
     environment:
-      - CONFIG: "linux_BLAS_VARIANTopenblas"
+      - CONFIG: "linux_blas_implopenblasblas_impl_libopenblas"
     steps:
       - checkout
       - run:
@@ -61,6 +61,6 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - build_linux_BLAS_VARIANTmkl
-      - build_linux_BLAS_VARIANTnoblas
-      - build_linux_BLAS_VARIANTopenblas
+      - build_linux_blas_implblisblas_impl_libblis
+      - build_linux_blas_implmklblas_impl_libmkl_rt
+      - build_linux_blas_implopenblasblas_impl_libopenblas

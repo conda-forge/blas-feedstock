@@ -1,4 +1,16 @@
-BLAS_VARIANT:
+blas_impl:
 - openblas
-- noblas
-- mkl  # [not (ppc64le or aarch64)]
+- mkl        # [x86 or x86_64]
+- blis       # [x86 or x86_64]
+blas_impl_lib:
+- openblas
+- mkl_rt     # [x86 or x86_64]
+- blis       # [not win and (x86 or x86_64)]
+- libblis.2  # [win]
+blas_default_impl:
+- openblas   # [not win]
+- mkl        # [win]
+zip_keys:
+-
+  - blas_impl
+  - blas_impl_lib
