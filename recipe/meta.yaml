@@ -33,6 +33,7 @@ requirements:
     - libcblas   {{ version }} *netlib
     - liblapack  {{ version }} *netlib
     - liblapacke {{ version }} *netlib
+    - blas {{ blas_major }}.* netlib
 
 outputs:
   - name: libblas
