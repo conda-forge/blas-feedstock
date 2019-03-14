@@ -29,7 +29,7 @@ requirements:
     - make      # [not win]
     - posix     # [win]
   host:
-    - blas {{ blas_major }}.* netlib
+    - blas 2.2 netlib
 
 outputs:
   - name: libblas
