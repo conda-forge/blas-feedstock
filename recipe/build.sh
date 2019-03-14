@@ -19,11 +19,6 @@ conda${EXE_SUFFIX} create -p ${NEW_ENV} --yes --quiet \
     liblapack=${PKG_VERSION}=*netlib \
     liblapacke=${PKG_VERSION}=*netlib
 
-ls -al ${PREFIX}/lib
-ls -al ${PREFIX}/include
-
-
-
 export CPATH="${LIBRARY_PREFIX}/include"
 export LIBRARY_PATH="${LIBRARY_PREFIX}/lib"
 
