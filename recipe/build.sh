@@ -4,11 +4,19 @@ set +e
 mkdir build
 cd build
 
+export NEW_ENV=`pwd`/_env
+
+conda create -p ${NEW_ENV} --yes --quiet \
+    libblas=${PKG_VERSION}=*netlib \
+    libcblas=${PKG_VERSION}=*netlib \
+    liblapack=${PKG_VERSION}=*netlib \
+    liblapacke=${PKG_VERSION}=*netlib
+
 ls -al ${PREFIX}/lib
 ls -al ${PREFIX}/include
 
-export CPATH="${PREFIX}/include"
-export LIBRARY_PATH="${PREFIX}/lib"
+export CPATH="${NEW_ENV}/include"
+export LIBRARY_PATH="${NEW_ENV}/lib"
 
 if [[ "$(uname)" == "Linux" || "$(uname)" == "Darwin" ]]; then
     export SHLIB_PREFIX=lib
@@ -25,3 +33,4 @@ cat CMakeFiles/CMakeOutput.log CMakeFiles/CMakeError.log
 
 make -j${CPU_COUNT}
 
+rm -rf ${NEW_ENV}

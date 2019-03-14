@@ -28,8 +28,6 @@ requirements:
     - m2-make   # [win]
     - make      # [not win]
     - posix     # [win]
-  host:
-    - blas 2.2 netlib
 
 outputs:
   - name: libblas
