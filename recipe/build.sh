@@ -13,7 +13,7 @@ else
     export EXE_SUFFIX=".exe"
 fi
 
-conda${EXE_SUFFIX} create -p ${NEW_ENV} --yes --quiet \
+conda${EXE_SUFFIX} create -p ${NEW_ENV} -c conda-forge --yes --quiet \
     libblas=${PKG_VERSION}=*netlib \
     libcblas=${PKG_VERSION}=*netlib \
     liblapack=${PKG_VERSION}=*netlib \
