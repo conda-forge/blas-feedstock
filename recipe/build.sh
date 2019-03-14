@@ -4,8 +4,16 @@ mkdir build
 cd build
 
 export NEW_ENV=`pwd`/_env
+if [[ "$(uname)" == "Linux" || "$(uname)" == "Darwin" ]]; then
+    export SHLIB_PREFIX=lib
+    export LIBRARY_PREFIX=$NEW_ENV
+    export EXE_SUFFIX=""
+else
+    export LIBRARY_PREFIX=$NEW_ENV/Library
+    export EXE_SUFFIX=".exe"
+fi
 
-conda create -p ${NEW_ENV} --yes --quiet \
+conda${EXE_SUFFIX} create -p ${NEW_ENV} --yes --quiet \
     libblas=${PKG_VERSION}=*netlib \
     libcblas=${PKG_VERSION}=*netlib \
     liblapack=${PKG_VERSION}=*netlib \
@@ -15,12 +23,6 @@ ls -al ${PREFIX}/lib
 ls -al ${PREFIX}/include
 
 
-if [[ "$(uname)" == "Linux" || "$(uname)" == "Darwin" ]]; then
-    export SHLIB_PREFIX=lib
-    export LIBRARY_PREFIX=$NEW_ENV
-else
-    export LIBRARY_PREFIX=$NEW_ENV/Library
-fi
 
 export CPATH="${LIBRARY_PREFIX}/include"
 export LIBRARY_PATH="${LIBRARY_PREFIX}/lib"
