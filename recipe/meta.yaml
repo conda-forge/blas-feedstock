@@ -29,10 +29,6 @@ requirements:
     - make      # [not win]
     - posix     # [win]
   host:
-    - libblas    {{ version }} *netlib
-    - libcblas   {{ version }} *netlib
-    - liblapack  {{ version }} *netlib
-    - liblapacke {{ version }} *netlib
     - blas {{ blas_major }}.* netlib
 
 outputs:
