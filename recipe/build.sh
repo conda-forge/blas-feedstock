@@ -8,22 +8,23 @@ if [[ "$(uname)" == "Linux" || "$(uname)" == "Darwin" ]]; then
     export SHLIB_PREFIX=lib
     export LIBRARY_PREFIX=$NEW_ENV
     export EXE_SUFFIX=""
+    export LDFLAGS="-Wl,-rpath,${LIBRARY_PREFIX}/lib $LDFLAGS"
 else
     export LIBRARY_PREFIX=$NEW_ENV/Library
     export EXE_SUFFIX=".exe"
 fi
-
-conda${EXE_SUFFIX} create -p ${NEW_ENV} -c conda-forge --yes --quiet \
-    libblas=${PKG_VERSION}=*netlib \
-    libcblas=${PKG_VERSION}=*netlib \
-    liblapack=${PKG_VERSION}=*netlib \
-    liblapacke=${PKG_VERSION}=*netlib
 
 export CPATH="${LIBRARY_PREFIX}/include"
 export LIBRARY_PATH="${LIBRARY_PREFIX}/lib"
 
 export FFLAGS="-I${LIBRARY_PREFIX}/include $FFLAGS"
 export LDFLAGS="-L${LIBRARY_PREFIX}/lib $LDFLAGS"
+
+conda${EXE_SUFFIX} create -p ${NEW_ENV} -c conda-forge --yes --quiet \
+    libblas=${PKG_VERSION}=*netlib \
+    libcblas=${PKG_VERSION}=*netlib \
+    liblapack=${PKG_VERSION}=*netlib \
+    liblapacke=${PKG_VERSION}=*netlib
 
 # Link against the netlib libraries
 cmake -G "${CMAKE_GENERATOR}" .. \
