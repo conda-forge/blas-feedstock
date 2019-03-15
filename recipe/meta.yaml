@@ -1,5 +1,5 @@
 {% set version = "3.8.0" %}
-{% set build_num = "0" %}
+{% set build_num = "1" %}
 {% set version_major = version.split(".")[0] %}
 {% set blas_major = "2" %}
 
@@ -28,11 +28,6 @@ requirements:
     - m2-make   # [win]
     - make      # [not win]
     - posix     # [win]
-  host:
-    - libblas    {{ version }} *netlib
-    - libcblas   {{ version }} *netlib
-    - liblapack  {{ version }} *netlib
-    - liblapacke {{ version }} *netlib
 
 outputs:
   - name: libblas
@@ -57,6 +52,7 @@ outputs:
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("liblapack", exact=True) }}    # [blas_impl != 'blis']
         - {{ pin_subpackage("liblapacke", exact=True) }}   # [blas_impl != 'blis']
+        - blas {{ blas_major }}.*
     files:
       - lib/libblas.so.{{ version_major }}      # [linux]
       - lib/libblas.{{ version_major }}.dylib   # [osx]
@@ -86,6 +82,7 @@ outputs:
       run_constrained:
         - {{ pin_subpackage("liblapack", exact=True) }}    # [blas_impl != 'blis']
         - {{ pin_subpackage("liblapacke", exact=True) }}   # [blas_impl != 'blis']
+        - blas {{ blas_major }}.*
     files:
       - lib/libcblas.so.{{ version_major }}      # [linux]
       - lib/libcblas.{{ version_major }}.dylib   # [osx]
@@ -114,6 +111,7 @@ outputs:
       run_constrained:
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("liblapacke", exact=True) }}
+        - blas {{ blas_major }}.*
     files:
       - lib/liblapack.so.{{ version_major }}      # [linux]
       - lib/liblapack.{{ version_major }}.dylib   # [osx]
@@ -134,9 +132,16 @@ outputs:
       track_features:
        - blas_{{ blas_impl }}     # [blas_impl != blas_default_impl]
     requirements:
-      - {{ pin_subpackage("libblas", exact=True) }}
-      - {{ pin_subpackage("libcblas", exact=True) }}
-      - {{ pin_subpackage("liblapack", exact=True) }}
+      host:
+        - {{ pin_subpackage("libblas", exact=True) }}
+        - {{ pin_subpackage("libcblas", exact=True) }}
+        - {{ pin_subpackage("liblapack", exact=True) }}
+      run:
+        - {{ pin_subpackage("libblas", exact=True) }}
+        - {{ pin_subpackage("libcblas", exact=True) }}
+        - {{ pin_subpackage("liblapack", exact=True) }}
+      run_constrained:
+        - blas {{ blas_major }}.*
     files:
       - lib/liblapacke.so.{{ version_major }}      # [linux]
       - lib/liblapacke.{{ version_major }}.dylib   # [osx]
