@@ -12,13 +12,13 @@ jobs:
     matrix:
       osx_blas_implblisblas_impl_libblis:
         CONFIG: osx_blas_implblisblas_impl_libblis
-        UPLOAD_PACKAGES: False
+        UPLOAD_PACKAGES: True
       osx_blas_implmklblas_impl_libmkl_rt:
         CONFIG: osx_blas_implmklblas_impl_libmkl_rt
-        UPLOAD_PACKAGES: False
+        UPLOAD_PACKAGES: True
       osx_blas_implopenblasblas_impl_libopenblas:
         CONFIG: osx_blas_implopenblasblas_impl_libopenblas
-        UPLOAD_PACKAGES: False
+        UPLOAD_PACKAGES: True
 
   steps:
   # TODO: Fast finish on azure pipelines?
