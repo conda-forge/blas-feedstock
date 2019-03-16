@@ -18,8 +18,6 @@ Summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism i
 Current build status
 ====================
 
-[![Linux](https://img.shields.io/circleci/project/github/conda-forge/blas-feedstock/master.svg?label=Linux)](https://circleci.com/gh/conda-forge/blas-feedstock)
-[![OSX](https://img.shields.io/travis/conda-forge/blas-feedstock/master.svg?label=macOS)](https://travis-ci.org/conda-forge/blas-feedstock)
 [![Windows](https://img.shields.io/appveyor/ci/conda-forge/blas-feedstock/master.svg?label=Windows)](https://ci.appveyor.com/project/conda-forge/blas-feedstock/branch/master)
 
 Current release info

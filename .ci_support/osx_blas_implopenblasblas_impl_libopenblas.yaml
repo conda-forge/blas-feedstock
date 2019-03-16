@@ -8,6 +8,8 @@ blas_impl_lib:
 - openblas
 c_compiler:
 - clang
+c_compiler_version:
+- '4'
 channel_sources:
 - conda-forge,defaults
 channel_targets:
