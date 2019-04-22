@@ -4,3 +4,10 @@ else
     ln -s $PREFIX/lib/lib${blas_impl_lib}.so $PREFIX/lib/${PKG_NAME}.so.${PKG_VERSION:0:1}
 fi
 
+if [[ "${blas_impl}" == "mkl" ]]; then
+    for CHANGE in "activate" "deactivate"
+    do
+        mkdir -p "${PREFIX}/etc/conda/${CHANGE}.d"
+        cp "${RECIPE_DIR}/libblas_mkl_${CHANGE}.sh" "${PREFIX}/etc/conda/${CHANGE}.d/libblas_mkl_${CHANGE}.sh"
+    done
+fi
