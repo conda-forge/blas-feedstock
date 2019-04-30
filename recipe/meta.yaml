@@ -45,9 +45,9 @@ outputs:
         - mkl 2019.0       # [blas_impl == 'mkl']
         - blis 0.5.2       # [blas_impl == 'blis']
       run:
-        - openblas 0.3.6   # [blas_impl == 'openblas']
-        - {{ pin_compatible("mkl") }}    # [blas_impl == 'mkl']
-        - blis 0.5.2       # [blas_impl == 'blis']
+        - {{ pin_compatible("openblas", max_pin="x.x.x") }}     # [blas_impl == 'openblas']
+        - {{ pin_compatible("mkl", max_pin="x") }}              # [blas_impl == 'mkl']
+        - {{ pin_compatible("blis", max_pin="x.x.x") }}         # [blas_impl == 'blis']
       run_constrained:
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("liblapack", exact=True) }}    # [blas_impl != 'blis']
