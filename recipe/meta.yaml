@@ -1,5 +1,5 @@
 {% set version = "3.8.0" %}
-{% set build_num = "7" %}
+{% set build_num = "8" %}
 {% set version_major = version.split(".")[0] %}
 {% set blas_major = "2" %}
 
@@ -41,13 +41,13 @@ outputs:
        - blas_{{ blas_impl }}     # [blas_impl != blas_default_impl]
     requirements:
       host:
-        - openblas 0.3.5   # [blas_impl == 'openblas']
+        - openblas 0.3.6   # [blas_impl == 'openblas']
         - mkl 2019.0       # [blas_impl == 'mkl']
-        - blis 0.5.1       # [blas_impl == 'blis']
+        - blis 0.5.2       # [blas_impl == 'blis']
       run:
-        - openblas 0.3.5   # [blas_impl == 'openblas']
-        - {{ pin_compatible("mkl") }}    # [blas_impl == 'mkl']
-        - blis 0.5.1       # [blas_impl == 'blis']
+        - {{ pin_compatible("openblas", max_pin="x.x.x") }}     # [blas_impl == 'openblas']
+        - {{ pin_compatible("mkl", max_pin="x") }}              # [blas_impl == 'mkl']
+        - {{ pin_compatible("blis", max_pin="x.x.x") }}         # [blas_impl == 'blis']
       run_constrained:
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("liblapack", exact=True) }}    # [blas_impl != 'blis']
