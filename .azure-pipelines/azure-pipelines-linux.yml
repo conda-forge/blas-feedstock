@@ -22,9 +22,6 @@ jobs:
       linux_blas_implopenblasblas_impl_libopenblas:
         CONFIG: linux_blas_implopenblasblas_impl_libopenblas
         UPLOAD_PACKAGES: True
-      linux_ppc64le_:
-        CONFIG: linux_ppc64le_
-        UPLOAD_PACKAGES: True
   steps:
   - script: |
       sudo pip install --upgrade pip
