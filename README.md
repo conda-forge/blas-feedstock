@@ -3,7 +3,7 @@ About blas-split
 
 Home: https://github.com/conda-forge/blas-feedstock
 
-Package license: BSD 3-clause
+Package license: BSD-3-Clause
 
 Feedstock license: BSD 3-Clause
 
@@ -92,24 +92,24 @@ Current build status
                 </a>
               </td>
             </tr><tr>
-              <td>win_blas_implblisblas_impl_liblibblis.2</td>
+              <td>win_blas_implblisblas_impl_liblibblisblas_impl_lib_soname.2</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=win&configuration=win_blas_implblisblas_impl_liblibblis.2" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=win&configuration=win_blas_implblisblas_impl_liblibblisblas_impl_lib_soname.2" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>win_blas_implmklblas_impl_libmkl_rt</td>
+              <td>win_blas_implmklblas_impl_libmkl_rtblas_impl_lib_soname</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=win&configuration=win_blas_implmklblas_impl_libmkl_rt" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=win&configuration=win_blas_implmklblas_impl_libmkl_rtblas_impl_lib_soname" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>win_blas_implopenblasblas_impl_libopenblas</td>
+              <td>win_blas_implopenblasblas_impl_libopenblasblas_impl_lib_soname.0</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=win&configuration=win_blas_implopenblasblas_impl_libopenblas" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=win&configuration=win_blas_implopenblasblas_impl_libopenblasblas_impl_lib_soname.0" alt="variant">
                 </a>
               </td>
             </tr>
@@ -218,5 +218,6 @@ Feedstock Maintainers
 
 * [@isuruf](https://github.com/isuruf/)
 * [@jakirkham](https://github.com/jakirkham/)
+* [@ocefpaf](https://github.com/ocefpaf/)
 * [@pelson](https://github.com/pelson/)
 

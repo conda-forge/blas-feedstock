@@ -10,16 +10,16 @@ jobs:
   strategy:
     maxParallel: 4
     matrix:
-      win_blas_implblisblas_impl_liblibblis.2:
-        CONFIG: win_blas_implblisblas_impl_liblibblis.2
+      win_blas_implblisblas_impl_liblibblisblas_impl_lib_soname.2:
+        CONFIG: win_blas_implblisblas_impl_liblibblisblas_impl_lib_soname.2
         CONDA_BLD_PATH: D:\\bld\\
         UPLOAD_PACKAGES: False
-      win_blas_implmklblas_impl_libmkl_rt:
-        CONFIG: win_blas_implmklblas_impl_libmkl_rt
+      win_blas_implmklblas_impl_libmkl_rtblas_impl_lib_soname:
+        CONFIG: win_blas_implmklblas_impl_libmkl_rtblas_impl_lib_soname
         CONDA_BLD_PATH: D:\\bld\\
         UPLOAD_PACKAGES: False
-      win_blas_implopenblasblas_impl_libopenblas:
-        CONFIG: win_blas_implopenblasblas_impl_libopenblas
+      win_blas_implopenblasblas_impl_libopenblasblas_impl_lib_soname.0:
+        CONFIG: win_blas_implopenblasblas_impl_libopenblasblas_impl_lib_soname.0
         CONDA_BLD_PATH: D:\\bld\\
         UPLOAD_PACKAGES: False
   steps:
@@ -76,8 +76,8 @@ jobs:
 
     # Configure the VM.
     - script: |
+        set "CI=azure"
         run_conda_forge_build_setup
-
       displayName: conda-forge build setup
     
 

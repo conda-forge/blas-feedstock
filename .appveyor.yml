@@ -10,13 +10,13 @@ environment:
     secure: tumuXLL8PU75WMnRDemRy02ruEq2RpNxeK3dz0MjFssnosPm2v4EFjfNB4PTotA1
 
   matrix:
-    - CONFIG: win_blas_implblisblas_impl_liblibblis.2
+    - CONFIG: win_blas_implblisblas_impl_liblibblisblas_impl_lib_soname.2
       CONDA_INSTALL_LOCN: C:\Miniconda36-x64
 
-    - CONFIG: win_blas_implmklblas_impl_libmkl_rt
+    - CONFIG: win_blas_implmklblas_impl_libmkl_rtblas_impl_lib_soname
       CONDA_INSTALL_LOCN: C:\Miniconda36-x64
 
-    - CONFIG: win_blas_implopenblasblas_impl_libopenblas
+    - CONFIG: win_blas_implopenblasblas_impl_libopenblasblas_impl_lib_soname.0
       CONDA_INSTALL_LOCN: C:\Miniconda36-x64
 
 
@@ -26,6 +26,7 @@ platform:
     - x64
 
 install:
+    - cmd: set "CI=appveyor"
     # If there is a newer build queued for the same PR, cancel this one.
     - cmd: |
         powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/conda-forge/conda-forge-ci-setup-feedstock/master/recipe/conda_forge_ci_setup/ff_ci_pr_build.py', 'ff_ci_pr_build.py')"

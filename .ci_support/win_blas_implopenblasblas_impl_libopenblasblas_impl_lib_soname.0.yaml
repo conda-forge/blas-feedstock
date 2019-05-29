@@ -1,9 +1,11 @@
 blas_default_impl:
 - mkl
 blas_impl:
-- mkl
+- openblas
 blas_impl_lib:
-- mkl_rt
+- openblas
+blas_impl_lib_soname:
+- '.0'
 channel_sources:
 - conda-forge,defaults
 channel_targets:
@@ -15,3 +17,4 @@ m2w64_fortran_compiler:
 zip_keys:
 - - blas_impl
   - blas_impl_lib
+  - blas_impl_lib_soname
