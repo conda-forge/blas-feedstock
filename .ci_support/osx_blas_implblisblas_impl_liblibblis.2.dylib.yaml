@@ -3,9 +3,9 @@ MACOSX_DEPLOYMENT_TARGET:
 blas_default_impl:
 - openblas
 blas_impl:
-- mkl
+- blis
 blas_impl_lib:
-- mkl_rt
+- libblis.2.dylib
 c_compiler:
 - clang
 c_compiler_version:

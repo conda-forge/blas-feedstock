@@ -1,9 +1,9 @@
 blas_default_impl:
 - openblas
 blas_impl:
-- blis
+- openblas
 blas_impl_lib:
-- blis
+- libopenblas.so.0
 c_compiler:
 - gcc
 c_compiler_version:

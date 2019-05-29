@@ -43,24 +43,24 @@ Current build status
                 </a>
               </td>
             </tr><tr>
-              <td>linux_blas_implblisblas_impl_libblis</td>
+              <td>linux_blas_implblisblas_impl_liblibblis.so.2</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=linux&configuration=linux_blas_implblisblas_impl_libblis" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=linux&configuration=linux_blas_implblisblas_impl_liblibblis.so.2" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>linux_blas_implmklblas_impl_libmkl_rt</td>
+              <td>linux_blas_implmklblas_impl_liblibmkl_rt.so</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=linux&configuration=linux_blas_implmklblas_impl_libmkl_rt" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=linux&configuration=linux_blas_implmklblas_impl_liblibmkl_rt.so" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>linux_blas_implopenblasblas_impl_libopenblas</td>
+              <td>linux_blas_implopenblasblas_impl_liblibopenblas.so.0</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=linux&configuration=linux_blas_implopenblasblas_impl_libopenblas" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=linux&configuration=linux_blas_implopenblasblas_impl_liblibopenblas.so.0" alt="variant">
                 </a>
               </td>
             </tr><tr>
@@ -71,45 +71,45 @@ Current build status
                 </a>
               </td>
             </tr><tr>
-              <td>osx_blas_implblisblas_impl_libblis</td>
+              <td>osx_blas_implblisblas_impl_liblibblis.2.dylib</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=osx&configuration=osx_blas_implblisblas_impl_libblis" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=osx&configuration=osx_blas_implblisblas_impl_liblibblis.2.dylib" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>osx_blas_implmklblas_impl_libmkl_rt</td>
+              <td>osx_blas_implmklblas_impl_liblibmkl_rt.dylib</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=osx&configuration=osx_blas_implmklblas_impl_libmkl_rt" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=osx&configuration=osx_blas_implmklblas_impl_liblibmkl_rt.dylib" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>osx_blas_implopenblasblas_impl_libopenblas</td>
+              <td>osx_blas_implopenblasblas_impl_liblibopenblas.0.dylib</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=osx&configuration=osx_blas_implopenblasblas_impl_libopenblas" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=osx&configuration=osx_blas_implopenblasblas_impl_liblibopenblas.0.dylib" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>win_blas_implblisblas_impl_liblibblisblas_impl_lib_soname.2</td>
+              <td>win_blas_implblisblas_impl_liblibblis.2.dll</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=win&configuration=win_blas_implblisblas_impl_liblibblisblas_impl_lib_soname.2" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=win&configuration=win_blas_implblisblas_impl_liblibblis.2.dll" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>win_blas_implmklblas_impl_libmkl_rtblas_impl_lib_soname</td>
+              <td>win_blas_implmklblas_impl_libmkl_rt.dll</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=win&configuration=win_blas_implmklblas_impl_libmkl_rtblas_impl_lib_soname" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=win&configuration=win_blas_implmklblas_impl_libmkl_rt.dll" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>win_blas_implopenblasblas_impl_libopenblasblas_impl_lib_soname.0</td>
+              <td>win_blas_implopenblasblas_impl_libopenblas.dll</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=win&configuration=win_blas_implopenblasblas_impl_libopenblasblas_impl_lib_soname.0" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=win&configuration=win_blas_implopenblasblas_impl_libopenblas.dll" alt="variant">
                 </a>
               </td>
             </tr>

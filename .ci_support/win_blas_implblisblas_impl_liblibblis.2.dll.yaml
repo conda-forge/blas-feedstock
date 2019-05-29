@@ -1,11 +1,9 @@
 blas_default_impl:
 - mkl
 blas_impl:
-- mkl
+- blis
 blas_impl_lib:
-- mkl_rt
-blas_impl_lib_soname:
-- ''
+- libblis.2.dll
 channel_sources:
 - conda-forge,defaults
 channel_targets:
@@ -17,4 +15,3 @@ m2w64_fortran_compiler:
 zip_keys:
 - - blas_impl
   - blas_impl_lib
-  - blas_impl_lib_soname

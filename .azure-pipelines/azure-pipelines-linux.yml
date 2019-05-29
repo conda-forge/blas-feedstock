@@ -14,16 +14,16 @@ jobs:
         CONFIG: linux_aarch64_
         UPLOAD_PACKAGES: True
         DOCKER_IMAGE: condaforge/linux-anvil-aarch64
-      linux_blas_implblisblas_impl_libblis:
-        CONFIG: linux_blas_implblisblas_impl_libblis
+      linux_blas_implblisblas_impl_liblibblis.so.2:
+        CONFIG: linux_blas_implblisblas_impl_liblibblis.so.2
         UPLOAD_PACKAGES: True
         DOCKER_IMAGE: condaforge/linux-anvil-comp7
-      linux_blas_implmklblas_impl_libmkl_rt:
-        CONFIG: linux_blas_implmklblas_impl_libmkl_rt
+      linux_blas_implmklblas_impl_liblibmkl_rt.so:
+        CONFIG: linux_blas_implmklblas_impl_liblibmkl_rt.so
         UPLOAD_PACKAGES: True
         DOCKER_IMAGE: condaforge/linux-anvil-comp7
-      linux_blas_implopenblasblas_impl_libopenblas:
-        CONFIG: linux_blas_implopenblasblas_impl_libopenblas
+      linux_blas_implopenblasblas_impl_liblibopenblas.so.0:
+        CONFIG: linux_blas_implopenblasblas_impl_liblibopenblas.so.0
         UPLOAD_PACKAGES: True
         DOCKER_IMAGE: condaforge/linux-anvil-comp7
       linux_ppc64le_:
