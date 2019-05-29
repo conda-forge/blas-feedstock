@@ -6,7 +6,12 @@ blas_impl_lib:
 - openblas
 - mkl_rt     # [x86 or x86_64]
 - blis       # [not win and (x86 or x86_64)]
-- libblis.2  # [win]
+- libblis    # [win]
+blas_impl_lib_soname:
+- .0
+-            # [x86 or x86_64]
+-            # [not win and (x86 or x86_64)]
+- .2         # [win]
 blas_default_impl:
 - openblas   # [not win]
 - mkl        # [win]
@@ -14,3 +19,4 @@ zip_keys:
 -
   - blas_impl
   - blas_impl_lib
+  - blas_impl_lib_soname
