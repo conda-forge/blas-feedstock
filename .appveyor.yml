@@ -10,13 +10,13 @@ environment:
     secure: tumuXLL8PU75WMnRDemRy02ruEq2RpNxeK3dz0MjFssnosPm2v4EFjfNB4PTotA1
 
   matrix:
-    - CONFIG: win_blas_implblisblas_impl_liblibblis.2
+    - CONFIG: win_blas_implblisblas_impl_liblibblis.2.dll
       CONDA_INSTALL_LOCN: C:\Miniconda36-x64
 
-    - CONFIG: win_blas_implmklblas_impl_libmkl_rt
+    - CONFIG: win_blas_implmklblas_impl_libmkl_rt.dll
       CONDA_INSTALL_LOCN: C:\Miniconda36-x64
 
-    - CONFIG: win_blas_implopenblasblas_impl_libopenblas
+    - CONFIG: win_blas_implopenblasblas_impl_libopenblas.dll
       CONDA_INSTALL_LOCN: C:\Miniconda36-x64
 
 
@@ -26,6 +26,7 @@ platform:
     - x64
 
 install:
+    - cmd: set "CI=appveyor"
     # If there is a newer build queued for the same PR, cancel this one.
     - cmd: |
         powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/conda-forge/conda-forge-ci-setup-feedstock/master/recipe/conda_forge_ci_setup/ff_ci_pr_build.py', 'ff_ci_pr_build.py')"
@@ -46,6 +47,8 @@ install:
     - cmd: conda.exe install -n root -c conda-forge --quiet --yes conda-forge-ci-setup=2 conda-build
     - cmd: setup_conda_rc .\ .\recipe .\.ci_support\%CONFIG%.yaml
     - cmd: run_conda_forge_build_setup
+    - cmd: conda.exe install conda-build=3.17.8 --yes
+    - cmd: conda.exe config --set channel_priority strict
 
 # Skip .NET project specific build phase.
 build: off
