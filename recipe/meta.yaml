@@ -214,7 +214,7 @@ about:
   home: https://github.com/conda-forge/blas-feedstock
   license: BSD-3-Clause
   license_file:
-    - {{ RECIPE_DIR }}/../LICENSE.txt
+    - LICENSE.txt
     - {{ blas_impl }}_license.txt  # [win]
   summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism in your environment to control which variant you want.
 
