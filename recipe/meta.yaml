@@ -1,5 +1,5 @@
 {% set version = "3.8.0" %}
-{% set build_num = "10" %}
+{% set build_num = "11" %}
 {% set version_major = version.split(".")[0] %}
 {% set blas_major = "2" %}
 
@@ -212,7 +212,10 @@ outputs:
 
 about:
   home: https://github.com/conda-forge/blas-feedstock
-  license: BSD 3-clause
+  license: BSD-3-Clause
+  license_file:
+    - LICENSE.txt
+    - {{ blas_impl }}_license.txt  # [win]
   summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism in your environment to control which variant you want.
 
 extra:
