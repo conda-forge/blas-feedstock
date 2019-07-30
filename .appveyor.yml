@@ -47,8 +47,6 @@ install:
     - cmd: conda.exe install -n root -c conda-forge --quiet --yes conda-forge-ci-setup=2 conda-build
     - cmd: setup_conda_rc .\ .\recipe .\.ci_support\%CONFIG%.yaml
     - cmd: run_conda_forge_build_setup
-    - cmd: conda.exe install conda-build=3.17.8 --yes
-    - cmd: conda.exe config --set channel_priority strict
 
 # Skip .NET project specific build phase.
 build: off
