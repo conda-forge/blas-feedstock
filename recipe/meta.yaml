@@ -28,7 +28,6 @@ requirements:
     - m2-make   # [win]
     - make      # [not win]
     - posix     # [win]
-    - libgfortran 3.*  # [osx]
 
 outputs:
   - name: libblas
@@ -46,7 +45,6 @@ outputs:
         - mkl 2019.0       # [not win and blas_impl == 'mkl']
         - mkl 2019.*       # [win and blas_impl == 'mkl']
         - blis 0.5.2       # [blas_impl == 'blis']
-        - libgfortran 3.*  # [osx]
       run:
         - {{ pin_compatible("libopenblas", max_pin="x.x.x", exact=win) }}     # [blas_impl == 'openblas']
         - {{ pin_compatible("mkl", max_pin="x", exact=win) }}              # [blas_impl == 'mkl']
@@ -84,7 +82,6 @@ outputs:
     requirements:
       host:
         - {{ pin_subpackage("libblas", exact=True) }}
-        - libgfortran 3.*  # [osx]
       run:
         - {{ pin_subpackage("libblas", exact=True) }}
       run_constrained:
@@ -118,7 +115,6 @@ outputs:
     requirements:
       host:
         - {{ pin_subpackage("libblas", exact=True) }}
-        - libgfortran 3.*  # [osx]
       run:
         - {{ pin_subpackage("libblas", exact=True) }}
       run_constrained:
@@ -153,7 +149,6 @@ outputs:
         - {{ pin_subpackage("libblas", exact=True) }}
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("liblapack", exact=True) }}
-        - libgfortran 3.*  # [osx]
       run:
         - {{ pin_subpackage("libblas", exact=True) }}
         - {{ pin_subpackage("libcblas", exact=True) }}
@@ -200,7 +195,6 @@ outputs:
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("libblas", exact=True) }}
       {% endif %}
-        - libgfortran 3.*  # [osx]
       run:
         - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
         - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
