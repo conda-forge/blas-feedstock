@@ -4,11 +4,12 @@ mkdir build
 cd build
 
 export NEW_ENV=`pwd`/_env
-if [[ "$(uname)" == "Linux" || "$(uname)" == "Darwin" ]]; then
+if [[ "$target_platform" == linux* || "$target_platform" == osx* ]]; then
     export SHLIB_PREFIX=lib
     export LIBRARY_PREFIX=$NEW_ENV
     export EXE_SUFFIX=""
     export LDFLAGS="-Wl,-rpath,${LIBRARY_PREFIX}/lib $LDFLAGS"
+
 else
     export LIBRARY_PREFIX=$NEW_ENV/Library
     export EXE_SUFFIX=".exe"
@@ -24,7 +25,7 @@ conda${EXE_SUFFIX} create -p ${NEW_ENV} -c conda-forge --yes --quiet \
     libblas=${PKG_VERSION}=*netlib \
     libcblas=${PKG_VERSION}=*netlib \
     liblapack=${PKG_VERSION}=*netlib \
-    liblapacke=${PKG_VERSION}=*netlib
+    liblapacke=${PKG_VERSION}=*netlib ${fortran_compiler}_${target_platform}=${fortran_compiler_version}
 
 # Link against the netlib libraries
 cmake -G "${CMAKE_GENERATOR}" .. \
