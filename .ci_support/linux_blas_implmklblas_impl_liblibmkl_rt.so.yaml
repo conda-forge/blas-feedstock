@@ -3,7 +3,7 @@ blas_default_impl:
 blas_impl:
 - mkl
 blas_impl_lib:
-- mkl_rt
+- libmkl_rt.so
 c_compiler:
 - gcc
 c_compiler_version:
