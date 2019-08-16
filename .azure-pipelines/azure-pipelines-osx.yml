@@ -10,14 +10,23 @@ jobs:
   strategy:
     maxParallel: 8
     matrix:
-      osx_blas_implblisblas_impl_liblibblis.2.dylib:
-        CONFIG: osx_blas_implblisblas_impl_liblibblis.2.dylib
+      osx_blas_implblisblas_impl_liblibblis.2.dylibfortran_compiler_version4:
+        CONFIG: osx_blas_implblisblas_impl_liblibblis.2.dylibfortran_compiler_version4
         UPLOAD_PACKAGES: True
-      osx_blas_implmklblas_impl_liblibmkl_rt.dylib:
-        CONFIG: osx_blas_implmklblas_impl_liblibmkl_rt.dylib
+      osx_blas_implblisblas_impl_liblibblis.2.dylibfortran_compiler_version7:
+        CONFIG: osx_blas_implblisblas_impl_liblibblis.2.dylibfortran_compiler_version7
         UPLOAD_PACKAGES: True
-      osx_blas_implopenblasblas_impl_liblibopenblas.0.dylib:
-        CONFIG: osx_blas_implopenblasblas_impl_liblibopenblas.0.dylib
+      osx_blas_implmklblas_impl_liblibmkl_rt.dylibfortran_compiler_version4:
+        CONFIG: osx_blas_implmklblas_impl_liblibmkl_rt.dylibfortran_compiler_version4
+        UPLOAD_PACKAGES: True
+      osx_blas_implmklblas_impl_liblibmkl_rt.dylibfortran_compiler_version7:
+        CONFIG: osx_blas_implmklblas_impl_liblibmkl_rt.dylibfortran_compiler_version7
+        UPLOAD_PACKAGES: True
+      osx_blas_implopenblasblas_impl_liblibopenblas.0.dylibfortran_compiler_version4:
+        CONFIG: osx_blas_implopenblasblas_impl_liblibopenblas.0.dylibfortran_compiler_version4
+        UPLOAD_PACKAGES: True
+      osx_blas_implopenblasblas_impl_liblibopenblas.0.dylibfortran_compiler_version7:
+        CONFIG: osx_blas_implopenblasblas_impl_liblibopenblas.0.dylibfortran_compiler_version7
         UPLOAD_PACKAGES: True
 
   steps:

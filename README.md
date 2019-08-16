@@ -71,24 +71,45 @@ Current build status
                 </a>
               </td>
             </tr><tr>
-              <td>osx_blas_implblisblas_impl_liblibblis.2.dylib</td>
+              <td>osx_blas_implblisblas_impl_liblibblis.2.dylibfortran_compiler_version4</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=osx&configuration=osx_blas_implblisblas_impl_liblibblis.2.dylib" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=osx&configuration=osx_blas_implblisblas_impl_liblibblis.2.dylibfortran_compiler_version4" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>osx_blas_implmklblas_impl_liblibmkl_rt.dylib</td>
+              <td>osx_blas_implblisblas_impl_liblibblis.2.dylibfortran_compiler_version7</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=osx&configuration=osx_blas_implmklblas_impl_liblibmkl_rt.dylib" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=osx&configuration=osx_blas_implblisblas_impl_liblibblis.2.dylibfortran_compiler_version7" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>osx_blas_implopenblasblas_impl_liblibopenblas.0.dylib</td>
+              <td>osx_blas_implmklblas_impl_liblibmkl_rt.dylibfortran_compiler_version4</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=osx&configuration=osx_blas_implopenblasblas_impl_liblibopenblas.0.dylib" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=osx&configuration=osx_blas_implmklblas_impl_liblibmkl_rt.dylibfortran_compiler_version4" alt="variant">
+                </a>
+              </td>
+            </tr><tr>
+              <td>osx_blas_implmklblas_impl_liblibmkl_rt.dylibfortran_compiler_version7</td>
+              <td>
+                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=osx&configuration=osx_blas_implmklblas_impl_liblibmkl_rt.dylibfortran_compiler_version7" alt="variant">
+                </a>
+              </td>
+            </tr><tr>
+              <td>osx_blas_implopenblasblas_impl_liblibopenblas.0.dylibfortran_compiler_version4</td>
+              <td>
+                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=osx&configuration=osx_blas_implopenblasblas_impl_liblibopenblas.0.dylibfortran_compiler_version4" alt="variant">
+                </a>
+              </td>
+            </tr><tr>
+              <td>osx_blas_implopenblasblas_impl_liblibopenblas.0.dylibfortran_compiler_version7</td>
+              <td>
+                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=osx&configuration=osx_blas_implopenblasblas_impl_liblibopenblas.0.dylibfortran_compiler_version7" alt="variant">
                 </a>
               </td>
             </tr><tr>
