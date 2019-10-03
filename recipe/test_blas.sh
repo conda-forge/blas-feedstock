@@ -56,4 +56,4 @@ if [[ ! "$(uname -m)" == "x86_64" ]]; then
   SKIP_TESTS="${SKIP_TESTS}|LAPACK-xeigtstz"
 fi
 
-ctest --output-on-failure -E "${SKIP_TESTS}"
+ctest --output-on-failure --timeout 600 -E "${SKIP_TESTS}"
