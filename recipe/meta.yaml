@@ -182,6 +182,8 @@ outputs:
         - {{ pin_subpackage("liblapacke", exact=True) }}
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("libblas", exact=True) }}
+      {% else %}
+        - blis 0.6.0
       {% endif %}
       run:
         - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
