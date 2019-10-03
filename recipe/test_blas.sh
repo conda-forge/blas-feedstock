@@ -2,9 +2,12 @@
 set -e
 
 # Setup symlinks for .so and .dylib
-for pkg in blas cblas lapack lapacke; do
+
+if [[ "$target_platform" != win* ]]; then
+  for pkg in blas cblas lapack lapacke; do
     ln -s $PREFIX/lib/${blas_impl_lib} $PREFIX/lib/lib${pkg}${SHLIB_EXT}
-done
+  done
+fi
 
 cd build
 
@@ -15,11 +18,11 @@ if [[ "${blas_impl}" == "blis" ]]; then
   exit 0
 fi
 
-if [[ "$(uname)" != "Darwin" ]]; then
+if [[ "$target_platform" != "osx-64" ]]; then
   ulimit -s unlimited
 fi
 
-if [[ "$(uname)" == "Darwin" ]]; then
+if [[ "$target_platform" == "osx-64" ]]; then
   # testing with shared libraries does not work. skip them.
   # to test that program exits if wrong parameters are given, what the testsuite
   # do is that the symbol xerbla (xerbla logs the error and exits) is overriden
@@ -35,7 +38,7 @@ if [[ "${blas_impl}" == "mkl" ]]; then
   SKIP_TESTS="${SKIP_TESTS}|LAPACK-xeigtstc_csb_in|LAPACK-xeigtstc_csg_in|LAPACK-xeigtstz_zed_in|LAPACK-xeigtstz_zsg_in|LAPACK-xlintstzc_zctest_in"
   SKIP_TESTS="${SKIP_TESTS}|BLAS-xblat1c|BLAS-xblat1z"
 
-  if [[ $(uname) == "Linux" ]]; then
+  if [[ "$target_platform" == linux* ]]; then
     SKIP_TESTS="${SKIP_TESTS}|example_DGELS_rowmajor|example_DGELS_colmajor"
   fi
 fi
