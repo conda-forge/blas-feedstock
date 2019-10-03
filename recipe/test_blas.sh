@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+# Setup symlinks for .so and .dylib
+for pkg in blas cblas lapack lapacke; do
+    ln -s $PREFIX/lib/${blas_impl_lib} $PREFIX/lib/${pkg}${SHLIB_EXT}
+done
+
 cd build
 
 SKIP_TESTS="dummy"
