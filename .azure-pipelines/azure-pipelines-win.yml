@@ -13,15 +13,15 @@ jobs:
       win_blas_implblisblas_impl_liblibblis.2.dll:
         CONFIG: win_blas_implblisblas_impl_liblibblis.2.dll
         CONDA_BLD_PATH: D:\\bld\\
-        UPLOAD_PACKAGES: False
+        UPLOAD_PACKAGES: True
       win_blas_implmklblas_impl_libmkl_rt.dll:
         CONFIG: win_blas_implmklblas_impl_libmkl_rt.dll
         CONDA_BLD_PATH: D:\\bld\\
-        UPLOAD_PACKAGES: False
+        UPLOAD_PACKAGES: True
       win_blas_implopenblasblas_impl_libopenblas.dll:
         CONFIG: win_blas_implopenblasblas_impl_libopenblas.dll
         CONDA_BLD_PATH: D:\\bld\\
-        UPLOAD_PACKAGES: False
+        UPLOAD_PACKAGES: True
   steps:
     # TODO: Fast finish on azure pipelines?
     - script: |
@@ -103,7 +103,9 @@ jobs:
       condition: not(contains(variables['CONFIG'], 'vs2008'))
 
     - script: |
+        set "GIT_BRANCH=%BUILD_SOURCEBRANCHNAME%"
         upload_package .\ .\recipe .ci_support\%CONFIG%.yaml
+      displayName: Upload package
       env:
         BINSTAR_TOKEN: $(BINSTAR_TOKEN)
       condition: not(eq(variables['UPLOAD_PACKAGES'], 'False'))
