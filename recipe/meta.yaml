@@ -200,6 +200,13 @@ outputs:
         - test -f $PREFIX/lib/liblapacke.{{ version_major }}.dylib   # [osx]
         - if not exist %LIBRARY_BIN%/liblapacke.dll exit 1           # [win]
 
+  - name: blas-devel
+    requirements:
+      run:
+        - openblas   # [blas_impl == "openblas"]
+        - mkl-devel  # [blas_impl == "mkl"]
+        - blas {{ version }} *{{blas_impl}}
+
 about:
   home: https://github.com/conda-forge/blas-feedstock
   license: BSD-3-Clause
