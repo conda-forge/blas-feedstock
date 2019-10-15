@@ -1,14 +1,6 @@
 #!/bin/bash
 set -e
 
-# Setup symlinks for .so and .dylib
-
-if [[ "$target_platform" != win* ]]; then
-  for pkg in blas cblas lapack lapacke; do
-    ln -s $PREFIX/lib/${blas_impl_lib} $PREFIX/lib/lib${pkg}${SHLIB_EXT}
-  done
-fi
-
 cd build
 
 SKIP_TESTS="dummy"
