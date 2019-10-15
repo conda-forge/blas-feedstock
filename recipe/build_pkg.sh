@@ -3,6 +3,7 @@ if [[ "$target_platform" == "osx-64" ]]; then
 else
     ln -s $PREFIX/lib/${blas_impl_lib} $PREFIX/lib/${PKG_NAME}.so.${PKG_VERSION:0:1}
 fi
+ln -s $PREFIX/lib/${blas_impl_lib} $PREFIX/lib/${PKG_NAME}${SHLIB_EXT}
 
 if [[ "${blas_impl}" == "mkl" ]]; then
     for CHANGE in "activate" "deactivate"
