@@ -209,7 +209,7 @@ outputs:
       run:
         - openblas   # [blas_impl == "openblas"]
         - mkl-devel  # [blas_impl == "mkl"]
-        - blas {{ version }} *{{blas_impl}}
+        - {{ pin_subpackage("blas", exact=True) }}
 
 about:
   home: https://github.com/conda-forge/blas-feedstock
