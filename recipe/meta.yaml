@@ -212,6 +212,11 @@ outputs:
         - openblas   # [blas_impl == "openblas"]
         - mkl-devel  # [blas_impl == "mkl"]
         - {{ pin_subpackage("blas", exact=True) }}
+    test:
+      commands:
+        - test -f $PREFIX/lib/liblapack.so                          # [linux]
+        - test -f $PREFIX/lib/liblapack.dylib                       # [osx]
+        - if not exist %LIBRARY_BIN%/liblapack.dll exit 1           # [win]
 
 about:
   home: https://github.com/conda-forge/blas-feedstock
