@@ -43,10 +43,10 @@ Current build status
                 </a>
               </td>
             </tr><tr>
-              <td>linux_blas_implblisblas_impl_liblibblis.so.2</td>
+              <td>linux_blas_implblisblas_impl_liblibblis.so.3</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=linux&configuration=linux_blas_implblisblas_impl_liblibblis.so.2" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=linux&configuration=linux_blas_implblisblas_impl_liblibblis.so.3" alt="variant">
                 </a>
               </td>
             </tr><tr>
@@ -71,10 +71,10 @@ Current build status
                 </a>
               </td>
             </tr><tr>
-              <td>osx_blas_implblisblas_impl_liblibblis.2.dylib</td>
+              <td>osx_blas_implblisblas_impl_liblibblis.3.dylib</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=osx&configuration=osx_blas_implblisblas_impl_liblibblis.2.dylib" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=osx&configuration=osx_blas_implblisblas_impl_liblibblis.3.dylib" alt="variant">
                 </a>
               </td>
             </tr><tr>
@@ -92,10 +92,10 @@ Current build status
                 </a>
               </td>
             </tr><tr>
-              <td>win_blas_implblisblas_impl_liblibblis.2.dll</td>
+              <td>win_blas_implblisblas_impl_liblibblis.3.dll</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=win&configuration=win_blas_implblisblas_impl_liblibblis.2.dll" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=win&configuration=win_blas_implblisblas_impl_liblibblis.3.dll" alt="variant">
                 </a>
               </td>
             </tr><tr>
@@ -126,6 +126,7 @@ Current release info
 | Name | Downloads | Version | Platforms |
 | --- | --- | --- | --- |
 | [![Conda Recipe](https://img.shields.io/badge/recipe-blas-green.svg)](https://anaconda.org/conda-forge/blas) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/blas.svg)](https://anaconda.org/conda-forge/blas) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/blas.svg)](https://anaconda.org/conda-forge/blas) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/blas.svg)](https://anaconda.org/conda-forge/blas) |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-blas--devel-green.svg)](https://anaconda.org/conda-forge/blas-devel) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/blas-devel.svg)](https://anaconda.org/conda-forge/blas-devel) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/blas-devel.svg)](https://anaconda.org/conda-forge/blas-devel) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/blas-devel.svg)](https://anaconda.org/conda-forge/blas-devel) |
 | [![Conda Recipe](https://img.shields.io/badge/recipe-libblas-green.svg)](https://anaconda.org/conda-forge/libblas) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/libblas.svg)](https://anaconda.org/conda-forge/libblas) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/libblas.svg)](https://anaconda.org/conda-forge/libblas) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/libblas.svg)](https://anaconda.org/conda-forge/libblas) |
 | [![Conda Recipe](https://img.shields.io/badge/recipe-libcblas-green.svg)](https://anaconda.org/conda-forge/libcblas) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/libcblas.svg)](https://anaconda.org/conda-forge/libcblas) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/libcblas.svg)](https://anaconda.org/conda-forge/libcblas) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/libcblas.svg)](https://anaconda.org/conda-forge/libcblas) |
 | [![Conda Recipe](https://img.shields.io/badge/recipe-liblapack-green.svg)](https://anaconda.org/conda-forge/liblapack) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/liblapack.svg)](https://anaconda.org/conda-forge/liblapack) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/liblapack.svg)](https://anaconda.org/conda-forge/liblapack) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/liblapack.svg)](https://anaconda.org/conda-forge/liblapack) |
@@ -140,10 +141,10 @@ Installing `blas-split` from the `conda-forge` channel can be achieved by adding
 conda config --add channels conda-forge
 ```
 
-Once the `conda-forge` channel has been enabled, `blas, libblas, libcblas, liblapack, liblapacke` can be installed with:
+Once the `conda-forge` channel has been enabled, `blas, blas-devel, libblas, libcblas, liblapack, liblapacke` can be installed with:
 
 ```
-conda install blas libblas libcblas liblapack liblapacke
+conda install blas blas-devel libblas libcblas liblapack liblapacke
 ```
 
 It is possible to list all of the versions of `blas` available on your platform with:
@@ -167,7 +168,7 @@ A feedstock is made up of a conda recipe (the instructions on what and how to bu
 the package) and the necessary configurations for automatic building using freely
 available continuous integration services. Thanks to the awesome service provided by
 [CircleCI](https://circleci.com/), [AppVeyor](https://www.appveyor.com/)
-and [TravisCI](https://travis-ci.org/) it is possible to build and upload installable
+and [TravisCI](https://travis-ci.com/) it is possible to build and upload installable
 packages to the [conda-forge](https://anaconda.org/conda-forge)
 [Anaconda-Cloud](https://anaconda.org/) channel for Linux, Windows and OSX respectively.
 

@@ -10,8 +10,8 @@ jobs:
   strategy:
     maxParallel: 8
     matrix:
-      linux_blas_implblisblas_impl_liblibblis.so.2:
-        CONFIG: linux_blas_implblisblas_impl_liblibblis.so.2
+      linux_blas_implblisblas_impl_liblibblis.so.3:
+        CONFIG: linux_blas_implblisblas_impl_liblibblis.so.3
         UPLOAD_PACKAGES: True
         DOCKER_IMAGE: condaforge/linux-anvil-comp7
       linux_blas_implmklblas_impl_liblibmkl_rt.so:
@@ -38,7 +38,7 @@ jobs:
   - script: |
         export CI=azure
         export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
-        .azure-pipelines/run_docker_build.sh
+        .scripts/run_docker_build.sh
     displayName: Run docker build
     env:
       BINSTAR_TOKEN: $(BINSTAR_TOKEN)
