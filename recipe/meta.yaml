@@ -205,6 +205,8 @@ outputs:
         - if not exist %LIBRARY_BIN%/liblapacke.dll exit 1           # [win]
 
   - name: blas-devel
+    build:
+      string: "{{ build_num }}_{{ blas_impl }}"
     requirements:
       run:
         - openblas   # [blas_impl == "openblas"]
