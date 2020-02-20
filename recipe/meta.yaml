@@ -179,6 +179,7 @@ outputs:
         - cmake
         - m2-make   # [win]
         - posix     # [win]
+        - llvm-openmp   # [linux and blas_impl == "openblas"]
       host:
       # Building with blis fails due to a conda-build bug
       {% if blas_impl != 'blis' %}
