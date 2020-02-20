@@ -11,9 +11,9 @@ blas_impl_lib:
 - libmkl_rt.dylib          # [osx]
 - mkl_rt.dll               # [win64]
 
-- libblis.so.2             # [linux64]
-- libblis.2.dylib          # [osx]
-- libblis.2.dll            # [win64]
+- libblis.so.3             # [linux64]
+- libblis.3.dylib          # [osx]
+- libblis.3.dll            # [win64]
 blas_default_impl:
 - openblas   # [not win]
 - mkl        # [win]
