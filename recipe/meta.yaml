@@ -182,9 +182,10 @@ outputs:
         - cmake
         - m2-make   # [win]
         - posix     # [win]
+        # hack (around which bug?)
         - llvm-openmp   # [linux and blas_impl == "openblas"]
       host:
-      # Building with blis fails due to a conda-build bug
+      # Building with blis fails due to a conda-build bug - which one?
       {% if blas_impl != 'blis' %}
         - {{ pin_subpackage("liblapack", exact=True) }}
         - {{ pin_subpackage("liblapacke", exact=True) }}
