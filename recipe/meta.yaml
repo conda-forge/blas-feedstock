@@ -1,5 +1,5 @@
 {% set version = "3.8.0" %}
-{% set build_num = "15" %}
+{% set build_num = 15 %}
 {% if blas_impl == 'openblas' %}
 {% set build_num = build_num + 1 %}
 {% endif %}
