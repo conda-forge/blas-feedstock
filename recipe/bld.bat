@@ -13,5 +13,5 @@ set MSYS2_PATH_TYPE=inherit
 set CHERE_INVOKING=1
 set "SHLIB_PREFIX="
 bash -x "./build.sh"
-if errorlevel 1 exit 1
+IF %ERRORLEVEL% NEQ 0 exit 1
 exit 0
