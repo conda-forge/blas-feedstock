@@ -31,6 +31,18 @@ requirements:
     - m2-make   # [win]
     - make      # [not win]
     - posix     # [win]
+    # The following are actual build dependencies of this recipe; however, they
+    # only get installed by the build scripts, since they must be installed in a
+    # different environment (otherwise there'd be a variant collision)! The build
+    # script will link to those netlib libraries and set up the netlib test suite.
+    # For the different blas variants, build_pkg.{sh|bat} will then point those
+    # links to the respective libraries of the desired variant, and *then* run
+    # the test suite (in test_blas.{sh|bat}) to see that everything works correctly.
+    # Note: These libraries are built in the lapack-feedstock.
+    # - libblas    {{ version }} *netlib
+    # - libcblas   {{ version }} *netlib
+    # - liblapacke {{ version }} *netlib
+    # - liblapack  {{ version }} *netlib
 
 outputs:
   - name: libblas
