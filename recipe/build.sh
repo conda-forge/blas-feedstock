@@ -13,6 +13,8 @@ if [[ "$target_platform" == linux* || "$target_platform" == osx* ]]; then
 else
     export LIBRARY_PREFIX=$NEW_ENV/Library
     export EXE_SUFFIX=".exe"
+    # necessary to escalate errors to calling bld.bat script correctly
+    set -e
 fi
 
 export CPATH="${LIBRARY_PREFIX}/include"
