@@ -16,7 +16,7 @@ source:
   sha256: deb22cc4a6120bff72621155a9917f485f96ef8319ac074a7afbc68aab88bcf6
   patches:
     # Test BLAS and LAPACKE in addition to LAPACK
-    - more_testing.diff
+    - patches/0001-Test-BLAS-and-LAPACKE-in-addition-to-LAPACK.patch
 
 build:
   number: "{{ build_num }}"
