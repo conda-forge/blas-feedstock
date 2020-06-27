@@ -6,6 +6,7 @@ set "MSYS2_ARG_CONV_EXCL=/AI;/AL;/OUT;/out"
 copy "%RECIPE_DIR%\build.sh" .
 FOR /F "delims=" %%i IN ('cygpath.exe -u -p "%PATH%"') DO set "PATH_OVERRIDE=%%i"
 FOR /F "delims=" %%i IN ('cygpath.exe -u "%LIBRARY_PREFIX%"') DO set "PREFIX=%%i"
+FOR /F "delims=" %%i in ('cygpath.exe -u "%BUILD_PREFIX%"') DO set "BUILD_PREFIX=%%i"
 set "SHLIB_EXT=.lib"
 set "CMAKE_GENERATOR=MSYS Makefiles"
 set MSYSTEM=MINGW%ARCH%
