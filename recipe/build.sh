@@ -31,6 +31,8 @@ conda${EXE_SUFFIX} create -p ${NEW_ENV} -c conda-forge --yes --quiet \
     ${fortran_compiler}_${target_platform}=${fortran_compiler_version} \
     cmake
 
+export PATH="$PATH:${LIBRARY_PREFIX}/bin"
+
 # Link against the netlib libraries
 cmake -G "${CMAKE_GENERATOR}" .. \
     "-DBLAS_LIBRARIES=${SHLIB_PREFIX}blas${SHLIB_EXT};${SHLIB_PREFIX}cblas${SHLIB_EXT}" \
