@@ -5,6 +5,7 @@ set "MSYS2_ARG_CONV_EXCL=/AI;/AL;/OUT;/out"
 :: to be Unix-y rather than Windows-y, though.
 copy "%RECIPE_DIR%\test_blas.sh" .
 FOR /F "delims=" %%i IN ('cygpath.exe -u -p "%PATH%"') DO set "PATH_OVERRIDE=%%i"
+FOR /F "delims=" %%i in ('cygpath.exe -u "%BUILD_PREFIX%"') DO set "BUILD_PREFIX=%%i"
 set MSYSTEM=MINGW%ARCH%
 set MSYS2_PATH_TYPE=inherit
 set CHERE_INVOKING=1
