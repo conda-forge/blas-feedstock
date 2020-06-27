@@ -1,5 +1,5 @@
 {% set version = "3.8.0" %}
-{% set build_num = 15 %}
+{% set build_num = 16 %}
 {% if blas_impl == 'openblas' %}
 {% set build_num = build_num + 1 %}
 {% endif %}
@@ -16,7 +16,7 @@ source:
   sha256: deb22cc4a6120bff72621155a9917f485f96ef8319ac074a7afbc68aab88bcf6
   patches:
     # Test BLAS and LAPACKE in addition to LAPACK
-    - more_testing.diff
+    - patches/0001-Test-BLAS-and-LAPACKE-in-addition-to-LAPACK.patch
 
 build:
   number: "{{ build_num }}"
@@ -31,6 +31,18 @@ requirements:
     - m2-make   # [win]
     - make      # [not win]
     - posix     # [win]
+    # The following are actual build dependencies of this recipe; however, they
+    # only get installed by the build scripts, since they must be installed in a
+    # different environment (otherwise there'd be a variant collision)! The build
+    # script will link to those netlib libraries and set up the netlib test suite.
+    # For the different blas variants, build_pkg.{sh|bat} will then point those
+    # links to the respective libraries of the desired variant, and *then* run
+    # the test suite (in test_blas.{sh|bat}) to see that everything works correctly.
+    # Note: These libraries are built in the lapack-feedstock.
+    # - libblas    {{ version }} *netlib
+    # - libcblas   {{ version }} *netlib
+    # - liblapack  {{ version }} *netlib
+    # - liblapacke {{ version }} *netlib
 
 outputs:
   - name: libblas
@@ -44,10 +56,10 @@ outputs:
        - blas_{{ blas_impl }}     # [blas_impl != blas_default_impl]
     requirements:
       host:
-        - libopenblas 0.3.9   # [blas_impl == 'openblas']
+        - libopenblas 0.3.10   # [blas_impl == 'openblas']
         - mkl 2020.0       # [not win and blas_impl == 'mkl']
         - mkl 2020.*       # [win and blas_impl == 'mkl']
-        - blis 0.6.1       # [blas_impl == 'blis']
+        - blis 0.7.0       # [blas_impl == 'blis']
       run:
         - {{ pin_compatible("libopenblas", max_pin="x.x.x", exact=win) }}     # [blas_impl == 'openblas']
         - {{ pin_compatible("mkl", max_pin="x", exact=win) }}              # [blas_impl == 'mkl']
@@ -191,7 +203,7 @@ outputs:
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("libblas", exact=True) }}
       {% else %}
-        - blis 0.6.1
+        - blis 0.7.0
       {% endif %}
       run:
         - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']

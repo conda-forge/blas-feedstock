@@ -48,4 +48,9 @@ if [[ ! "$(uname -m)" == "x86_64" ]]; then
   SKIP_TESTS="${SKIP_TESTS}|LAPACK-xeigtstz"
 fi
 
-ctest --output-on-failure -E "${SKIP_TESTS}"
+
+if [[ "$target_platform" == "win-64" ]]; then
+  ${BUILD_PREFIX}/Library/bin/ctest --output-on-failure -E "${SKIP_TESTS}"
+else
+  ctest --output-on-failure -E "${SKIP_TESTS}"
+fi

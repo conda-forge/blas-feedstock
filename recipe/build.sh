@@ -13,6 +13,10 @@ if [[ "$target_platform" == linux* || "$target_platform" == osx* ]]; then
 else
     export LIBRARY_PREFIX=$NEW_ENV/Library
     export EXE_SUFFIX=".exe"
+    # For finding cmake
+    export PATH="$PATH:${BUILD_PREFIX}/Library/bin"
+    # necessary to escalate errors to calling bld.bat script correctly
+    set -e
 fi
 
 export CPATH="${LIBRARY_PREFIX}/include"
@@ -25,7 +29,9 @@ conda${EXE_SUFFIX} create -p ${NEW_ENV} -c conda-forge --yes --quiet \
     libblas=${PKG_VERSION}=*netlib \
     libcblas=${PKG_VERSION}=*netlib \
     liblapack=${PKG_VERSION}=*netlib \
-    liblapacke=${PKG_VERSION}=*netlib ${fortran_compiler}_${target_platform}=${fortran_compiler_version}
+    liblapacke=${PKG_VERSION}=*netlib \
+    ${fortran_compiler}_${target_platform}=${fortran_compiler_version}
+
 
 # Link against the netlib libraries
 cmake -G "${CMAKE_GENERATOR}" .. \
