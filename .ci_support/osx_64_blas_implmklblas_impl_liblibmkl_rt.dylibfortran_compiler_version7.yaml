@@ -1,23 +1,27 @@
+MACOSX_DEPLOYMENT_TARGET:
+- '10.9'
 blas_default_impl:
 - openblas
 blas_impl:
 - mkl
 blas_impl_lib:
-- libmkl_rt.so
+- libmkl_rt.dylib
 c_compiler:
-- gcc
+- clang
 c_compiler_version:
-- '7'
+- '10'
 channel_sources:
 - conda-forge,defaults
 channel_targets:
 - conda-forge main
-docker_image:
-- condaforge/linux-anvil-comp7
 fortran_compiler:
 - gfortran
 fortran_compiler_version:
 - '7'
+macos_machine:
+- x86_64-apple-darwin13.4.0
+target_platform:
+- osx-64
 zip_keys:
 - - blas_impl
   - blas_impl_lib

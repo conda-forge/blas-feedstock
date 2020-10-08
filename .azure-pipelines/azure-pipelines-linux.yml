@@ -8,26 +8,47 @@ jobs:
     vmImage: ubuntu-16.04
   strategy:
     matrix:
-      linux_blas_implblisblas_impl_liblibblis.so.3:
-        CONFIG: linux_blas_implblisblas_impl_liblibblis.so.3
+      linux_64_blas_implblisblas_impl_liblibblis.so.3fortran_compiler_version7:
+        CONFIG: linux_64_blas_implblisblas_impl_liblibblis.so.3fortran_compiler_version7
         UPLOAD_PACKAGES: 'True'
         DOCKER_IMAGE: condaforge/linux-anvil-comp7
-      linux_blas_implmklblas_impl_liblibmkl_rt.so:
-        CONFIG: linux_blas_implmklblas_impl_liblibmkl_rt.so
+      linux_64_blas_implblisblas_impl_liblibblis.so.3fortran_compiler_version9:
+        CONFIG: linux_64_blas_implblisblas_impl_liblibblis.so.3fortran_compiler_version9
         UPLOAD_PACKAGES: 'True'
         DOCKER_IMAGE: condaforge/linux-anvil-comp7
-      linux_blas_implopenblasblas_impl_liblibopenblas.so.0:
-        CONFIG: linux_blas_implopenblasblas_impl_liblibopenblas.so.0
+      linux_64_blas_implmklblas_impl_liblibmkl_rt.sofortran_compiler_version7:
+        CONFIG: linux_64_blas_implmklblas_impl_liblibmkl_rt.sofortran_compiler_version7
         UPLOAD_PACKAGES: 'True'
         DOCKER_IMAGE: condaforge/linux-anvil-comp7
-      linux_ppc64le_:
-        CONFIG: linux_ppc64le_
+      linux_64_blas_implmklblas_impl_liblibmkl_rt.sofortran_compiler_version9:
+        CONFIG: linux_64_blas_implmklblas_impl_liblibmkl_rt.sofortran_compiler_version9
+        UPLOAD_PACKAGES: 'True'
+        DOCKER_IMAGE: condaforge/linux-anvil-comp7
+      linux_64_blas_implopenblasblas_impl_liblibopenblas.so.0fortran_compiler_version7:
+        CONFIG: linux_64_blas_implopenblasblas_impl_liblibopenblas.so.0fortran_compiler_version7
+        UPLOAD_PACKAGES: 'True'
+        DOCKER_IMAGE: condaforge/linux-anvil-comp7
+      linux_64_blas_implopenblasblas_impl_liblibopenblas.so.0fortran_compiler_version9:
+        CONFIG: linux_64_blas_implopenblasblas_impl_liblibopenblas.so.0fortran_compiler_version9
+        UPLOAD_PACKAGES: 'True'
+        DOCKER_IMAGE: condaforge/linux-anvil-comp7
+      linux_ppc64le_fortran_compiler_version8:
+        CONFIG: linux_ppc64le_fortran_compiler_version8
+        UPLOAD_PACKAGES: 'True'
+        DOCKER_IMAGE: condaforge/linux-anvil-ppc64le
+      linux_ppc64le_fortran_compiler_version9:
+        CONFIG: linux_ppc64le_fortran_compiler_version9
         UPLOAD_PACKAGES: 'True'
         DOCKER_IMAGE: condaforge/linux-anvil-ppc64le
     maxParallel: 8
   timeoutInMinutes: 360
 
   steps:
+  - script: |
+         rm -rf /opt/ghc
+         df -h
+    displayName: Manage disk space
+
   # configure qemu binfmt-misc running.  This allows us to run docker containers
   # embedded qemu-static
   - script: |
@@ -39,6 +60,7 @@ jobs:
   - script: |
         export CI=azure
         export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
+        export FEEDSTOCK_NAME=$(basename ${BUILD_REPOSITORY_NAME})
         .scripts/run_docker_build.sh
     displayName: Run docker build
     env:
