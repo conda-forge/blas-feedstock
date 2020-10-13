@@ -26,7 +26,6 @@ jobs:
       osx_64_blas_implopenblasblas_impl_liblibopenblas.0.dylibfortran_compiler_version9:
         CONFIG: osx_64_blas_implopenblasblas_impl_liblibopenblas.0.dylibfortran_compiler_version9
         UPLOAD_PACKAGES: 'True'
-    maxParallel: 8
   timeoutInMinutes: 360
 
   steps:

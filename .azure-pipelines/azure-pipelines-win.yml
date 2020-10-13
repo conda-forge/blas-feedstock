@@ -17,7 +17,6 @@ jobs:
       win_64_blas_implopenblasblas_impl_libopenblas.dll:
         CONFIG: win_64_blas_implopenblasblas_impl_libopenblas.dll
         UPLOAD_PACKAGES: 'True'
-    maxParallel: 4
   timeoutInMinutes: 360
   variables:
     CONDA_BLD_PATH: D:\\bld\\

@@ -40,7 +40,6 @@ jobs:
         CONFIG: linux_ppc64le_c_compiler_version9fortran_compiler_version9
         UPLOAD_PACKAGES: 'True'
         DOCKER_IMAGE: condaforge/linux-anvil-ppc64le
-    maxParallel: 8
   timeoutInMinutes: 360
 
   steps:
