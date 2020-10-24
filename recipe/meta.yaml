@@ -1,8 +1,9 @@
 {% set version = "3.9.0" %}
+{% set build_num = 0 %}
 {% if blas_impl == 'mkl' %}
 {% set version = "3.8.0" %}
+{% set build_num = build_num + 18 %}
 {% endif %}
-{% set build_num = 18 %}
 {% set version_major = version.split(".")[0] %}
 {% set blas_major = "2" %}
 
@@ -64,7 +65,7 @@ outputs:
        - blas_{{ blas_impl }}     # [blas_impl != blas_default_impl]
     requirements:
       host:
-        - libopenblas 0.3.11   # [blas_impl == 'openblas']
+        - libopenblas 0.3.12   # [blas_impl == 'openblas']
         - mkl 2020.0       # [not win and blas_impl == 'mkl']
         - mkl 2020.*       # [win and blas_impl == 'mkl']
         - blis 0.7.0       # [blas_impl == 'blis']
