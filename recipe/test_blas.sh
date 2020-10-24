@@ -1,8 +1,8 @@
 #!/bin/bash
-set -e
+set -ex
 
 if [[ "$CONDA_BUILD_CROSS_COMPILATION" == "1" ]]; then
-  exit 1
+  exit 0
 fi
 
 cd build
