@@ -31,7 +31,8 @@ conda${EXE_SUFFIX} create -p ${NEW_ENV} -c conda-forge --yes --quiet \
     liblapack=${PKG_VERSION}=*netlib \
     liblapacke=${PKG_VERSION}=*netlib \
     ${fortran_compiler}_${target_platform}=${fortran_compiler_version}
-
+    
+rm -rf ${NEW_ENV}/lib/libgfortran.*dylib
 
 # Link against the netlib libraries
 cmake ${CMAKE_ARGS} -G "${CMAKE_GENERATOR}" .. \
