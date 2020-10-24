@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
 
+if [[ "$CONDA_BUILD_CROSS_COMPILATION" == "1" ]]; then
+  exit 1
+fi
+
 cd build
 
 SKIP_TESTS="dummy"
@@ -10,11 +14,11 @@ if [[ "${blas_impl}" == "blis" ]]; then
   exit 0
 fi
 
-if [[ "$target_platform" != "osx-64" ]]; then
+if [[ "$target_platform" != osx-* ]]; then
   ulimit -s unlimited
 fi
 
-if [[ "$target_platform" == "osx-64" ]]; then
+if [[ "$target_platform" == osx-* ]]; then
   # testing with shared libraries does not work. skip them.
   # to test that program exits if wrong parameters are given, what the testsuite
   # do is that the symbol xerbla (xerbla logs the error and exits) is overriden
