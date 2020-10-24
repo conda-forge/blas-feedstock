@@ -35,7 +35,7 @@ conda${EXE_SUFFIX} create -p ${NEW_ENV} -c conda-forge --yes --quiet \
 rm -rf ${NEW_ENV}/lib/libgfortran.*dylib
 
 # Link against the netlib libraries
-cmake ${CMAKE_ARGS} -G "${CMAKE_GENERATOR}" .. \
+cmake ${CMAKE_ARGS} -LAH -G "${CMAKE_GENERATOR}" .. \
     "-DBLAS_LIBRARIES=${SHLIB_PREFIX}blas${SHLIB_EXT};${SHLIB_PREFIX}cblas${SHLIB_EXT}" \
     "-DLAPACK_LIBRARIES=${SHLIB_PREFIX}lapack${SHLIB_EXT};${SHLIB_PREFIX}lapacke${SHLIB_EXT}" \
     -DBUILD_TESTING=yes \
