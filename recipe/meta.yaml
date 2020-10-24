@@ -1,5 +1,5 @@
 {% set version = "3.9.0" %}
-{% set build_num = 0 %}
+{% set build_num = 1 %}
 {% if blas_impl == 'mkl' %}
 {% set version = "3.8.0" %}
 {% set build_num = build_num + 18 %}
@@ -19,13 +19,8 @@ source:
   patches:
     # Test BLAS and LAPACKE in addition to LAPACK
     - patches/0001-Test-BLAS-and-LAPACKE-in-addition-to-LAPACK.patch
-    # carry upstream patches for build errors/bugs; these can all be removed upon next release
-    # ===FIX BUILD ERRORS===
-    # restore deprecated symbols that were inadvertently removed (from Reference-LAPACK/lapack#367);
-    # squashed with fix-ups Reference-LAPACK/lapack#434 & #437 (cf. xianyi/OpenBLAS#2808 & #2819)
-    - patches/0002-Restore-missing-prototypes-for-deprecated-LAPACK-fun.patch  # [version == "3.9.0"]
-    # fix compile errors due to trying to cast complex_float to int (from Reference-LAPACK/lapack#370)
-    - patches/0003-Fix-MinGW-build-error.patch                                 # [version == "3.9.0"]
+    # Only the test-suite is compiled here, and we therefore do not need to
+    # carry all the patches that the lapack-feedstock has (see comment below)
 
 build:
   number: "{{ build_num }}"
