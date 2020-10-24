@@ -25,14 +25,14 @@ export LIBRARY_PATH="${LIBRARY_PREFIX}/lib"
 export FFLAGS="-I${LIBRARY_PREFIX}/include $FFLAGS"
 export LDFLAGS="-L${LIBRARY_PREFIX}/lib $LDFLAGS"
 
+export CONDA_SUBDIR="${target_platform}"
 conda${EXE_SUFFIX} create -p ${NEW_ENV} -c conda-forge --yes --quiet \
     libblas=${PKG_VERSION}=*netlib \
     libcblas=${PKG_VERSION}=*netlib \
     liblapack=${PKG_VERSION}=*netlib \
     liblapacke=${PKG_VERSION}=*netlib \
     ${fortran_compiler}_${target_platform}=${fortran_compiler_version}
-    
-rm -rf ${NEW_ENV}/lib/libgfortran.*dylib
+unset CONDA_SUBDIR
 
 # Link against the netlib libraries
 cmake ${CMAKE_ARGS} -LAH -G "${CMAKE_GENERATOR}" .. \
