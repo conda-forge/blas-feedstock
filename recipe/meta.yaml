@@ -52,15 +52,15 @@ outputs:
       run_exports:
         - {{ pin_subpackage("libblas", max_pin="x") }}
       track_features:
-       - blas_{{ blas_impl }}     # [blas_impl != blas_default_impl]
+       - blas_{{ blas_impl }}  # [blas_impl != blas_default_impl]
     requirements:
       host:
         - libopenblas 0.3.12   # [blas_impl == 'openblas']
         # 3.9.0 is supported from mkl 2020.4
         - mkl 2020.4           # [blas_impl == 'mkl']
-        - blis 0.7.0       # [blas_impl == 'blis']
+        - blis 0.7.0           # [blas_impl == 'blis']
       run:
-        - {{ pin_compatible("libopenblas", max_pin="x.x.x", exact=win) }}     # [blas_impl == 'openblas']
+        - {{ pin_compatible("libopenblas", max_pin="x.x.x", exact=win) }}  # [blas_impl == 'openblas']
         - {{ pin_compatible("mkl", max_pin="x", exact=win) }}              # [blas_impl == 'mkl']
         - {{ pin_compatible("blis", max_pin="x.x.x", exact=win) }}         # [blas_impl == 'blis']
       run_constrained:
@@ -191,8 +191,8 @@ outputs:
         - {{ compiler('m2w64_c') }}           # [win]
         - {{ compiler('m2w64_fortran') }}     # [win]
         - cmake
-        - m2-make   # [win]
-        - posix     # [win]
+        - m2-make       # [win]
+        - posix         # [win]
         - llvm-openmp   # [linux and ((blas_impl == "openblas") or (blas_impl == "mkl"))]
       host:
       # Building with blis fails due to a conda-build bug
