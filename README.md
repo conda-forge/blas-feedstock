@@ -34,115 +34,59 @@ Current build status
         <table>
           <thead><tr><th>Variant</th><th>Status</th></tr></thead>
           <tbody><tr>
-              <td>linux_64_blas_implblisblas_impl_liblibblis.so.3c_compiler_version7fortran_compiler_version7</td>
+              <td>linux_64_blas_implblisblas_impl_liblibblis.so.3</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=linux&configuration=linux_64_blas_implblisblas_impl_liblibblis.so.3c_compiler_version7fortran_compiler_version7" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=linux&configuration=linux_64_blas_implblisblas_impl_liblibblis.so.3" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>linux_64_blas_implblisblas_impl_liblibblis.so.3c_compiler_version9fortran_compiler_version9</td>
+              <td>linux_64_blas_implmklblas_impl_liblibmkl_rt.so</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=linux&configuration=linux_64_blas_implblisblas_impl_liblibblis.so.3c_compiler_version9fortran_compiler_version9" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=linux&configuration=linux_64_blas_implmklblas_impl_liblibmkl_rt.so" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>linux_64_blas_implmklblas_impl_liblibmkl_rt.soc_compiler_version7fortran_compiler_version7</td>
+              <td>linux_64_blas_implopenblasblas_impl_liblibopenblas.so.0</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=linux&configuration=linux_64_blas_implmklblas_impl_liblibmkl_rt.soc_compiler_version7fortran_compiler_version7" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=linux&configuration=linux_64_blas_implopenblasblas_impl_liblibopenblas.so.0" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>linux_64_blas_implmklblas_impl_liblibmkl_rt.soc_compiler_version9fortran_compiler_version9</td>
+              <td>linux_aarch64</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=linux&configuration=linux_64_blas_implmklblas_impl_liblibmkl_rt.soc_compiler_version9fortran_compiler_version9" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=linux&configuration=linux_aarch64_" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>linux_64_blas_implopenblasblas_impl_liblibopenblas.so.0c_compiler_version7fortran_compiler_version7</td>
+              <td>linux_ppc64le</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=linux&configuration=linux_64_blas_implopenblasblas_impl_liblibopenblas.so.0c_compiler_version7fortran_compiler_version7" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=linux&configuration=linux_ppc64le_" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>linux_64_blas_implopenblasblas_impl_liblibopenblas.so.0c_compiler_version9fortran_compiler_version9</td>
+              <td>osx_64_blas_implblisblas_impl_liblibblis.3.dylib</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=linux&configuration=linux_64_blas_implopenblasblas_impl_liblibopenblas.so.0c_compiler_version9fortran_compiler_version9" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=osx&configuration=osx_64_blas_implblisblas_impl_liblibblis.3.dylib" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>linux_aarch64_c_compiler_version7fortran_compiler_version7</td>
+              <td>osx_64_blas_implmklblas_impl_liblibmkl_rt.dylib</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=linux&configuration=linux_aarch64_c_compiler_version7fortran_compiler_version7" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=osx&configuration=osx_64_blas_implmklblas_impl_liblibmkl_rt.dylib" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>linux_aarch64_c_compiler_version9fortran_compiler_version9</td>
+              <td>osx_64_blas_implopenblasblas_impl_liblibopenblas.0.dylib</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=linux&configuration=linux_aarch64_c_compiler_version9fortran_compiler_version9" alt="variant">
-                </a>
-              </td>
-            </tr><tr>
-              <td>linux_ppc64le_c_compiler_version8fortran_compiler_version8</td>
-              <td>
-                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=linux&configuration=linux_ppc64le_c_compiler_version8fortran_compiler_version8" alt="variant">
-                </a>
-              </td>
-            </tr><tr>
-              <td>linux_ppc64le_c_compiler_version9fortran_compiler_version9</td>
-              <td>
-                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=linux&configuration=linux_ppc64le_c_compiler_version9fortran_compiler_version9" alt="variant">
-                </a>
-              </td>
-            </tr><tr>
-              <td>osx_64_blas_implblisblas_impl_liblibblis.3.dylibfortran_compiler_version7</td>
-              <td>
-                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=osx&configuration=osx_64_blas_implblisblas_impl_liblibblis.3.dylibfortran_compiler_version7" alt="variant">
-                </a>
-              </td>
-            </tr><tr>
-              <td>osx_64_blas_implblisblas_impl_liblibblis.3.dylibfortran_compiler_version9</td>
-              <td>
-                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=osx&configuration=osx_64_blas_implblisblas_impl_liblibblis.3.dylibfortran_compiler_version9" alt="variant">
-                </a>
-              </td>
-            </tr><tr>
-              <td>osx_64_blas_implmklblas_impl_liblibmkl_rt.dylibfortran_compiler_version7</td>
-              <td>
-                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=osx&configuration=osx_64_blas_implmklblas_impl_liblibmkl_rt.dylibfortran_compiler_version7" alt="variant">
-                </a>
-              </td>
-            </tr><tr>
-              <td>osx_64_blas_implmklblas_impl_liblibmkl_rt.dylibfortran_compiler_version9</td>
-              <td>
-                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=osx&configuration=osx_64_blas_implmklblas_impl_liblibmkl_rt.dylibfortran_compiler_version9" alt="variant">
-                </a>
-              </td>
-            </tr><tr>
-              <td>osx_64_blas_implopenblasblas_impl_liblibopenblas.0.dylibfortran_compiler_version7</td>
-              <td>
-                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=osx&configuration=osx_64_blas_implopenblasblas_impl_liblibopenblas.0.dylibfortran_compiler_version7" alt="variant">
-                </a>
-              </td>
-            </tr><tr>
-              <td>osx_64_blas_implopenblasblas_impl_liblibopenblas.0.dylibfortran_compiler_version9</td>
-              <td>
-                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=master">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=osx&configuration=osx_64_blas_implopenblasblas_impl_liblibopenblas.0.dylibfortran_compiler_version9" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=master&jobName=osx&configuration=osx_64_blas_implopenblasblas_impl_liblibopenblas.0.dylib" alt="variant">
                 </a>
               </td>
             </tr><tr>
