@@ -1,7 +1,11 @@
 {% set version = "3.9.0" %}
+# if build_num is reset to 0 (for new version), update increment for blas_minor below
 {% set build_num = 5 %}
 {% set version_major = version.split(".")[0] %}
 {% set blas_major = "2" %}
+# make sure we do not create colliding version strings of output "blas"
+# for builds across lapack-versions within the same blas_major
+{% set blas_minor = build_num + 100 %}
 
 # blas_major denotes major infrastructural change to how blas is managed
 package:
@@ -178,7 +182,7 @@ outputs:
 
   # For compatiblity
   - name: blas
-    version: "{{ blas_major }}.{{ build_num }}"
+    version: "{{ blas_major }}.{{ blas_minor }}"
     script: test_blas.sh   # [unix]
     script: test_blas.bat  # [win]
     build:
@@ -220,6 +224,7 @@ outputs:
         - if not exist %LIBRARY_BIN%/liblapacke.dll exit 1           # [win]
 
   - name: blas-devel
+    # uses lapack {{ version }}, not {{ blas_major }}
     build:
       string: "{{ build_num }}_{{ blas_impl }}"
     requirements:
