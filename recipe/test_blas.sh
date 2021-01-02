@@ -9,11 +9,6 @@ cd build
 
 SKIP_TESTS="dummy"
 
-if [[ "${blas_impl}" == "blis" ]]; then
-  # conda-build can't install a correct environment for testing
-  exit 0
-fi
-
 if [[ "$target_platform" != osx-* ]]; then
   ulimit -s unlimited
 fi
