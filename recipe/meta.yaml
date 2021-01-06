@@ -118,11 +118,11 @@ outputs:
       - Library/lib/pkgconfig/cblas.pc           # [win]
     test:
       commands:
-        - test -f $PREFIX/lib/libcblas.so.{{ version_major }}      # [linux]
-        - test -f $PREFIX/lib/libcblas.{{ version_major }}.dylib   # [osx]
-        - if not exist %LIBRARY_BIN%/libcblas.dll exit 1           # [win]
-        - test -f $PREFIX/lib/pkgconfig/cblas.pc                   # [unix]
-        - if not exist "%LIBRARY_LIB%\\pkgconfig\\cblas.pc" exit 1 # [win]
+        - test -f $PREFIX/lib/libcblas.so.{{ version_major }}       # [linux]
+        - test -f $PREFIX/lib/libcblas.{{ version_major }}.dylib    # [osx]
+        - if not exist %LIBRARY_BIN%/libcblas.dll exit 1            # [win]
+        - test -f $PREFIX/lib/pkgconfig/cblas.pc                    # [unix]
+        - if not exist "%LIBRARY_LIB%\\pkgconfig\\cblas.pc" exit 1  # [win]
 
   {% if blas_impl != 'blis' %}
   - name: liblapack
@@ -153,11 +153,11 @@ outputs:
       - Library/lib/pkgconfig/lapack.pc           # [win]
     test:
       commands:
-        - test -f $PREFIX/lib/liblapack.so.{{ version_major }}      # [linux]
-        - test -f $PREFIX/lib/liblapack.{{ version_major }}.dylib   # [osx]
-        - if not exist %LIBRARY_BIN%/liblapack.dll exit 1           # [win]
-        - test -f $PREFIX/lib/pkgconfig/lapack.pc                   # [unix]
-        - if not exist "%LIBRARY_LIB%\\pkgconfig\\lapack.pc" exit 1 # [win]
+        - test -f $PREFIX/lib/liblapack.so.{{ version_major }}       # [linux]
+        - test -f $PREFIX/lib/liblapack.{{ version_major }}.dylib    # [osx]
+        - if not exist %LIBRARY_BIN%/liblapack.dll exit 1            # [win]
+        - test -f $PREFIX/lib/pkgconfig/lapack.pc                    # [unix]
+        - if not exist "%LIBRARY_LIB%\\pkgconfig\\lapack.pc" exit 1  # [win]
 
   - name: liblapacke
     script: build_pkg.sh     # [unix]
