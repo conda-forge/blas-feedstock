@@ -84,11 +84,11 @@ outputs:
       commands:
         # Following line is just to help conda-build's used variables detection
         - echo hello  # [blas_impl_lib == 'blas']
-        - test -f $PREFIX/lib/libblas.so.{{ version_major }}      # [linux]
-        - test -f $PREFIX/lib/libblas.{{ version_major }}.dylib   # [osx]
-        - if not exist %LIBRARY_BIN%/libblas.dll exit 1           # [win]
-        - test -f $PREFIX/lib/pkgconfig/blas.pc                   # [unix]
-        - if not exist "%LIBRARY_LIB%\\pkgconfig\\blas.pc" exit 1 # [win]
+        - test -f $PREFIX/lib/libblas.so.{{ version_major }}       # [linux]
+        - test -f $PREFIX/lib/libblas.{{ version_major }}.dylib    # [osx]
+        - if not exist %LIBRARY_BIN%/libblas.dll exit 1            # [win]
+        - test -f $PREFIX/lib/pkgconfig/blas.pc                    # [unix]
+        - if not exist "%LIBRARY_LIB%\\pkgconfig\\blas.pc" exit 1  # [win]
 
   - name: libcblas
     script: build_pkg.sh     # [unix]
@@ -189,11 +189,11 @@ outputs:
       - Library/lib/pkgconfig/lapacke.pc           # [win]
     test:
       commands:
-        - test -f $PREFIX/lib/liblapacke.so.{{ version_major }}      # [linux]
-        - test -f $PREFIX/lib/liblapacke.{{ version_major }}.dylib   # [osx]
-        - if not exist %LIBRARY_BIN%/liblapacke.dll exit 1           # [win]
-        - test -f $PREFIX/lib/pkgconfig/lapacke.pc                   # [unix]
-        - if not exist "%LIBRARY_LIB%\\pkgconfig\\lapacke.pc" exit 1 # [win]
+        - test -f $PREFIX/lib/liblapacke.so.{{ version_major }}       # [linux]
+        - test -f $PREFIX/lib/liblapacke.{{ version_major }}.dylib    # [osx]
+        - if not exist %LIBRARY_BIN%/liblapacke.dll exit 1            # [win]
+        - test -f $PREFIX/lib/pkgconfig/lapacke.pc                    # [unix]
+        - if not exist "%LIBRARY_LIB%\\pkgconfig\\lapacke.pc" exit 1  # [win]
   {% endif %}
 
   # For compatiblity
