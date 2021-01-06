@@ -44,12 +44,3 @@ cmake ${CMAKE_ARGS} -LAH -G "${CMAKE_GENERATOR}" .. \
 make -j${CPU_COUNT}
 
 rm -rf ${NEW_ENV}
-
-# As OpenBLAS, now will have all symbols that BLAS, CBLAS or LAPACK have,
-# create libraries with the standard names that are linked back to
-# OpenBLAS. This will make it easier for packages that are looking for them.
-for arg in blas cblas lapack; do
-    ln -fs $PREFIX/lib/pkgconfig/openblas.pc $PREFIX/lib/pkgconfig/$arg.pc
-    ln -fs $PREFIX/lib/libopenblas.a $PREFIX/lib/lib$arg.a
-    ln -fs $PREFIX/lib/libopenblas$SHLIB_EXT $PREFIX/lib/lib$arg$SHLIB_EXT
-done
