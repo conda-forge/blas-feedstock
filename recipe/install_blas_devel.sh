@@ -1,3 +1,3 @@
-ln -s $PREFIX/lib/pkgconfig/openblas.pc $PREFIX/lib/blas.pc
-ln -s $PREFIX/lib/pkgconfig/openblas.pc $PREFIX/lib/cblas.pc
-ln -s $PREFIX/lib/pkgconfig/openblas.pc $PREFIX/lib/lapack.pc
+ln -s $PREFIX/lib/pkgconfig/openblas.pc $PREFIX/lib/pkgconfig/blas.pc
+ln -s $PREFIX/lib/pkgconfig/openblas.pc $PREFIX/lib/pkgconfig/cblas.pc
+ln -s $PREFIX/lib/pkgconfig/openblas.pc $PREFIX/lib/pkgconfig/lapack.pc
