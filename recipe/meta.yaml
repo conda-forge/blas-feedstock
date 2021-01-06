@@ -1,6 +1,6 @@
 {% set version = "3.9.0" %}
 # if build_num is reset to 0 (for new version), update increment for blas_minor below
-{% set build_num = 6 %}
+{% set build_num = 7 %}
 {% set version_major = version.split(".")[0] %}
 {% set blas_major = "2" %}
 # make sure we do not create colliding version strings of output "blas"
@@ -225,15 +225,21 @@ outputs:
 
   - name: blas-devel
     # uses lapack {{ version }}, not {{ blas_major }}
+    script: install_blas_devel.sh   # [unix]
     build:
       string: "{{ build_num }}_{{ blas_impl }}"
     requirements:
+      host:
+        - openblas   # [blas_impl == "openblas"]
+        - mkl-devel  # [blas_impl == "mkl"]
+        - {{ pin_subpackage("blas", exact=True) }}
       run:
         - openblas   # [blas_impl == "openblas"]
         - mkl-devel  # [blas_impl == "mkl"]
         - {{ pin_subpackage("blas", exact=True) }}
     test:
       commands:
+        - test -f $PREFIX/lib/pkgconfig/blas.pc                     # [unix and blas_impl == "openblas"]
         - test -f $PREFIX/lib/liblapack.so                          # [linux]
         - test -f $PREFIX/lib/liblapack.dylib                       # [osx]
         - if not exist %LIBRARY_BIN%/liblapack.dll exit 1           # [win]
