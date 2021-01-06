@@ -1,6 +1,6 @@
 {% set version = "3.9.0" %}
 # if build_num is reset to 0 (for new version), update increment for blas_minor below
-{% set build_num = 6 %}
+{% set build_num = 7 %}
 {% set version_major = version.split(".")[0] %}
 {% set blas_major = "2" %}
 # make sure we do not create colliding version strings of output "blas"
@@ -180,6 +180,33 @@ outputs:
         - if not exist %LIBRARY_BIN%/liblapacke.dll exit 1           # [win]
   {% endif %}
 
+  - name: blas-devel
+    # uses lapack {{ version }}, not {{ blas_major }}
+    script: install_blas_devel.sh   # [unix]
+    build:
+      string: "{{ build_num }}_{{ blas_impl }}"
+    requirements:
+      host:
+        - openblas   # [blas_impl == "openblas"]
+        - mkl-devel  # [blas_impl == "mkl"]
+      run:
+        - openblas   # [blas_impl == "openblas"]
+        - mkl-devel  # [blas_impl == "mkl"]
+        - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
+        - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
+        - liblapack  {{ version }} *netlib                   # [blas_impl == 'blis']
+        - liblapacke {{ version }} *netlib                   # [blas_impl == 'blis']
+        - {{ pin_subpackage("libcblas", exact=True) }}
+        - {{ pin_subpackage("libblas", exact=True) }}
+        - {{ pin_subpackage("blas-devel", exact=True) }}
+    test:
+      commands:
+        - test -f $PREFIX/lib/pkgconfig/blas.pc                     # [unix and blas_impl == "openblas"]
+        - test -f $PREFIX/lib/liblapack.so                          # [linux]
+        - test -f $PREFIX/lib/liblapack.dylib                       # [osx]
+        - if not exist %LIBRARY_BIN%/liblapack.dll exit 1           # [win]
+
+
   # For compatiblity
   - name: blas
     version: "{{ blas_major }}.{{ blas_minor }}"
@@ -215,6 +242,7 @@ outputs:
         - liblapacke {{ version }} *netlib                   # [blas_impl == 'blis']
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("libblas", exact=True) }}
+        - {{ pin_subpackage("blas-devel", exact=True) }}
     test:
       commands:
         - test -f $PREFIX/lib/liblapacke.so                          # [linux]
@@ -222,21 +250,6 @@ outputs:
         - test -f $PREFIX/lib/liblapacke.dylib                       # [osx]
         - test -f $PREFIX/lib/liblapacke.{{ version_major }}.dylib   # [osx]
         - if not exist %LIBRARY_BIN%/liblapacke.dll exit 1           # [win]
-
-  - name: blas-devel
-    # uses lapack {{ version }}, not {{ blas_major }}
-    build:
-      string: "{{ build_num }}_{{ blas_impl }}"
-    requirements:
-      run:
-        - openblas   # [blas_impl == "openblas"]
-        - mkl-devel  # [blas_impl == "mkl"]
-        - {{ pin_subpackage("blas", exact=True) }}
-    test:
-      commands:
-        - test -f $PREFIX/lib/liblapack.so                          # [linux]
-        - test -f $PREFIX/lib/liblapack.dylib                       # [osx]
-        - if not exist %LIBRARY_BIN%/liblapack.dll exit 1           # [win]
 
 about:
   home: https://github.com/conda-forge/blas-feedstock
