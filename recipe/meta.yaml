@@ -189,11 +189,16 @@ outputs:
       host:
         - openblas   # [blas_impl == "openblas"]
         - mkl-devel  # [blas_impl == "mkl"]
-        - {{ pin_subpackage("blas", exact=True) }}
       run:
         - openblas   # [blas_impl == "openblas"]
         - mkl-devel  # [blas_impl == "mkl"]
-        - {{ pin_subpackage("blas", exact=True) }}
+        - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
+        - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
+        - liblapack  {{ version }} *netlib                   # [blas_impl == 'blis']
+        - liblapacke {{ version }} *netlib                   # [blas_impl == 'blis']
+        - {{ pin_subpackage("libcblas", exact=True) }}
+        - {{ pin_subpackage("libblas", exact=True) }}
+        - {{ pin_subpackage("blas-devel", exact=True) }}
     test:
       commands:
         - test -f $PREFIX/lib/pkgconfig/blas.pc                     # [unix and blas_impl == "openblas"]
