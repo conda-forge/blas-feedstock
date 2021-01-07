@@ -69,8 +69,8 @@ outputs:
         - {{ pin_compatible("blis", max_pin="x.x.x", exact=win) }}         # [blas_impl == 'blis']
       run_constrained:
         - {{ pin_subpackage("libcblas", exact=True) }}
-        - {{ pin_subpackage("liblapack", exact=True) }}    # [blas_impl != 'blis']
-        - {{ pin_subpackage("liblapacke", exact=True) }}   # [blas_impl != 'blis']
+        - {{ pin_subpackage("liblapack", exact=True) }}
+        - {{ pin_subpackage("liblapacke", exact=True) }}
         - blas * {{ blas_impl }}
     files:
       - lib/libblas.so                          # [linux]
@@ -101,8 +101,8 @@ outputs:
       run:
         - {{ pin_subpackage("libblas", exact=True) }}
       run_constrained:
-        - {{ pin_subpackage("liblapack", exact=True) }}    # [blas_impl != 'blis']
-        - {{ pin_subpackage("liblapacke", exact=True) }}   # [blas_impl != 'blis']
+        - {{ pin_subpackage("liblapack", exact=True) }}
+        - {{ pin_subpackage("liblapacke", exact=True) }}
         - blas * {{ blas_impl }}
     files:
       - lib/libcblas.so                          # [linux]
@@ -116,7 +116,9 @@ outputs:
         - test -f $PREFIX/lib/libcblas.{{ version_major }}.dylib   # [osx]
         - if not exist %LIBRARY_BIN%/libcblas.dll exit 1           # [win]
 
-  {% if blas_impl != 'blis' %}
+  # blis does not provide liblapack(e) - repackage netlib-version to have consistent
+  # build strings (see build_pkg.{bat|sh}); otherwise, testing blis becomes difficult
+  # since conda-build would get confused by the mix of exact pins and netlib subpackages
   - name: liblapack
     script: build_pkg.sh     # [unix]
     script: build_pkg.bat    # [win]
@@ -178,7 +180,6 @@ outputs:
         - test -f $PREFIX/lib/liblapacke.so.{{ version_major }}      # [linux]
         - test -f $PREFIX/lib/liblapacke.{{ version_major }}.dylib   # [osx]
         - if not exist %LIBRARY_BIN%/liblapacke.dll exit 1           # [win]
-  {% endif %}
 
   - name: blas-devel
     # uses lapack {{ version }}, not {{ blas_major }}
@@ -226,23 +227,15 @@ outputs:
         - posix         # [win]
         - llvm-openmp   # [linux and ((blas_impl == "openblas") or (blas_impl == "mkl"))]
       host:
-      # Building with blis fails due to a conda-build bug
-      {% if blas_impl != 'blis' %}
+        - {{ pin_subpackage("libblas", exact=True) }}
+        - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("liblapack", exact=True) }}
         - {{ pin_subpackage("liblapacke", exact=True) }}
-        - {{ pin_subpackage("libcblas", exact=True) }}
-        - {{ pin_subpackage("libblas", exact=True) }}
-      {% else %}
-        - blis 0.8.0
-      {% endif %}
       run:
-        - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
-        - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
-        - liblapack  {{ version }} *netlib                   # [blas_impl == 'blis']
-        - liblapacke {{ version }} *netlib                   # [blas_impl == 'blis']
-        - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("libblas", exact=True) }}
-        - {{ pin_subpackage("blas-devel", exact=True) }}
+        - {{ pin_subpackage("libcblas", exact=True) }}
+        - {{ pin_subpackage("liblapack", exact=True) }}
+        - {{ pin_subpackage("liblapacke", exact=True) }}
     test:
       commands:
         - test -f $PREFIX/lib/liblapacke.so                          # [linux]
