@@ -216,7 +216,7 @@ outputs:
         - if not exist %LIBRARY_BIN%/liblapack.dll exit 1           # [win]
 
 
-  # For compatiblity
+  # For conda-forge blas selector, see also lapack-feedstock
   - name: blas
     version: "{{ blas_major }}.{{ blas_minor }}"
     script: test_blas.sh   # [unix]
