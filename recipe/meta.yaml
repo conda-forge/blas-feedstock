@@ -1,6 +1,6 @@
 {% set version = "3.9.0" %}
 # if build_num is reset to 0 (for new version), update increment for blas_minor below
-{% set build_num = 7 %}
+{% set build_num = 8 %}
 {% set version_major = version.split(".")[0] %}
 {% set blas_major = "2" %}
 # make sure we do not create colliding version strings of output "blas"
@@ -198,7 +198,6 @@ outputs:
         - liblapacke {{ version }} *netlib                   # [blas_impl == 'blis']
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("libblas", exact=True) }}
-        - {{ pin_subpackage("blas-devel", exact=True) }}
     test:
       commands:
         - test -f $PREFIX/lib/pkgconfig/blas.pc                     # [unix and blas_impl == "openblas"]
