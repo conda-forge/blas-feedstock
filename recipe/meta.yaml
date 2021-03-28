@@ -207,10 +207,18 @@ outputs:
         - pin_run_as_build('liblapacke', exact=True)         # [blas_impl == 'netlib']
     test:
       commands:
-        - test -f $PREFIX/lib/pkgconfig/blas.pc                     # [unix and blas_impl == "openblas"]
-        - test -f $PREFIX/lib/liblapack.so                          # [linux]
-        - test -f $PREFIX/lib/liblapack.dylib                       # [osx]
-        - if not exist %LIBRARY_BIN%/liblapack.dll exit 1           # [win]
+        {% for each_lib in ['blas', 'cblas', 'lapack', 'lapacke'] %}
+        - test -f $PREFIX/lib/lib{{ each_lib }}.so                           # [linux]
+        - test -f $PREFIX/lib/lib{{ each_lib }}.so.{{ version_major }}       # [linux]
+        - test -f $PREFIX/lib/lib{{ each_lib }}.so.{{ version }}             # [linux]
+        - test -f $PREFIX/lib/lib{{ each_lib }}.dylib                        # [osx]
+        - test -f $PREFIX/lib/lib{{ each_lib }}.{{ version_major }}.dylib    # [osx]
+        - test -f $PREFIX/lib/lib{{ each_lib }}.{{ version }}.dylib          # [osx]
+        - test -f $PREFIX/lib/pkgconfig/{{ each_lib }}.pc                    # [unix and blas_impl != "mkl"]
+        - if not exist "%LIBRARY_LIB%\\pkgconfig\\{{ each_lib }}.pc" exit 1  # [win and blas_impl != "mkl"]
+        - if not exist "%LIBRARY_LIB%\\{{ each_lib }}.lib" exit 1            # [win]
+        - if not exist "%LIBRARY_BIN%\\lib{{ each_lib }}.dll" exit 1         # [win]
+        {% endfor %}
 
 
   # For compatiblity
@@ -250,11 +258,8 @@ outputs:
         - {{ pin_subpackage("blas-devel", exact=True) }}
     test:
       commands:
-        - test -f $PREFIX/lib/liblapacke.so                          # [linux]
-        - test -f $PREFIX/lib/liblapacke.so.{{ version_major }}      # [linux]
-        - test -f $PREFIX/lib/liblapacke.dylib                       # [osx]
-        - test -f $PREFIX/lib/liblapacke.{{ version_major }}.dylib   # [osx]
-        - if not exist %LIBRARY_BIN%/liblapacke.dll exit 1           # [win]
+        # see tests in blas-devel
+        - exit 0
 
 about:
   home: https://github.com/conda-forge/blas-feedstock
