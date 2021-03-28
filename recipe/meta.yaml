@@ -7,6 +7,10 @@
 # for builds across lapack-versions within the same blas_major
 {% set blas_minor = build_num + 100 %}
 
+# the recipe depends on the netlib builds for blas,cblas,lapack,lapacke;
+# specify the exact build number to make the meta-package selection unique
+{% set netlib_build_num = 3 %}
+
 # blas_major denotes major infrastructural change to how blas is managed
 package:
   name: blas-split
@@ -194,26 +198,22 @@ outputs:
       run:
         - openblas   # [blas_impl == "openblas"]
         - mkl-devel  # [blas_impl == "mkl"]
-        - {{ pin_subpackage("libblas", exact=True) }}        # [blas_impl != 'netlib']
-        - {{ pin_subpackage("libcblas", exact=True) }}       # [blas_impl != 'netlib']
-        - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl not in ('blis', 'netlib')]
-        - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl not in ('blis', 'netlib')]
-        - liblapack  {{ version }} *netlib                   # [blas_impl == 'blis']
-        - liblapacke {{ version }} *netlib                   # [blas_impl == 'blis']
-        # netlib builds are build in lapack-feedstock
-        - pin_run_as_build('libblas', exact=True)            # [blas_impl == 'netlib']
-        - pin_run_as_build('libcblas', exact=True)           # [blas_impl == 'netlib']
-        - pin_run_as_build('liblapack', exact=True)          # [blas_impl == 'netlib']
-        - pin_run_as_build('liblapacke', exact=True)         # [blas_impl == 'netlib']
+        # netlib builds are built in lapack-feedstock
+        - libblas    ={{ version }}={{ netlib_build_num }}*netlib  # [blas_impl == 'netlib']
+        - libcblas   ={{ version }}={{ netlib_build_num }}*netlib  # [blas_impl == 'netlib']
+        - {{ pin_subpackage("libblas", exact=True) }}              # [blas_impl != 'netlib']
+        - {{ pin_subpackage("libcblas", exact=True) }}             # [blas_impl != 'netlib']
+        - {{ pin_subpackage("liblapack", exact=True) }}            # [blas_impl not in ('blis', 'netlib')]
+        - {{ pin_subpackage("liblapacke", exact=True) }}           # [blas_impl not in ('blis', 'netlib')]
+        - liblapack  ={{ version }}={{ netlib_build_num }}*netlib  # [blas_impl in ('blis', 'netlib')]
+        - liblapacke ={{ version }}={{ netlib_build_num }}*netlib  # [blas_impl in ('blis', 'netlib')]
     test:
       commands:
         {% for each_lib in ['blas', 'cblas', 'lapack', 'lapacke'] %}
         - test -f $PREFIX/lib/lib{{ each_lib }}.so                           # [linux]
         - test -f $PREFIX/lib/lib{{ each_lib }}.so.{{ version_major }}       # [linux]
-        - test -f $PREFIX/lib/lib{{ each_lib }}.so.{{ version }}             # [linux]
         - test -f $PREFIX/lib/lib{{ each_lib }}.dylib                        # [osx]
         - test -f $PREFIX/lib/lib{{ each_lib }}.{{ version_major }}.dylib    # [osx]
-        - test -f $PREFIX/lib/lib{{ each_lib }}.{{ version }}.dylib          # [osx]
         - test -f $PREFIX/lib/pkgconfig/{{ each_lib }}.pc                    # [unix and blas_impl != "mkl"]
         - if not exist "%LIBRARY_LIB%\\pkgconfig\\{{ each_lib }}.pc" exit 1  # [win and blas_impl != "mkl"]
         - if not exist "%LIBRARY_LIB%\\{{ each_lib }}.lib" exit 1            # [win]
@@ -244,10 +244,10 @@ outputs:
       {% if blas_impl == 'blis' %}
         - blis 0.8.0
       {% elif blas_impl == 'netlib' %}
-        - libblas    {{ version }} *netlib
-        - libcblas   {{ version }} *netlib
-        - liblapack  {{ version }} *netlib
-        - liblapacke {{ version }} *netlib
+        - libblas    ={{ version }}={{ netlib_build_num }}*netlib
+        - libcblas   ={{ version }}={{ netlib_build_num }}*netlib
+        - liblapack  ={{ version }}={{ netlib_build_num }}*netlib
+        - liblapacke ={{ version }}={{ netlib_build_num }}*netlib
       {% else %}
         - {{ pin_subpackage("libblas", exact=True) }}
         - {{ pin_subpackage("libcblas", exact=True) }}
