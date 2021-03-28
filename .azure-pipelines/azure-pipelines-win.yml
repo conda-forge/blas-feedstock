@@ -14,6 +14,9 @@ jobs:
       win_64_blas_implmklblas_impl_libmkl_rt.dll:
         CONFIG: win_64_blas_implmklblas_impl_libmkl_rt.dll
         UPLOAD_PACKAGES: 'True'
+      win_64_blas_implnetlibblas_impl_libblas.dll:
+        CONFIG: win_64_blas_implnetlibblas_impl_libblas.dll
+        UPLOAD_PACKAGES: 'True'
       win_64_blas_implopenblasblas_impl_libopenblas.dll:
         CONFIG: win_64_blas_implopenblasblas_impl_libopenblas.dll
         UPLOAD_PACKAGES: 'True'

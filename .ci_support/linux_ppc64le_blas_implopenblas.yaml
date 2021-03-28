@@ -9,19 +9,21 @@ c_compiler:
 c_compiler_version:
 - '9'
 cdt_name:
-- cos6
+- cos7
 channel_sources:
 - conda-forge,defaults
 channel_targets:
 - conda-forge main
 docker_image:
-- quay.io/condaforge/linux-anvil-comp7
+- quay.io/condaforge/linux-anvil-ppc64le
 fortran_compiler:
 - gfortran
 fortran_compiler_version:
 - '9'
+openblas:
+- 0.3.*
 target_platform:
-- linux-64
+- linux-ppc64le
 zip_keys:
 - - blas_impl
   - blas_impl_lib
