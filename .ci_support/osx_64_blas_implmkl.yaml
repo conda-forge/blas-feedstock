@@ -3,9 +3,9 @@ MACOSX_DEPLOYMENT_TARGET:
 blas_default_impl:
 - openblas
 blas_impl:
-- openblas
+- mkl
 blas_impl_lib:
-- libopenblas.0.dylib
+- libmkl_rt.dylib
 c_compiler:
 - clang
 c_compiler_version:
@@ -20,6 +20,8 @@ fortran_compiler_version:
 - '9'
 macos_machine:
 - x86_64-apple-darwin13.4.0
+openblas:
+- 0.3.*
 target_platform:
 - osx-64
 zip_keys:

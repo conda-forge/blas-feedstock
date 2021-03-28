@@ -8,20 +8,28 @@ jobs:
     vmImage: ubuntu-16.04
   strategy:
     matrix:
-      linux_64_blas_implblisblas_impl_liblibblis.so.3:
-        CONFIG: linux_64_blas_implblisblas_impl_liblibblis.so.3
+      linux_64_blas_implblis:
+        CONFIG: linux_64_blas_implblis
         UPLOAD_PACKAGES: 'True'
         DOCKER_IMAGE: quay.io/condaforge/linux-anvil-comp7
-      linux_64_blas_implmklblas_impl_liblibmkl_rt.so:
-        CONFIG: linux_64_blas_implmklblas_impl_liblibmkl_rt.so
+      linux_64_blas_implmkl:
+        CONFIG: linux_64_blas_implmkl
         UPLOAD_PACKAGES: 'True'
         DOCKER_IMAGE: quay.io/condaforge/linux-anvil-comp7
-      linux_64_blas_implopenblasblas_impl_liblibopenblas.so.0:
-        CONFIG: linux_64_blas_implopenblasblas_impl_liblibopenblas.so.0
+      linux_64_blas_implnetlib:
+        CONFIG: linux_64_blas_implnetlib
         UPLOAD_PACKAGES: 'True'
         DOCKER_IMAGE: quay.io/condaforge/linux-anvil-comp7
-      linux_ppc64le_:
-        CONFIG: linux_ppc64le_
+      linux_64_blas_implopenblas:
+        CONFIG: linux_64_blas_implopenblas
+        UPLOAD_PACKAGES: 'True'
+        DOCKER_IMAGE: quay.io/condaforge/linux-anvil-comp7
+      linux_ppc64le_blas_implnetlib:
+        CONFIG: linux_ppc64le_blas_implnetlib
+        UPLOAD_PACKAGES: 'True'
+        DOCKER_IMAGE: quay.io/condaforge/linux-anvil-ppc64le
+      linux_ppc64le_blas_implopenblas:
+        CONFIG: linux_ppc64le_blas_implopenblas
         UPLOAD_PACKAGES: 'True'
         DOCKER_IMAGE: quay.io/condaforge/linux-anvil-ppc64le
   timeoutInMinutes: 360

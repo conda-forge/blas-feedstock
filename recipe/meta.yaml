@@ -1,11 +1,15 @@
 {% set version = "3.9.0" %}
 # if build_num is reset to 0 (for new version), update increment for blas_minor below
-{% set build_num = 8 %}
+{% set build_num = 9 %}
 {% set version_major = version.split(".")[0] %}
 {% set blas_major = "2" %}
 # make sure we do not create colliding version strings of output "blas"
 # for builds across lapack-versions within the same blas_major
 {% set blas_minor = build_num + 100 %}
+
+# the recipe depends on the netlib builds for blas,cblas,lapack,lapacke;
+# specify the exact build number to make the meta-package selection unique
+{% set netlib_build_num = 3 %}
 
 # blas_major denotes major infrastructural change to how blas is managed
 package:
@@ -48,6 +52,7 @@ requirements:
     # - liblapacke {{ version }} *netlib
 
 outputs:
+  {% if blas_impl != 'netlib' %}
   - name: libblas
     script: build_pkg.sh     # [unix]
     script: build_pkg.bat    # [win]
@@ -178,7 +183,8 @@ outputs:
         - test -f $PREFIX/lib/liblapacke.so.{{ version_major }}      # [linux]
         - test -f $PREFIX/lib/liblapacke.{{ version_major }}.dylib   # [osx]
         - if not exist %LIBRARY_BIN%/liblapacke.dll exit 1           # [win]
-  {% endif %}
+  {% endif %}  # blas_impl != 'blis'
+  {% endif %}  # blas_impl != 'netlib'
 
   - name: blas-devel
     # uses lapack {{ version }}, not {{ blas_major }}
@@ -192,18 +198,27 @@ outputs:
       run:
         - openblas   # [blas_impl == "openblas"]
         - mkl-devel  # [blas_impl == "mkl"]
-        - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
-        - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
-        - liblapack  {{ version }} *netlib                   # [blas_impl == 'blis']
-        - liblapacke {{ version }} *netlib                   # [blas_impl == 'blis']
-        - {{ pin_subpackage("libcblas", exact=True) }}
-        - {{ pin_subpackage("libblas", exact=True) }}
+        # netlib builds are built in lapack-feedstock
+        - libblas    ={{ version }}={{ netlib_build_num }}*netlib  # [blas_impl == 'netlib']
+        - libcblas   ={{ version }}={{ netlib_build_num }}*netlib  # [blas_impl == 'netlib']
+        - {{ pin_subpackage("libblas", exact=True) }}              # [blas_impl != 'netlib']
+        - {{ pin_subpackage("libcblas", exact=True) }}             # [blas_impl != 'netlib']
+        - {{ pin_subpackage("liblapack", exact=True) }}            # [blas_impl not in ('blis', 'netlib')]
+        - {{ pin_subpackage("liblapacke", exact=True) }}           # [blas_impl not in ('blis', 'netlib')]
+        - liblapack  ={{ version }}={{ netlib_build_num }}*netlib  # [blas_impl in ('blis', 'netlib')]
+        - liblapacke ={{ version }}={{ netlib_build_num }}*netlib  # [blas_impl in ('blis', 'netlib')]
     test:
       commands:
-        - test -f $PREFIX/lib/pkgconfig/blas.pc                     # [unix and blas_impl == "openblas"]
-        - test -f $PREFIX/lib/liblapack.so                          # [linux]
-        - test -f $PREFIX/lib/liblapack.dylib                       # [osx]
-        - if not exist %LIBRARY_BIN%/liblapack.dll exit 1           # [win]
+        {% for each_lib in ['blas', 'cblas', 'lapack', 'lapacke'] %}
+        - test -f $PREFIX/lib/lib{{ each_lib }}.so                           # [linux]
+        - test -f $PREFIX/lib/lib{{ each_lib }}.so.{{ version_major }}       # [linux]
+        - test -f $PREFIX/lib/lib{{ each_lib }}.dylib                        # [osx]
+        - test -f $PREFIX/lib/lib{{ each_lib }}.{{ version_major }}.dylib    # [osx]
+        - test -f $PREFIX/lib/pkgconfig/{{ each_lib }}.pc                    # [unix and blas_impl != "mkl"]
+        - if not exist "%LIBRARY_LIB%\\pkgconfig\\{{ each_lib }}.pc" exit 1  # [win and blas_impl != "mkl"]
+        - if not exist "%LIBRARY_LIB%\\{{ each_lib }}.lib" exit 1            # [win]
+        - if not exist "%LIBRARY_BIN%\\lib{{ each_lib }}.dll" exit 1         # [win]
+        {% endfor %}
 
 
   # For compatiblity
@@ -226,29 +241,25 @@ outputs:
         - llvm-openmp   # [linux and ((blas_impl == "openblas") or (blas_impl == "mkl"))]
       host:
       # Building with blis fails due to a conda-build bug
-      {% if blas_impl != 'blis' %}
+      {% if blas_impl == 'blis' %}
+        - blis 0.8.0
+      {% elif blas_impl == 'netlib' %}
+        - libblas    ={{ version }}={{ netlib_build_num }}*netlib
+        - libcblas   ={{ version }}={{ netlib_build_num }}*netlib
+        - liblapack  ={{ version }}={{ netlib_build_num }}*netlib
+        - liblapacke ={{ version }}={{ netlib_build_num }}*netlib
+      {% else %}
+        - {{ pin_subpackage("libblas", exact=True) }}
+        - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("liblapack", exact=True) }}
         - {{ pin_subpackage("liblapacke", exact=True) }}
-        - {{ pin_subpackage("libcblas", exact=True) }}
-        - {{ pin_subpackage("libblas", exact=True) }}
-      {% else %}
-        - blis 0.8.0
       {% endif %}
       run:
-        - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
-        - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
-        - liblapack  {{ version }} *netlib                   # [blas_impl == 'blis']
-        - liblapacke {{ version }} *netlib                   # [blas_impl == 'blis']
-        - {{ pin_subpackage("libcblas", exact=True) }}
-        - {{ pin_subpackage("libblas", exact=True) }}
         - {{ pin_subpackage("blas-devel", exact=True) }}
     test:
       commands:
-        - test -f $PREFIX/lib/liblapacke.so                          # [linux]
-        - test -f $PREFIX/lib/liblapacke.so.{{ version_major }}      # [linux]
-        - test -f $PREFIX/lib/liblapacke.dylib                       # [osx]
-        - test -f $PREFIX/lib/liblapacke.{{ version_major }}.dylib   # [osx]
-        - if not exist %LIBRARY_BIN%/liblapacke.dll exit 1           # [win]
+        # see tests in blas-devel
+        - exit 0
 
 about:
   home: https://github.com/conda-forge/blas-feedstock
