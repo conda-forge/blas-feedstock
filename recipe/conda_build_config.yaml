@@ -1,8 +1,13 @@
 blas_impl:
+- netlib
 - openblas
 - mkl        # [x86 or x86_64]
 - blis       # [x86 or x86_64]
 blas_impl_lib:
+- libblas.so               # [linux]
+- libblas.dylib            # [osx]
+- blas.dll                 # [win]
+
 - libopenblas.so.0         # [linux]
 - libopenblas.0.dylib      # [osx]
 - openblas.dll             # [win]
