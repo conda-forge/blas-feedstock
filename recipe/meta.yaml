@@ -2,12 +2,12 @@
 # if build_num is reset to 0 (for new version), update increment for blas_minor below
 {% set build_num = 9 %}
 {% set version_major = version.split(".")[0] %}
+# blas_major denotes major infrastructural change to how blas is managed
 {% set blas_major = "2" %}
 # make sure we do not create colliding version strings of output "blas"
 # for builds across lapack-versions within the same blas_major
 {% set blas_minor = build_num + 100 %}
 
-# blas_major denotes major infrastructural change to how blas is managed
 package:
   name: blas-split
   version: "{{ version }}"
