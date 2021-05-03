@@ -60,8 +60,8 @@ outputs:
     requirements:
       host:
         - libopenblas 0.3.15   # [blas_impl == 'openblas']
-        # 3.9.0 is supported from mkl 2020.4
-        - mkl 2020.4           # [blas_impl == 'mkl']
+        # from https://github.com/conda-forge/intel_repack-feedstock/
+        - mkl 2021.2           # [blas_impl == 'mkl']
         - blis 0.8.1           # [blas_impl == 'blis']
       run:
         - {{ pin_compatible("libopenblas", max_pin="x.x.x", exact=win) }}  # [blas_impl == 'openblas']
