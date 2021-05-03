@@ -9,7 +9,7 @@ blas_impl_lib:
 
 - libmkl_rt.so             # [linux64]
 - libmkl_rt.dylib          # [osx and x86_64]
-- mkl_rt.dll               # [win64]
+- mkl_rt.1.dll             # [win64]
 
 - libblis.so.3             # [linux64]
 - libblis.3.dylib          # [osx and x86_64]

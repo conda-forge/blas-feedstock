@@ -20,6 +20,8 @@ fortran_compiler:
 - gfortran
 fortran_compiler_version:
 - '9'
+openblas:
+- 0.3.*
 target_platform:
 - linux-64
 zip_keys:
@@ -27,3 +29,5 @@ zip_keys:
   - blas_impl_lib
 - - c_compiler_version
   - fortran_compiler_version
+- - cdt_name
+  - docker_image
