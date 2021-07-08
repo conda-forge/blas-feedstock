@@ -1,6 +1,6 @@
 {% set version = "3.9.0" %}
 # if build_num is reset to 0 (for new version), update increment for blas_minor below
-{% set build_num = 9 %}
+{% set build_num = 10 %}
 {% set version_major = version.split(".")[0] %}
 # blas_major denotes major infrastructural change to how blas is managed
 {% set blas_major = "2" %}
@@ -61,7 +61,7 @@ outputs:
       host:
         - libopenblas 0.3.15   # [blas_impl == 'openblas']
         # from https://github.com/conda-forge/intel_repack-feedstock/
-        - mkl 2021.2           # [blas_impl == 'mkl']
+        - mkl 2021.3           # [blas_impl == 'mkl']
         - blis 0.8.1           # [blas_impl == 'blis']
       run:
         - {{ pin_compatible("libopenblas", max_pin="x.x.x", exact=win) }}  # [blas_impl == 'openblas']
