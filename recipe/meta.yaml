@@ -59,7 +59,7 @@ outputs:
        - blas_{{ blas_impl }}  # [blas_impl != blas_default_impl]
     requirements:
       host:
-        - libopenblas 0.3.15   # [blas_impl == 'openblas']
+        - libopenblas 0.3.16   # [blas_impl == 'openblas']
         # from https://github.com/conda-forge/intel_repack-feedstock/
         - mkl 2021.3           # [blas_impl == 'mkl']
         - blis 0.8.1           # [blas_impl == 'blis']
