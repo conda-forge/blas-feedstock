@@ -28,6 +28,9 @@ if [[ "$target_platform" == osx-* ]]; then
 fi
 
 if [[ "${blas_impl}" == "mkl" ]]; then
+  # gained with MKL 2020.4 for lapack 3.9 across all x86_64 platforms, not sure why
+  # still present as of MKL 2021.3
+  SKIP_TESTS="${SKIP_TESTS}|LAPACK-xeigtstc_svd_in|LAPACK-xeigtstd_svd_in|LAPACK-xeigtsts_svd_in|LAPACK-xeigtstz_svd_in"
   if [[ "$target_platform" == "linux-64" ]]; then
     # TODO: figure out these segfaults
     SKIP_TESTS="${SKIP_TESTS}|example_DGELS_rowmajor|example_DGELS_colmajor"
@@ -47,19 +50,12 @@ fi
 
 if [[ "${blas_impl}" == "openblas" && "$(uname)" == MINGW* ]]; then
   # I'm not sure why these fail only on Windows. Skip for now.
+  # Still present as of openblas 0.3.16
   SKIP_TESTS="${SKIP_TESTS}|LAPACK-xeigtsts_sgd_in|LAPACK-xeigtsts_glm_in|LAPACK-xeigtsts_gsv_in|LAPACK-xeigtsts_lse_in|LAPACK-xeigtstd_dgd_in"
   SKIP_TESTS="${SKIP_TESTS}|LAPACK-xeigtstd_glm_in|LAPACK-xeigtstd_gsv_in|LAPACK-xeigtstd_lse_in|LAPACK-xlintstc_ctest_in|LAPACK-xlintstrfc_ctest_rfp_in"
   SKIP_TESTS="${SKIP_TESTS}|LAPACK-xeigtstc_sep_in|LAPACK-xeigtstc_se2_in|LAPACK-xeigtstc_ced_in|LAPACK-xeigtstc_cgd_in|LAPACK-xeigtstc_csb_in"
   SKIP_TESTS="${SKIP_TESTS}|LAPACK-xeigtstc_csg_in|LAPACK-xeigtstc_glm_in|LAPACK-xeigtstc_gsv_in|LAPACK-xeigtstc_lse_in|LAPACK-xeigtstz_zgd_in"
   SKIP_TESTS="${SKIP_TESTS}|LAPACK-xeigtstz_glm_in|LAPACK-xeigtstz_gsv_in|LAPACK-xeigtstz_lse_in|BLAS-xblat1c"
-fi
-
-if [[ "$target_platform" == "linux-ppc64le" ]]; then
-  # lots of failing tests for this test-prefix on ppc
-  SKIP_TESTS="${SKIP_TESTS}|LAPACK-xeigtstz"
-elif [[ "$target_platform" == *-64 ]]; then
-  # gained with MKL 2020.4 for lapack 3.9 across all x86_64 platforms, not sure why
-  SKIP_TESTS="${SKIP_TESTS}|LAPACK-xeigtstc_svd_in|LAPACK-xeigtstd_svd_in|LAPACK-xeigtsts_svd_in|LAPACK-xeigtstz_svd_in"
 fi
 
 if [[ "$target_platform" == "win-64" ]]; then
