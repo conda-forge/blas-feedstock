@@ -7,7 +7,7 @@
 # make sure we do not create colliding version strings of output "blas"
 # for builds across lapack-versions within the same blas_major
 {% set blas_minor = build_num + 100 %}
-{% set build_string_platform = target_platform | "linux-64" %}
+{% set build_string_platform = target_platform | default("linux-64") %}
 {% set build_string_platform = build_string_platform.replace("-", "") %}
 
 package:
