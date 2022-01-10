@@ -20,6 +20,8 @@ fortran_compiler:
 - gfortran
 fortran_compiler_version:
 - '9'
+mkl_devel:
+- '2021'
 openblas:
 - 0.3.*
 target_platform:
