@@ -8,6 +8,9 @@ jobs:
     vmImage: macOS-10.15
   strategy:
     matrix:
+      osx_64_blas_implaccelerateblas_impl_liblibvecLibFort-ng.dylib:
+        CONFIG: osx_64_blas_implaccelerateblas_impl_liblibvecLibFort-ng.dylib
+        UPLOAD_PACKAGES: 'True'
       osx_64_blas_implblisblas_impl_liblibblis.3.dylib:
         CONFIG: osx_64_blas_implblisblas_impl_liblibblis.3.dylib
         UPLOAD_PACKAGES: 'True'
@@ -17,8 +20,11 @@ jobs:
       osx_64_blas_implopenblasblas_impl_liblibopenblas.0.dylib:
         CONFIG: osx_64_blas_implopenblasblas_impl_liblibopenblas.0.dylib
         UPLOAD_PACKAGES: 'True'
-      osx_arm64_:
-        CONFIG: osx_arm64_
+      osx_arm64_blas_implaccelerateblas_impl_liblibvecLibFort-ng.dylib:
+        CONFIG: osx_arm64_blas_implaccelerateblas_impl_liblibvecLibFort-ng.dylib
+        UPLOAD_PACKAGES: 'True'
+      osx_arm64_blas_implopenblasblas_impl_liblibopenblas.0.dylib:
+        CONFIG: osx_arm64_blas_implopenblasblas_impl_liblibopenblas.0.dylib
         UPLOAD_PACKAGES: 'True'
   timeoutInMinutes: 360
 
@@ -29,6 +35,11 @@ jobs:
       export OSX_FORCE_SDK_DOWNLOAD="1"
       export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
       export FEEDSTOCK_NAME=$(basename ${BUILD_REPOSITORY_NAME})
+      if [[ "${BUILD_REASON:-}" == "PullRequest" ]]; then
+        export IS_PR_BUILD="True"
+      else
+        export IS_PR_BUILD="False"
+      fi
       ./.scripts/run_osx_build.sh
     displayName: Run OSX build
     env:

@@ -3,15 +3,15 @@ MACOSX_DEPLOYMENT_TARGET:
 blas_default_impl:
 - openblas
 blas_impl:
-- openblas
+- accelerate
 blas_impl_lib:
-- libopenblas.0.dylib
+- libvecLibFort-ng.dylib
 c_compiler:
 - clang
 c_compiler_version:
 - '11'
 channel_sources:
-- conda-forge/label/rust_dev,conda-forge
+- conda-forge
 channel_targets:
 - conda-forge main
 fortran_compiler:
