@@ -1,3 +1,7 @@
+if [[ "$blas_impl" == "accelerate" && "${PKG_NAME}" == "libblas" ]]; then
+    cp $SRC_DIR/accelerate/* $PREFIX/lib/
+fi
+
 if [[ "$target_platform" == osx-* ]]; then
     ln -s $PREFIX/lib/${blas_impl_lib} $PREFIX/lib/${PKG_NAME}.${PKG_VERSION:0:1}.dylib
 else
