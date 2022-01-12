@@ -62,7 +62,7 @@ if [[ "$blas_impl" == "accelerate" ]]; then
         -Wl,-reexport_library,$SRC_DIR/accelerate/liblapack-netlib.${PKG_VERSION}.dylib \
         -Wl,-reexport_library,$SRC_DIR/accelerate/liblapacke-netlib.${PKG_VERSION}.dylib
 
-    cp libvecLibFort-ng.dylib ${PREFIX}/lib/
+    cp libvecLibFort-ng.dylib $SRC_DIR/accelerate/
 fi
 
 rm -rf ${NEW_ENV}

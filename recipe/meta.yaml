@@ -24,6 +24,7 @@ source:
       # carry all the patches that the lapack-feedstock has (see comment below)
 
   - url: https://github.com/isuruf/vecLibFort/archive/master.tar.gz
+    sha256: 7ed236c2496c2eda6fad4a99537e62ecf0ed43f315c7ad737769cdefd74ffd22
     folder: vecLibFort
 
 build:
@@ -63,6 +64,8 @@ outputs:
       track_features:
        - blas_{{ blas_impl }}  # [blas_impl != blas_default_impl]
     requirements:
+      build:
+        - {{ compiler('fortran') }}   # [blas_impl == 'accelerate']
       host:
         - libopenblas 0.3.18   # [blas_impl == 'openblas']
         # from https://github.com/conda-forge/intel_repack-feedstock/
@@ -83,6 +86,9 @@ outputs:
       - lib/libblas.so.{{ version_major }}      # [linux]
       - lib/libblas.{{ version_major }}.dylib   # [osx]
       - Library/bin/libblas.dll                 # [win]
+      - lib/libvecLibFort-ng.dylib              # [blas_impl == 'accelerate']
+      - lib/liblapack-netlib.*.dylib            # [blas_impl == 'accelerate']
+      - lib/liblapacke-netlib.*.dylib           # [blas_impl == 'accelerate']
     test:
       commands:
         # Following line is just to help conda-build's used variables detection

@@ -25,6 +25,11 @@ if [[ "$target_platform" == osx-* ]]; then
   # by the test program's own version which reports to the test program that
   # xerbla was called. This does not work with dylibs on osx and dlls on windows
   SKIP_TESTS="${SKIP_TESTS}|x*cblat2|x*cblat3"
+  # Not sure why the following tests work with other blas implementations, but
+  # they check error codes as well
+  if [[ "${blas_impl}" == "accelerate" ]]; then
+    SKIP_TESTS="${SKIP_TESTS}|xblat2*|xblat3*"
+  fi
 fi
 
 if [[ "${blas_impl}" == "mkl" ]]; then
