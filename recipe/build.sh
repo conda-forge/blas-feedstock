@@ -44,13 +44,16 @@ cmake ${CMAKE_ARGS} -LAH -G "${CMAKE_GENERATOR}" .. \
 make -j${CPU_COUNT}
 
 if [[ "$blas_impl" == "accelerate" ]]; then
-    mkdir -p $SRC_DIR/netlib
+    mkdir -p $SRC_DIR/accelerate
     cp $NEW_ENV/lib/liblapack.dylib $SRC_DIR/accelerate/liblapack-netlib.${PKG_VERSION}.dylib
-    cp $NEW_ENV/lib/liblapacke.dylib $SRC_DIR/accelerate/liblapack-netlib.${PKG_VERSION}.dylib
+    cp $NEW_ENV/lib/liblapacke.dylib $SRC_DIR/accelerate/liblapacke-netlib.${PKG_VERSION}.dylib
     $INSTALL_NAME_TOOL -id "@rpath/liblapack-netlib.${PKG_VERSION}.dylib" $SRC_DIR/accelerate/liblapack-netlib.${PKG_VERSION}.dylib
     $INSTALL_NAME_TOOL -id "@rpath/liblapacke-netlib.${PKG_VERSION}.dylib" $SRC_DIR/accelerate/liblapacke-netlib.${PKG_VERSION}.dylib
 
     veclib_loc=$SDKROOT/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A
+
+    export LDFLAGS="${LDFLAGS/-Wl,-dead_strip_dylibs/}"
+
     $CC ${CFLAGS} -O3 -c -o vecLibFort.o $SRC_DIR/vecLibFort/vecLibFort.c
     $CC -shared -o libvecLibFort-ng.dylib \
         vecLibFort.o \
