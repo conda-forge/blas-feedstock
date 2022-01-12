@@ -24,7 +24,7 @@ source:
       # carry all the patches that the lapack-feedstock has (see comment below)
 
   - url: https://github.com/isuruf/vecLibFort/archive/99af8640e98c829b41c3235e3706760cd5696fe4.tar.gz
-    sha256: 7ed236c2496c2eda6fad4a99537e62ecf0ed43f315c7ad737769cdefd74ffd22
+    sha256: 80de7c6e83d1d84d016b4cb299f2c15f5a82b9d36865dd5c16bf221fe9a303ad
     folder: vecLibFort
 
 build:
