@@ -51,6 +51,11 @@ if [[ "$blas_impl" == "accelerate" ]]; then
     $INSTALL_NAME_TOOL -id "@rpath/liblapacke-netlib.${PKG_VERSION}.dylib" $SRC_DIR/accelerate/liblapacke-netlib.${PKG_VERSION}.dylib
 
     veclib_loc=$SDKROOT/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A
+    if [[ -f ${veclib_loc}/libBLAS.dylib ]]; then
+        veclib_libblas="${veclib_loc}/libBLAS.dylib"
+    else
+        veclib_libblas="${veclib_loc}/libBLAS.tbd"
+    fi
 
     export LDFLAGS="${LDFLAGS/-Wl,-dead_strip_dylibs/}"
 
@@ -58,7 +63,7 @@ if [[ "$blas_impl" == "accelerate" ]]; then
     $CC -shared -o libvecLibFort-ng.dylib \
         vecLibFort.o \
         ${LDFLAGS} \
-        -Wl,-reexport_library,${veclib_loc}/libBLAS.tbd \
+        -Wl,-reexport_library,${veclib_libblas} \
         -Wl,-reexport_library,$SRC_DIR/accelerate/liblapack-netlib.${PKG_VERSION}.dylib \
         -Wl,-reexport_library,$SRC_DIR/accelerate/liblapacke-netlib.${PKG_VERSION}.dylib
 
