@@ -3,9 +3,9 @@ MACOSX_DEPLOYMENT_TARGET:
 blas_default_impl:
 - openblas
 blas_impl:
-- mkl
+- accelerate
 blas_impl_lib:
-- libmkl_rt.dylib
+- libvecLibFort-ng.dylib
 c_compiler:
 - clang
 c_compiler_version:

@@ -43,4 +43,31 @@ cmake ${CMAKE_ARGS} -LAH -G "${CMAKE_GENERATOR}" .. \
 
 make -j${CPU_COUNT}
 
+if [[ "$blas_impl" == "accelerate" ]]; then
+    mkdir -p $SRC_DIR/accelerate
+    cp $NEW_ENV/lib/liblapack.dylib $SRC_DIR/accelerate/liblapack-netlib.${PKG_VERSION}.dylib
+    cp $NEW_ENV/lib/liblapacke.dylib $SRC_DIR/accelerate/liblapacke-netlib.${PKG_VERSION}.dylib
+    $INSTALL_NAME_TOOL -id "@rpath/liblapack-netlib.${PKG_VERSION}.dylib" $SRC_DIR/accelerate/liblapack-netlib.${PKG_VERSION}.dylib
+    $INSTALL_NAME_TOOL -id "@rpath/liblapacke-netlib.${PKG_VERSION}.dylib" $SRC_DIR/accelerate/liblapacke-netlib.${PKG_VERSION}.dylib
+
+    veclib_loc=$SDKROOT/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A
+    if [[ -f ${veclib_loc}/libBLAS.dylib ]]; then
+        veclib_libblas="${veclib_loc}/libBLAS.dylib"
+    else
+        veclib_libblas="${veclib_loc}/libBLAS.tbd"
+    fi
+
+    export LDFLAGS="${LDFLAGS/-Wl,-dead_strip_dylibs/}"
+
+    $CC ${CFLAGS} -O3 -c -o vecLibFort.o $SRC_DIR/vecLibFort/vecLibFort.c
+    $CC -shared -o libvecLibFort-ng.dylib \
+        vecLibFort.o \
+        ${LDFLAGS} \
+        -Wl,-reexport_library,${veclib_libblas} \
+        -Wl,-reexport_library,$SRC_DIR/accelerate/liblapack-netlib.${PKG_VERSION}.dylib \
+        -Wl,-reexport_library,$SRC_DIR/accelerate/liblapacke-netlib.${PKG_VERSION}.dylib
+
+    cp libvecLibFort-ng.dylib $SRC_DIR/accelerate/
+fi
+
 rm -rf ${NEW_ENV}
