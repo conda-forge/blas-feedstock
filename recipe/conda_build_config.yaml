@@ -27,3 +27,8 @@ zip_keys:
 -
   - blas_impl
   - blas_impl_lib
+
+mkl:        # [win]
+  - '2021'  # [win]
+mkl_devel:  # [win]
+  - '2021'  # [win]
