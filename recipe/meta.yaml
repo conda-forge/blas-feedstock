@@ -198,11 +198,11 @@ outputs:
       string: "{{ build_num }}_{{ build_string_platform }}_{{ blas_impl }}"
     requirements:
       host:
-        - openblas   # [blas_impl == "openblas"]
-        - mkl-devel  # [blas_impl == "mkl"]
+        - openblas   0.3.18  # [blas_impl == "openblas"]
+        - mkl-devel  2022.0  # [blas_impl == "mkl"]
       run:
-        - openblas   # [blas_impl == "openblas"]
-        - mkl-devel  # [blas_impl == "mkl"]
+        - openblas   0.3.18  # [blas_impl == "openblas"]
+        - mkl-devel  2022.0  # [blas_impl == "mkl"]
         - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
         - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
         - liblapack  {{ version }} *netlib                   # [blas_impl == 'blis']
