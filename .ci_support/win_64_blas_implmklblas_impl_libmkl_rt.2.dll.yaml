@@ -3,7 +3,7 @@ blas_default_impl:
 blas_impl:
 - mkl
 blas_impl_lib:
-- mkl_rt.1.dll
+- mkl_rt.2.dll
 channel_sources:
 - conda-forge
 channel_targets:
@@ -12,10 +12,6 @@ m2w64_c_compiler:
 - m2w64-toolchain
 m2w64_fortran_compiler:
 - m2w64-toolchain
-mkl_devel:
-- '2021'
-openblas:
-- 0.3.*
 target_platform:
 - win-64
 zip_keys:
