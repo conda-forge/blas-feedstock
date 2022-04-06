@@ -13,9 +13,9 @@ blas_impl_lib:
 - libmkl_rt.dylib          # [osx and x86_64]
 - mkl_rt.2.dll             # [win64]
 
-- libblis.so.3             # [linux64]
-- libblis.3.dylib          # [osx and x86_64]
-- libblis.3.dll            # [win64]
+- libblis.so.4             # [linux64]
+- libblis.4.dylib          # [osx and x86_64]
+- libblis.4.dll            # [win64]
 
 - libvecLibFort-ng.dylib   # [osx]
 
