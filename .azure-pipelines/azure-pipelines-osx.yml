@@ -11,8 +11,8 @@ jobs:
       osx_64_blas_implaccelerateblas_impl_liblibvecLibFort-ng.dylib:
         CONFIG: osx_64_blas_implaccelerateblas_impl_liblibvecLibFort-ng.dylib
         UPLOAD_PACKAGES: 'True'
-      osx_64_blas_implblisblas_impl_liblibblis.3.dylib:
-        CONFIG: osx_64_blas_implblisblas_impl_liblibblis.3.dylib
+      osx_64_blas_implblisblas_impl_liblibblis.4.dylib:
+        CONFIG: osx_64_blas_implblisblas_impl_liblibblis.4.dylib
         UPLOAD_PACKAGES: 'True'
       osx_64_blas_implmklblas_impl_liblibmkl_rt.dylib:
         CONFIG: osx_64_blas_implmklblas_impl_liblibmkl_rt.dylib

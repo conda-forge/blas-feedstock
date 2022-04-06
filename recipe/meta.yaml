@@ -1,6 +1,6 @@
 {% set version = "3.9.0" %}
 # if build_num is reset to 0 (for new version), update increment for blas_minor below
-{% set build_num = 13 %}
+{% set build_num = 14 %}
 {% set version_major = version.split(".")[0] %}
 # blas_major denotes major infrastructural change to how blas is managed
 {% set blas_major = "2" %}
@@ -67,10 +67,10 @@ outputs:
       build:
         - {{ compiler('fortran') }}   # [blas_impl == 'accelerate']
       host:
-        - libopenblas 0.3.18   # [blas_impl == 'openblas']
+        - libopenblas 0.3.20   # [blas_impl == 'openblas']
         # from https://github.com/conda-forge/intel_repack-feedstock/
         - mkl 2022.0           # [blas_impl == 'mkl']
-        - blis 0.8.1           # [blas_impl == 'blis']
+        - blis 0.9.0           # [blas_impl == 'blis']
       run:
         - {{ pin_compatible("libopenblas", max_pin="x.x.x", exact=win) }}  # [blas_impl == 'openblas']
         - {{ pin_compatible("mkl", max_pin="x", exact=win) }}              # [blas_impl == 'mkl']
@@ -198,10 +198,10 @@ outputs:
       string: "{{ build_num }}_{{ build_string_platform }}_{{ blas_impl }}"
     requirements:
       host:
-        - openblas   0.3.18  # [blas_impl == "openblas"]
+        - openblas   0.3.20  # [blas_impl == "openblas"]
         - mkl-devel  2022.0  # [blas_impl == "mkl"]
       run:
-        - openblas   0.3.18  # [blas_impl == "openblas"]
+        - openblas   0.3.20  # [blas_impl == "openblas"]
         - mkl-devel  2022.0  # [blas_impl == "mkl"]
         - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
         - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
@@ -243,7 +243,7 @@ outputs:
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("libblas", exact=True) }}
       {% else %}
-        - blis 0.8.1
+        - blis 0.9.0
       {% endif %}
       run:
         - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
