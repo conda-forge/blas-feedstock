@@ -1,11 +1,62 @@
+About blas-feedstock
+====================
+
+Feedstock license: [BSD-3-Clause](https://github.com/conda-forge/blas-feedstock/blob/main/LICENSE.txt)
+
 About blas
-==========
+----------
 
 Home: https://github.com/conda-forge/blas-feedstock
 
 Package license: BSD-3-Clause
 
-Feedstock license: [BSD-3-Clause](https://github.com/conda-forge/blas-feedstock/blob/main/LICENSE.txt)
+Summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism in your environment to control which variant you want.
+About libblas
+-------------
+
+Home: https://github.com/conda-forge/blas-feedstock
+
+Package license: BSD-3-Clause
+
+Summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism in your environment to control which variant you want.
+About libcblas
+--------------
+
+Home: https://github.com/conda-forge/blas-feedstock
+
+Package license: BSD-3-Clause
+
+Summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism in your environment to control which variant you want.
+About liblapack
+---------------
+
+Home: https://github.com/conda-forge/blas-feedstock
+
+Package license: BSD-3-Clause
+
+Summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism in your environment to control which variant you want.
+About liblapacke
+----------------
+
+Home: https://github.com/conda-forge/blas-feedstock
+
+Package license: BSD-3-Clause
+
+Summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism in your environment to control which variant you want.
+About blas-devel
+----------------
+
+Home: https://github.com/conda-forge/blas-feedstock
+
+Package license: BSD-3-Clause
+
+Summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism in your environment to control which variant you want.
+About blas
+----------
+
+Home: https://github.com/conda-forge/blas-feedstock
+
+Package license: BSD-3-Clause
 
 Summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism in your environment to control which variant you want.
 
