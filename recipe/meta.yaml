@@ -1,12 +1,13 @@
-{% set version = "3.9.0" %}
+{% set version = "3.10.1" %}
 # if build_num is reset to 0 (for new version), update increment for blas_minor below
-{% set build_num = 26 %}
+{% set build_num = 0 %}
+
 {% set version_major = version.split(".")[0] %}
 # blas_major denotes major infrastructural change to how blas is managed
 {% set blas_major = "2" %}
 # make sure we do not create colliding version strings of output "blas"
 # for builds across lapack-versions within the same blas_major
-{% set blas_minor = build_num + 100 %}
+{% set blas_minor = build_num + 200 %}
 {% set build_string_platform = target_platform | default("linux-64") %}
 {% set build_string_platform = build_string_platform.replace("-", "") %}
 
@@ -16,7 +17,7 @@ package:
 
 source:
   - url: https://github.com/Reference-LAPACK/lapack/archive/v{{ version }}.tar.gz
-    sha256: 106087f1bb5f46afdfba7f569d0cbe23dacb9a07cd24733765a0e89dbe1ad573
+    sha256: cd005cd021f144d7d5f7f33c943942db9f03a28d110d6a3b80d718a295f7f714
     patches:
       # Test BLAS and LAPACKE in addition to LAPACK
       - patches/0001-Test-BLAS-and-LAPACKE-in-addition-to-LAPACK.patch
