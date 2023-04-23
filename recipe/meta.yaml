@@ -67,7 +67,7 @@ outputs:
       build:
         - {{ compiler('fortran') }}   # [blas_impl == 'accelerate']
       host:
-        - libopenblas 0.3.21   # [blas_impl == 'openblas']
+        - libopenblas 0.3.23   # [blas_impl == 'openblas']
         # from https://github.com/conda-forge/intel_repack-feedstock/
         - mkl 2022.1           # [blas_impl == 'mkl']
         - blis 0.9.0           # [blas_impl == 'blis']
@@ -198,10 +198,10 @@ outputs:
       string: "{{ build_num }}_{{ build_string_platform }}_{{ blas_impl }}"
     requirements:
       host:
-        - openblas   0.3.21  # [blas_impl == "openblas"]
+        - openblas   0.3.23  # [blas_impl == "openblas"]
         - mkl-devel  2022.1  # [blas_impl == "mkl"]
       run:
-        - openblas   0.3.21  # [blas_impl == "openblas"]
+        - openblas   0.3.23  # [blas_impl == "openblas"]
         - mkl-devel  2022.1  # [blas_impl == "mkl"]
         - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
         - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
