@@ -16,7 +16,7 @@ set "CFLAGS=-I%LIBRARY_PREFIX%\include %CFLAGS%"
 set "FFLAGS=-I%LIBRARY_PREFIX%\include %FFLAGS%"
 set "LDFLAGS=/LIBPATH:%LIBRARY_PREFIX%\lib %LDFLAGS%"
 
-%MINIFORGE_HOME%\Scripts\conda.exe create -p %NEW_ENV% -c conda-forge --yes --quiet ^
+%MINIFORGE_HOME%\Scripts\conda.exe create -p %NEW_ENV% -c conda-forge/label/lapack_rc -c conda-forge --yes --quiet ^
     libblas=%PKG_VERSION%=*netlib ^
     libcblas=%PKG_VERSION%=*netlib ^
     liblapack=%PKG_VERSION%=*netlib ^
