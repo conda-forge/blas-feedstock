@@ -1,7 +1,7 @@
 blas_impl:
 - openblas
-- mkl        # [x86 or x86_64]
-- blis       # [x86 or x86_64]
+- mkl                      # [x86 or x86_64]
+- blis                     # [x86 or x86_64]
 - accelerate               # [osx]
 
 blas_impl_lib:
@@ -20,8 +20,8 @@ blas_impl_lib:
 - libvecLibFort-ng.dylib   # [osx]
 
 blas_default_impl:
-- openblas   # [not win]
-- mkl        # [win]
+- openblas                 # [not win]
+- mkl                      # [win]
 
 zip_keys:
 -
