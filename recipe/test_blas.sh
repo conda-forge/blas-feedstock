@@ -11,7 +11,7 @@ SKIP_TESTS="dummy"
 
 if [[ "${blas_impl}" == "blis" ]]; then
   # conda-build can't install a correct environment for testing
-  conda install -c conda-forge "libblas=*=*blis" "libcblas=*=*blis" "liblapack=*=*netlib" "liblapacke=*=*netlib" --use-local --yes -p $PREFIX
+  conda install -c conda-forge/label/lapack_rc -c conda-forge "libblas=*=*blis" "libcblas=*=*blis" "liblapack=*=*netlib" "liblapacke=*=*netlib" --use-local --yes -p $PREFIX
 fi
 
 if [[ "$target_platform" != osx-* ]]; then
