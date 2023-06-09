@@ -29,6 +29,8 @@ source:
 
 build:
   number: "{{ build_num }}"
+  # debug
+  skip: true  # [not (linux64 and (blas_impl == "mkl"))]
 
 requirements:
   build:
