@@ -42,13 +42,6 @@ requirements:
     - m2-make   # [win]
     - make      # [not win]
     - posix     # [win]
-    - libgfortran5 <12.2  # [linux64]
-    - libgomp      <12.2  # [linux64]
-    - libstdcxx-ng <12.2  # [linux64]
-  host:
-    - libgfortran5 <12.2  # [linux64]
-    - libgomp      <12.2  # [linux64]
-    - libstdcxx-ng <12.2  # [linux64]
     # The following are actual build dependencies of this recipe; however, they
     # only get installed by the build scripts, since they must be installed in a
     # different environment (otherwise there'd be a variant collision)! The build
@@ -245,10 +238,6 @@ outputs:
         - m2-make       # [win]
         - posix         # [win]
         - llvm-openmp   # [linux and ((blas_impl == "openblas") or (blas_impl == "mkl"))]
-        - llvm-openmp <14.0.5  # [linux64 and ((blas_impl == "openblas") or (blas_impl == "mkl"))]
-        - libgfortran5 <12.2  # [linux64]
-        - libgomp      <12.2  # [linux64]
-        - libstdcxx-ng <12.2  # [linux64]
       host:
       # Building with blis fails due to a conda-build bug
       {% if blas_impl != 'blis' %}
@@ -259,11 +248,6 @@ outputs:
       {% else %}
         - blis 0.9.0
       {% endif %}
-        - llvm-openmp <14.0.5  # [linux64 and ((blas_impl == "openblas") or (blas_impl == "mkl"))]
-        - libgfortran5 <12.2  # [linux64]
-        - libgomp      <12.2  # [linux64]
-        - libstdcxx-ng <12.2  # [linux64]
-        - tbb <2021.6         # [linux64]
       run:
         - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
         - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']

@@ -7,7 +7,7 @@ blas_impl_lib:
 c_compiler:
 - gcc
 c_compiler_version:
-- '10'
+- '12'
 cdt_name:
 - cos7
 channel_sources:
@@ -19,7 +19,7 @@ docker_image:
 fortran_compiler:
 - gfortran
 fortran_compiler_version:
-- '10'
+- '12'
 target_platform:
 - linux-ppc64le
 zip_keys:
