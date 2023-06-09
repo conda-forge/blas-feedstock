@@ -89,6 +89,7 @@ outputs:
         - {{ pin_subpackage("liblapack", exact=True) }}    # [blas_impl != 'blis']
         - {{ pin_subpackage("liblapacke", exact=True) }}   # [blas_impl != 'blis']
         - blas * {{ blas_impl }}
+        - libgomp <0.0a0  # [linux64]
     files:
       - lib/libblas.so                          # [linux]
       - lib/libblas.dylib                       # [osx]
