@@ -256,6 +256,7 @@ outputs:
       {% else %}
         - blis 0.9.0
       {% endif %}
+        - llvm-openmp <15     # [linux64 and ((blas_impl == "openblas") or (blas_impl == "mkl"))]
         - libgfortran5 <12.2  # [linux64]
         - libgomp      <12.2  # [linux64]
         - libstdcxx-ng <12.2  # [linux64]
