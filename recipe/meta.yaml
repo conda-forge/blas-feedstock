@@ -241,6 +241,7 @@ outputs:
         - cmake
         - m2-make       # [win]
         - posix         # [win]
+        - llvm-openmp   # [linux and ((blas_impl == "openblas") or (blas_impl == "mkl"))]
         - libgfortran5 <12.2  # [linux64]
         - libstdcxx-ng <12.2  # [linux64]
       host:
