@@ -64,7 +64,7 @@ if [[ "${blas_impl}" == "openblas" && "$(uname)" == MINGW* ]]; then
 fi
 
 if [[ "$target_platform" == "win-64" ]]; then
-  ${BUILD_PREFIX}/Library/bin/ctest --output-on-failure -E "${SKIP_TESTS}" --timeout=10
+  ${BUILD_PREFIX}/Library/bin/ctest --output-on-failure --timeout=10 -E "${SKIP_TESTS}"
 else
-  ctest --output-on-failure -E "${SKIP_TESTS}" --timeout=10
+  ctest --output-on-failure --timeout=10 -E "${SKIP_TESTS}"
 fi
