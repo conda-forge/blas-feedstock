@@ -246,6 +246,7 @@ outputs:
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("libblas", exact=True) }}
         - llvm-openmp   # [linux and ((blas_impl == "openblas") or (blas_impl == "mkl"))]
+        - libgomp
       {% else %}
         - blis 0.9.0
       {% endif %}
