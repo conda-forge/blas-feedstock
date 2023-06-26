@@ -42,6 +42,7 @@ requirements:
     - m2-make   # [win]
     - make      # [not win]
     - posix     # [win]
+    - llvm-openmp   # [linux and (blas_impl == "mkl")]
     # The following are actual build dependencies of this recipe; however, they
     # only get installed by the build scripts, since they must be installed in a
     # different environment (otherwise there'd be a variant collision)! The build
