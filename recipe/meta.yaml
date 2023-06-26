@@ -257,8 +257,6 @@ outputs:
         - blis 0.9.0
       {% endif %}
         - tbb <2021.6          # [linux64]
-        - libgfortran5 <12.2   # [linux64]
-        - libstdcxx-ng <12.2   # [linux64]
       run:
         - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
         - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
