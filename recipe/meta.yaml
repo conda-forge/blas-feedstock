@@ -82,6 +82,8 @@ outputs:
         - {{ pin_subpackage("liblapack", exact=True) }}    # [blas_impl != 'blis']
         - {{ pin_subpackage("liblapacke", exact=True) }}   # [blas_impl != 'blis']
         - blas * {{ blas_impl }}
+        # dummy to be able to suppress local libblas below
+        - libuuid <0.0a0
     files:
       - lib/libblas.so                          # [linux]
       - lib/libblas.dylib                       # [osx]
@@ -245,6 +247,8 @@ outputs:
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("libblas", exact=True) }}   # [not (linux and blas_impl == "mkl")]
         - libblas ={{ version }}=16_linux64_mkl         # [linux and blas_impl == "mkl"]
+        # dummy to evict local libblas
+        - libuuid                                       # [linux and blas_impl == "mkl"]
       {% else %}
         - blis 0.9.0
       {% endif %}
