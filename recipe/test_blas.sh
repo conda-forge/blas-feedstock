@@ -65,6 +65,9 @@ if [[ "${blas_impl}" == "openblas" && "$(uname)" == MINGW* ]]; then
   SKIP_TESTS="${SKIP_TESTS}|LAPACK-xeigtstz_glm_in|LAPACK-xeigtstz_gsv_in|LAPACK-xeigtstz_lse_in|BLAS-xblat1c"
 fi
 
+# dummy
+ls -R $PREFIX/lib
+
 if [[ "$target_platform" == "win-64" ]]; then
   ${BUILD_PREFIX}/Library/bin/ctest --output-on-failure --timeout=10 -E "${SKIP_TESTS}"
 else

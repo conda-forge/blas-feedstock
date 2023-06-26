@@ -1,6 +1,6 @@
 {% set version = "3.9.0" %}
 # if build_num is reset to 0 (for new version), update increment for blas_minor below
-{% set build_num = 16 %}
+{% set build_num = 18 %}
 {% set version_major = version.split(".")[0] %}
 # blas_major denotes major infrastructural change to how blas is managed
 {% set blas_major = "2" %}
@@ -82,8 +82,6 @@ outputs:
         - {{ pin_subpackage("liblapack", exact=True) }}    # [blas_impl != 'blis']
         - {{ pin_subpackage("liblapacke", exact=True) }}   # [blas_impl != 'blis']
         - blas * {{ blas_impl }}
-        # dummy to be able to suppress local libblas below
-        - libuuid <0.0a0
     files:
       - lib/libblas.so                          # [linux]
       - lib/libblas.dylib                       # [osx]
@@ -245,10 +243,7 @@ outputs:
         - {{ pin_subpackage("liblapack", exact=True) }}
         - {{ pin_subpackage("liblapacke", exact=True) }}
         - {{ pin_subpackage("libcblas", exact=True) }}
-        - {{ pin_subpackage("libblas", exact=True) }}   # [not (linux and blas_impl == "mkl")]
-        - libblas ={{ version }}=16_linux64_mkl         # [linux and blas_impl == "mkl"]
-        # dummy to evict local libblas
-        - libuuid                                       # [linux and blas_impl == "mkl"]
+        - {{ pin_subpackage("libblas", exact=True) }}
       {% else %}
         - blis 0.9.0
       {% endif %}
