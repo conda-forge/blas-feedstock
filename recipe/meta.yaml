@@ -42,11 +42,6 @@ requirements:
     - m2-make   # [win]
     - make      # [not win]
     - posix     # [win]
-    - libgfortran5 <12.2  # [linux64]
-    - libstdcxx-ng <12.2  # [linux64]
-  host:
-    - libgfortran5 <12.2  # [linux64]
-    - libstdcxx-ng <12.2  # [linux64]
     # The following are actual build dependencies of this recipe; however, they
     # only get installed by the build scripts, since they must be installed in a
     # different environment (otherwise there'd be a variant collision)! The build
