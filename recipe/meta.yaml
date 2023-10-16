@@ -89,6 +89,8 @@ outputs:
       - lib/libvecLibFort-ng.dylib              # [blas_impl == 'accelerate']
       - lib/liblapack-netlib.*.dylib            # [blas_impl == 'accelerate']
       - lib/liblapacke-netlib.*.dylib           # [blas_impl == 'accelerate']
+      - etc/conda/activate.d/libblas_mkl_*      # [blas_impl == 'mkl']
+      - etc/conda/deactivate.d/libblas_mkl_*    # [blas_impl == 'mkl']
     test:
       commands:
         # Following line is just to help conda-build's used variables detection
