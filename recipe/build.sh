@@ -68,6 +68,37 @@ if [[ "$blas_impl" == "accelerate" ]]; then
         -Wl,-reexport_library,$SRC_DIR/accelerate/liblapacke-netlib.${PKG_VERSION}.dylib
 
     cp libvecLibFort-ng.dylib $SRC_DIR/accelerate/
+
+elif [[ "$blas_impl" == "new_accelerate" ]]; then
+    mkdir -p $SRC_DIR/accelerate
+    cp $NEW_ENV/lib/liblapacke.dylib $SRC_DIR/accelerate/liblapacke-netlib.${PKG_VERSION}.dylib
+    $INSTALL_NAME_TOOL -id "@rpath/liblapacke-netlib.${PKG_VERSION}.dylib" $SRC_DIR/accelerate/liblapacke-netlib.${PKG_VERSION}.dylib
+
+    veclib_loc=$SDKROOT/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A
+    veclib_libblas="${veclib_loc}/libBLAS.tbd"
+    veclib_liblapack="${veclib_loc}/libLAPACK.tbd"
+    if [[ ! -f ${veclib_loc}/libLAPACK.tbd ]]; then
+        echo "could not find TBD file ${veclib_loc}/libLAPACK.tbd"
+	exit 1
+    fi
+
+    export LDFLAGS="${LDFLAGS/-Wl,-dead_strip_dylibs/}"
+
+    for f in $veclib_libblas $veclib_liblapack; do
+      symbols=$(cat $f | grep -o '[a-z0-9_]*$NEWLAPACK' | rev | cut -b 11- | rev)
+      for symbol in $symbols; do
+        echo $symbol'$NEWLAPACK' $symbol >> aliases.txt
+      done
+    done
+
+    $CC ${CFLAGS} -O3 -c -o wrap_accelerate.o ${RECIPE_DIR}/wrap_accelerate.c
+    $CC -shared -o libblas_reexport.dylib \
+        wrap_accelerate.o \
+        ${LDFLAGS} \
+        -Wl,-alias_list,${PWD}/aliases.txt \
+        -Wl,-reexport_library,$SRC_DIR/accelerate/liblapacke-netlib.${PKG_VERSION}.dylib
+
+    cp libblas_reexport.dylib $SRC_DIR/accelerate/
 fi
 
 rm -rf ${NEW_ENV}

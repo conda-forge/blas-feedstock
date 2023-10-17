@@ -65,7 +65,7 @@ outputs:
        - blas_{{ blas_impl }}  # [blas_impl != blas_default_impl]
     requirements:
       build:
-        - {{ compiler('fortran') }}   # [blas_impl == 'accelerate']
+        - {{ compiler('fortran') }}   # [blas_impl.endswith('accelerate')]
       host:
         - libopenblas 0.3.24   # [blas_impl == 'openblas']
         # from https://github.com/conda-forge/intel_repack-feedstock/
@@ -75,6 +75,7 @@ outputs:
         - {{ pin_compatible("libopenblas", max_pin="x.x.x", exact=win) }}  # [blas_impl == 'openblas']
         - {{ pin_compatible("mkl", max_pin="x", exact=win) }}              # [blas_impl == 'mkl']
         - {{ pin_compatible("blis", max_pin="x.x.x", exact=win) }}         # [blas_impl == 'blis']
+        - __osx >=13.3                                                     # [blas_impl == 'new_accelerate']
       run_constrained:
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("liblapack", exact=True) }}    # [blas_impl != 'blis']
@@ -86,6 +87,8 @@ outputs:
       - lib/libblas.so.{{ version_major }}      # [linux]
       - lib/libblas.{{ version_major }}.dylib   # [osx]
       - Library/bin/libblas.dll                 # [win]
+      - lib/libblas_reexport.dylib              # [blas_impl == 'new_accelerate']
+      - lib/liblapacke-netlib.*.dylib           # [blas_impl == 'new_accelerate']
       - lib/libvecLibFort-ng.dylib              # [blas_impl == 'accelerate']
       - lib/liblapack-netlib.*.dylib            # [blas_impl == 'accelerate']
       - lib/liblapacke-netlib.*.dylib           # [blas_impl == 'accelerate']

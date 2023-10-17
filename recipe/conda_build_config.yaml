@@ -3,6 +3,7 @@ blas_impl:
 - mkl                      # [x86 or x86_64]
 - blis                     # [x86 or x86_64]
 - accelerate               # [osx]
+- new_accelerate           # [osx]
 
 blas_impl_lib:
 - libopenblas.so.0         # [linux]
@@ -18,6 +19,7 @@ blas_impl_lib:
 - libblis.4.dll            # [win64]
 
 - libvecLibFort-ng.dylib   # [osx]
+- libblas_reexport.dylib   # [osx]
 
 blas_default_impl:
 - openblas                 # [not win]
