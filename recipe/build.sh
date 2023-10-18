@@ -96,7 +96,8 @@ elif [[ "$blas_impl" == "newaccelerate" ]]; then
         wrap_accelerate.o \
         ${LDFLAGS} \
         -Wl,-alias_list,${PWD}/aliases.txt \
-        -Wl,-reexport_library,$SRC_DIR/accelerate/liblapacke-netlib.${PKG_VERSION}.dylib
+        -Wl,-reexport_library,$SRC_DIR/accelerate/liblapacke-netlib.${PKG_VERSION}.dylib \
+	-framework Accelerate
 
     cp libblas_reexport.dylib $SRC_DIR/accelerate/
 fi
