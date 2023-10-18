@@ -5,9 +5,9 @@ MACOSX_SDK_VERSION:
 blas_default_impl:
 - openblas
 blas_impl:
-- accelerate
+- newaccelerate
 blas_impl_lib:
-- libvecLibFort-ng.dylib
+- libblas_reexport.dylib
 c_compiler:
 - clang
 c_compiler_version:
