@@ -10,7 +10,7 @@
 {% set build_string_platform = target_platform | default("linux-64") %}
 {% set build_string_platform = build_string_platform.replace("-", "") %}
 
-{% if blas_impl is undefined %}
+{% if blas_impl is not defined %}
 {% set blas_impl = "openblas" %}
 {% endif %}
 
@@ -69,7 +69,10 @@ outputs:
        - blas_{{ blas_impl }}  # [blas_impl != blas_default_impl]
     requirements:
       build:
-        - {{ compiler('fortran') }}   # [blas_impl.endswith('accelerate')]
+      {% if blas_impl.endswith('accelerate') %}
+        - {{ compiler('c') }}
+        - {{ compiler('fortran') }}
+      {% endif %}
       host:
         - libopenblas 0.3.24   # [blas_impl == 'openblas']
         # from https://github.com/conda-forge/intel_repack-feedstock/
