@@ -25,6 +25,9 @@ blas_default_impl:
 - openblas                 # [not win]
 - mkl                      # [win]
 
+MACOSX_SDK_VERSION:        # [osx]
+- 13.3                     # [osx]
+
 zip_keys:
 -
   - blas_impl
