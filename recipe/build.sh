@@ -87,9 +87,12 @@ elif [[ "$blas_impl" == "newaccelerate" ]]; then
     for f in $veclib_libblas $veclib_liblapack; do
       symbols=$(cat $f | grep -o '[a-z0-9_]*$NEWLAPACK' | rev | cut -b 11- | rev)
       for symbol in $symbols; do
-        echo $symbol'$NEWLAPACK' $symbol >> aliases.txt
+	if [[ "$symbol" != "_appleblas"* ]]; then
+          echo $symbol'$NEWLAPACK' $symbol >> aliases.txt
+	fi
       done
     done
+    cat aliases.txt
 
     $CC ${CFLAGS} -O3 -c -o wrap_accelerate.o ${RECIPE_DIR}/wrap_accelerate.c
     $CC -shared -o libblas_reexport.dylib \
