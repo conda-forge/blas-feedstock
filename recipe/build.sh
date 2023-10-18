@@ -87,7 +87,7 @@ elif [[ "$blas_impl" == "newaccelerate" ]]; then
     for f in $veclib_libblas $veclib_liblapack; do
       symbols=$(cat $f | grep -o '[a-z0-9_]*$NEWLAPACK' | rev | cut -b 11- | rev)
       for symbol in $symbols; do
-	if [[ "$symbol" != "_appleblas"* ]]; then
+	if [[ "$symbol" != "_appleblas"* || "$symbol" != "_catlas"* ]]; then
           echo $symbol'$NEWLAPACK' $symbol >> aliases.txt
 	fi
       done
