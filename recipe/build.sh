@@ -69,7 +69,7 @@ if [[ "$blas_impl" == "accelerate" ]]; then
 
     cp libvecLibFort-ng.dylib $SRC_DIR/accelerate/
 
-elif [[ "$blas_impl" == "new_accelerate" ]]; then
+elif [[ "$blas_impl" == "accelerate" ]]; then
     mkdir -p $SRC_DIR/accelerate
     cp $NEW_ENV/lib/liblapacke.dylib $SRC_DIR/accelerate/liblapacke-netlib.${PKG_VERSION}.dylib
     $INSTALL_NAME_TOOL -id "@rpath/liblapacke-netlib.${PKG_VERSION}.dylib" $SRC_DIR/accelerate/liblapacke-netlib.${PKG_VERSION}.dylib

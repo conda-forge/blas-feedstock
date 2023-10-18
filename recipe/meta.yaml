@@ -10,6 +10,10 @@
 {% set build_string_platform = target_platform | default("linux-64") %}
 {% set build_string_platform = build_string_platform.replace("-", "") %}
 
+{% if blas_impl is undefined %}
+{% set blas_impl = "openblas" %}
+{% endif %}
+
 package:
   name: blas-split
   version: "{{ version }}"
@@ -75,7 +79,7 @@ outputs:
         - {{ pin_compatible("libopenblas", max_pin="x.x.x", exact=win) }}  # [blas_impl == 'openblas']
         - {{ pin_compatible("mkl", max_pin="x", exact=win) }}              # [blas_impl == 'mkl']
         - {{ pin_compatible("blis", max_pin="x.x.x", exact=win) }}         # [blas_impl == 'blis']
-        - __osx >=13.3                                                     # [blas_impl == 'new_accelerate']
+        - __osx >=13.3                                                     # [blas_impl == 'newaccelerate']
       run_constrained:
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("liblapack", exact=True) }}    # [blas_impl != 'blis']
@@ -87,8 +91,8 @@ outputs:
       - lib/libblas.so.{{ version_major }}      # [linux]
       - lib/libblas.{{ version_major }}.dylib   # [osx]
       - Library/bin/libblas.dll                 # [win]
-      - lib/libblas_reexport.dylib              # [blas_impl == 'new_accelerate']
-      - lib/liblapacke-netlib.*.dylib           # [blas_impl == 'new_accelerate']
+      - lib/libblas_reexport.dylib              # [blas_impl == 'newaccelerate']
+      - lib/liblapacke-netlib.*.dylib           # [blas_impl == 'newaccelerate']
       - lib/libvecLibFort-ng.dylib              # [blas_impl == 'accelerate']
       - lib/liblapack-netlib.*.dylib            # [blas_impl == 'accelerate']
       - lib/liblapacke-netlib.*.dylib           # [blas_impl == 'accelerate']

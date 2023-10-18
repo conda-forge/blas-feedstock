@@ -3,7 +3,7 @@ blas_impl:
 - mkl                      # [x86 or x86_64]
 - blis                     # [x86 or x86_64]
 - accelerate               # [osx]
-- new_accelerate           # [osx]
+- newaccelerate            # [osx]
 
 blas_impl_lib:
 - libopenblas.so.0         # [linux]
