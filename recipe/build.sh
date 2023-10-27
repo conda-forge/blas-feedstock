@@ -70,6 +70,18 @@ if [[ "$blas_impl" == "accelerate" ]]; then
     cp libvecLibFort-ng.dylib $SRC_DIR/accelerate/
 
 elif [[ "$blas_impl" == "newaccelerate" ]]; then
+    # New Accelerate libraries have all symbols in BLAS, CBLAS, LAPACK with $NEWLAPACK
+    # name appended to all the symbol names. Therefore we create a library that dispatches
+    # eg: _dgemm -> _dgemm$NEWLAPACK with aliases.txt
+    #
+    # One exception to this is {c,z}dot{u,c}_ symbols which have different signatures.
+    # We use wrap_accelerate.c to fix those.
+    #
+    # For LAPACKE symbols, we use the LAPACKE wrappers from netlib which would call
+    # the LAPACK symbols from Accelerate.
+    #
+    # All of tese are exported from libblas_reexport.dylib
+
     mkdir -p $SRC_DIR/accelerate
     cp $NEW_ENV/lib/liblapacke.dylib $SRC_DIR/accelerate/liblapacke-netlib.${PKG_VERSION}.dylib
     $INSTALL_NAME_TOOL -id "@rpath/liblapacke-netlib.${PKG_VERSION}.dylib" $SRC_DIR/accelerate/liblapacke-netlib.${PKG_VERSION}.dylib
@@ -85,13 +97,22 @@ elif [[ "$blas_impl" == "newaccelerate" ]]; then
     export LDFLAGS="${LDFLAGS/-Wl,-dead_strip_dylibs/}"
 
     for f in $veclib_libblas $veclib_liblapack; do
-      symbols=$(cat $f | grep -o '[a-z0-9_]*$NEWLAPACK' | rev | cut -b 11- | rev)
+      symbols=$(cat $f | grep -o '[a-z0-9_]*$NEWLAPACK' | rev | cut -b 11- | rev | sort | uniq)
       for symbol in $symbols; do
-	if [[ "$symbol" != "_appleblas"* && "$symbol" != "_catlas"* ]]; then
-          echo $symbol'$NEWLAPACK' $symbol >> aliases.txt
-	fi
+        if [[ "$symbol" != "_appleblas"* && "$symbol" != "_catlas"* && "$symbol" != "roc" && "$symbol" != "_cdot"* && "$symbol" != "_zdot"* ]]; then
+          echo $symbol'$NEWLAPACK' ${symbol} >> aliases.txt
+          if [[ "$symbol" != "cblas"* ]]; then
+            # Add _dgemm_ alias in addition to _dgemm
+            echo $symbol'$NEWLAPACK' ${symbol}_ >> aliases.txt
+          fi
+        fi
       done
     done
+    # These are defined in wrap_accelerate.c. Add a alias with the trailing underscore
+    echo _cdotu _cdotu_ >> aliases.txt
+    echo _cdotc _cdotc_ >> aliases.txt
+    echo _zdotu _zdotu_ >> aliases.txt
+    echo _zdotc _zdotc_ >> aliases.txt
     cat aliases.txt
 
     $CC ${CFLAGS} -O3 -c -o wrap_accelerate.o ${RECIPE_DIR}/wrap_accelerate.c
