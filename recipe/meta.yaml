@@ -69,10 +69,9 @@ outputs:
        - blas_{{ blas_impl }}  # [blas_impl != blas_default_impl]
     requirements:
       build:
-      {% if blas_impl.endswith('accelerate') %}
-        - {{ compiler('c') }}
-        - {{ compiler('fortran') }}
-      {% endif %}
+        - {{ compiler('fortran') }}   # [blas_impl in ('accelerate', 'newaccelerate')]
+        # need to compile wrapper code, see build.sh
+        - {{ compiler('c') }}         # [blas_impl == 'newaccelerate']
       host:
         - libopenblas 0.3.25   # [blas_impl == 'openblas']
         # from https://github.com/conda-forge/intel_repack-feedstock/
