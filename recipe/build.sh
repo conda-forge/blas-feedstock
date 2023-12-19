@@ -77,10 +77,10 @@ elif [[ "$blas_impl" == "newaccelerate" ]]; then
     # One exception to this is {c,z}dot{u,c}_ symbols which have different signatures.
     # We use wrap_accelerate.c to fix those.
     #
-    # For LAPACKE symbols, we use the LAPACKE wrappers from netlib which would call
+    # For LAPACKE symbols, we use the LAPACKE wrappers from netlib which will call
     # the LAPACK symbols from Accelerate.
     #
-    # All of tese are exported from libblas_reexport.dylib
+    # All of these are exported from libblas_reexport.dylib
 
     mkdir -p $SRC_DIR/accelerate
     cp $NEW_ENV/lib/liblapacke.dylib $SRC_DIR/accelerate/liblapacke-netlib.${PKG_VERSION}.dylib
