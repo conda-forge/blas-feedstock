@@ -108,7 +108,8 @@ elif [[ "$blas_impl" == "newaccelerate" ]]; then
         fi
       done
     done
-    # These are defined in wrap_accelerate.c. Add a alias with the trailing underscore
+    # These are defined in wrap_accelerate.c. Add a alias with the trailing underscore.
+    # Leading underscore is because of C name mangling in macOS.
     echo _cdotu _cdotu_ >> aliases.txt
     echo _cdotc _cdotc_ >> aliases.txt
     echo _zdotu _zdotu_ >> aliases.txt
