@@ -14,9 +14,6 @@ jobs:
       osx_64_blas_implblisblas_impl_liblibblis.4.dylib:
         CONFIG: osx_64_blas_implblisblas_impl_liblibblis.4.dylib
         UPLOAD_PACKAGES: 'True'
-      osx_64_blas_implmklblas_impl_liblibmkl_rt.dylib:
-        CONFIG: osx_64_blas_implmklblas_impl_liblibmkl_rt.dylib
-        UPLOAD_PACKAGES: 'True'
       osx_64_blas_implopenblasblas_impl_liblibopenblas.0.dylib:
         CONFIG: osx_64_blas_implopenblasblas_impl_liblibopenblas.0.dylib
         UPLOAD_PACKAGES: 'True'
