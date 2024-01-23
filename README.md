@@ -141,13 +141,6 @@ Current build status
                 </a>
               </td>
             </tr><tr>
-              <td>osx_64_blas_implmklblas_impl_liblibmkl_rt.dylib</td>
-              <td>
-                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_64_blas_implmklblas_impl_liblibmkl_rt.dylib" alt="variant">
-                </a>
-              </td>
-            </tr><tr>
               <td>osx_64_blas_implnewaccelerateblas_impl_liblibblas_reexport.dylib</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
