@@ -3,9 +3,9 @@ conda_forge_output_validation: true
 provider:
   linux_ppc64le: default
   linux_aarch64: default
-test_on_native_only: true
 github:
   branch_name: main
   tooling_branch_name: main
 conda_build:
   pkg_format: '2'
+test: native_and_emulated
