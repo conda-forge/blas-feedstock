@@ -238,22 +238,19 @@ outputs:
         - posix         # [win]
         - llvm-openmp   # [linux and ((blas_impl == "openblas") or (blas_impl == "mkl"))]
       host:
-      # Building with blis fails due to a conda-build bug
-      {% if blas_impl != 'blis' %}
-        - {{ pin_subpackage("liblapack", exact=True) }}
-        - {{ pin_subpackage("liblapacke", exact=True) }}
-        - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("libblas", exact=True) }}
-      {% else %}
-        - blis 0.9.0
-      {% endif %}
-      run:
+        - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
         - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
         - liblapack  {{ version }} *netlib                   # [blas_impl == 'blis']
         - liblapacke {{ version }} *netlib                   # [blas_impl == 'blis']
-        - {{ pin_subpackage("libcblas", exact=True) }}
+      run:
         - {{ pin_subpackage("libblas", exact=True) }}
+        - {{ pin_subpackage("libcblas", exact=True) }}
+        - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
+        - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
+        - liblapack  {{ version }} *netlib                   # [blas_impl == 'blis']
+        - liblapacke {{ version }} *netlib                   # [blas_impl == 'blis']
         - {{ pin_subpackage("blas-devel", exact=True) }}
     test:
       commands:
