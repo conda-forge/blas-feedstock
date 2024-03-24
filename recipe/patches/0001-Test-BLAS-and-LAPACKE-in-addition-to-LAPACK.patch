@@ -1,17 +1,17 @@
-From 48c2ace8dcd69883470c67562d0e0b36ee1ddd90 Mon Sep 17 00:00:00 2001
+From 6ddc5a62badf0a2b4e1c29fd3ce32155985c1ba0 Mon Sep 17 00:00:00 2001
 From: Isuru Fernando <isuruf@gmail.com>
 Date: Mon, 7 Jan 2019 00:23:59 -0600
-Subject: [PATCH 1/5] Test BLAS and LAPACKE in addition to LAPACK
+Subject: [PATCH 1/4] Test BLAS and LAPACKE in addition to LAPACK
 
 ---
  CMakeLists.txt | 2 ++
  1 file changed, 2 insertions(+)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index d9dbf9746..dabab4c02 100644
+index 68a7767b8..91047636e 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -295,6 +295,8 @@ endif()
+@@ -394,6 +394,8 @@ endif()
  
  if(BUILD_TESTING)
    add_subdirectory(TESTING)
