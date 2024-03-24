@@ -29,6 +29,8 @@ source:
 
 build:
   number: "{{ build_num }}"
+  # DEBUG: only blis
+  skip: true  # [blas_impl != 'blis']
 
 requirements:
   build:
