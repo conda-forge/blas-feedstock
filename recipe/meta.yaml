@@ -1,12 +1,12 @@
-{% set version = "3.9.0" %}
+{% set version = "3.11.0" %}
 # if build_num is reset to 0 (for new version), update increment for blas_minor below
-{% set build_num = 21 %}
+{% set build_num = 0 %}
 {% set version_major = version.split(".")[0] %}
 # blas_major denotes major infrastructural change to how blas is managed
 {% set blas_major = "2" %}
 # make sure we do not create colliding version strings of output "blas"
 # for builds across lapack-versions within the same blas_major
-{% set blas_minor = build_num + 100 %}
+{% set blas_minor = build_num + 300 %}
 {% set build_string_platform = target_platform | default("linux-64") %}
 {% set build_string_platform = build_string_platform.replace("-", "") %}
 
@@ -16,7 +16,7 @@ package:
 
 source:
   - url: https://github.com/Reference-LAPACK/lapack/archive/v{{ version }}.tar.gz
-    sha256: 106087f1bb5f46afdfba7f569d0cbe23dacb9a07cd24733765a0e89dbe1ad573
+    sha256: 4b9ba79bfd4921ca820e83979db76ab3363155709444a787979e81c22285ffa9
     patches:
       # Test BLAS and LAPACKE in addition to LAPACK
       - patches/0001-Test-BLAS-and-LAPACKE-in-addition-to-LAPACK.patch
@@ -29,6 +29,8 @@ source:
 
 build:
   number: "{{ build_num }}"
+  # DEBUG: only blis
+  skip: true  # [blas_impl != 'blis']
 
 requirements:
   build:
@@ -202,9 +204,11 @@ outputs:
       host:
         - openblas   0.3.26  # [blas_impl == "openblas"]
         - mkl-devel  2024.0  # [blas_impl == "mkl"]
+        - blis 0.9.0         # [blas_impl == "blis"]
       run:
         - openblas   0.3.26  # [blas_impl == "openblas"]
         - mkl-devel  2024.0  # [blas_impl == "mkl"]
+        - blis 0.9.0         # [blas_impl == "blis"]
         - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
         - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
         - liblapack  {{ version }} *netlib                   # [blas_impl == 'blis']
@@ -238,22 +242,19 @@ outputs:
         - posix         # [win]
         - llvm-openmp   # [linux and ((blas_impl == "openblas") or (blas_impl == "mkl"))]
       host:
-      # Building with blis fails due to a conda-build bug
-      {% if blas_impl != 'blis' %}
-        - {{ pin_subpackage("liblapack", exact=True) }}
-        - {{ pin_subpackage("liblapacke", exact=True) }}
-        - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("libblas", exact=True) }}
-      {% else %}
-        - blis 0.9.0
-      {% endif %}
-      run:
+        - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
         - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
         - liblapack  {{ version }} *netlib                   # [blas_impl == 'blis']
         - liblapacke {{ version }} *netlib                   # [blas_impl == 'blis']
-        - {{ pin_subpackage("libcblas", exact=True) }}
+      run:
         - {{ pin_subpackage("libblas", exact=True) }}
+        - {{ pin_subpackage("libcblas", exact=True) }}
+        - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
+        - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
+        - liblapack  {{ version }} *netlib                   # [blas_impl == 'blis']
+        - liblapacke {{ version }} *netlib                   # [blas_impl == 'blis']
         - {{ pin_subpackage("blas-devel", exact=True) }}
     test:
       commands:

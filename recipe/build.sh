@@ -26,7 +26,7 @@ export FFLAGS="-I${LIBRARY_PREFIX}/include $FFLAGS"
 export LDFLAGS="-L${LIBRARY_PREFIX}/lib $LDFLAGS"
 
 export CONDA_SUBDIR="${target_platform}"
-conda${EXE_SUFFIX} create -p ${NEW_ENV} -c conda-forge --yes --quiet \
+conda${EXE_SUFFIX} create -p ${NEW_ENV} -c conda-forge/label/lapack_rc -c conda-forge --yes --quiet \
     libblas=${PKG_VERSION}=*netlib \
     libcblas=${PKG_VERSION}=*netlib \
     liblapack=${PKG_VERSION}=*netlib \
