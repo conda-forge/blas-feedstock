@@ -1,0 +1,256 @@
+From 9509026e0f00c4ad2c3398207a5368baf4a57df0 Mon Sep 17 00:00:00 2001
+From: Angelika Schwarz <angies@cs.umu.se>
+Date: Sat, 17 Jun 2023 10:51:33 +0200
+Subject: [PATCH 5/5] Use dynamic allocation in SYL01 tests
+
+---
+ TESTING/EIG/csyl01.f | 33 ++++++++++++++++++++++++++++-----
+ TESTING/EIG/dsyl01.f | 35 +++++++++++++++++++++++++++++------
+ TESTING/EIG/ssyl01.f | 35 +++++++++++++++++++++++++++++------
+ TESTING/EIG/zsyl01.f | 33 ++++++++++++++++++++++++++++-----
+ 4 files changed, 114 insertions(+), 22 deletions(-)
+
+diff --git a/TESTING/EIG/csyl01.f b/TESTING/EIG/csyl01.f
+index 82d790daa..8a3cd1ae5 100644
+--- a/TESTING/EIG/csyl01.f
++++ b/TESTING/EIG/csyl01.f
+@@ -120,14 +120,16 @@
+       COMPLEX            RMUL
+ *     ..
+ *     .. Local Arrays ..
+-      COMPLEX            A( MAXM, MAXM ), B( MAXN, MAXN ),
+-     $                   C( MAXM, MAXN ), CC( MAXM, MAXN ),
+-     $                   X( MAXM, MAXN ),
+-     $                   DUML( MAXM ), DUMR( MAXN ),
++      COMPLEX            DUML( MAXM ), DUMR( MAXN ),
+      $                   D( MAX( MAXM, MAXN ) )
+-      REAL               SWORK( LDSWORK, 54 ), DUM( MAXN ), VM( 2 )
++      REAL               DUM( MAXN ), VM( 2 )
+       INTEGER            ISEED( 4 ), IWORK( MAXM + MAXN + 2 )
+ *     ..
++*     .. Allocatable Arrays ..
++      INTEGER            AllocateStatus
++      COMPLEX, DIMENSION(:,:), ALLOCATABLE :: A, B, C, CC, X
++      REAL,    DIMENSION(:,:), ALLOCATABLE :: SWORK
++*     ..
+ *     .. External Functions ..
+       LOGICAL            SISNAN
+       REAL               SLAMCH, CLANGE
+@@ -139,6 +141,20 @@
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, REAL, MAX
+ *     ..
++*     .. Allocate memory dynamically ..
++      ALLOCATE ( A( MAXM, MAXM ), STAT = AllocateStatus )
++      IF( AllocateStatus /= 0 ) STOP "*** Not enough memory ***"
++      ALLOCATE ( B( MAXN, MAXN ), STAT = AllocateStatus )
++      IF( AllocateStatus /= 0 ) STOP "*** Not enough memory ***"
++      ALLOCATE ( C( MAXM, MAXN ), STAT = AllocateStatus )
++      IF( AllocateStatus /= 0 ) STOP "*** Not enough memory ***"
++      ALLOCATE ( CC( MAXM, MAXN ), STAT = AllocateStatus )
++      IF( AllocateStatus /= 0 ) STOP "*** Not enough memory ***"
++      ALLOCATE ( X( MAXM, MAXN ), STAT = AllocateStatus )
++      IF( AllocateStatus /= 0 ) STOP "*** Not enough memory ***"
++      ALLOCATE ( SWORK( LDSWORK, 54 ), STAT = AllocateStatus )
++      IF( AllocateStatus /= 0 ) STOP "*** Not enough memory ***"
++*     ..
+ *     .. Executable Statements ..
+ *
+ *     Get machine parameters
+@@ -286,6 +302,13 @@
+             END DO
+          END DO
+       END DO
++*
++      DEALLOCATE (A, STAT = AllocateStatus)
++      DEALLOCATE (B, STAT = AllocateStatus)
++      DEALLOCATE (C, STAT = AllocateStatus)
++      DEALLOCATE (CC, STAT = AllocateStatus)
++      DEALLOCATE (X, STAT = AllocateStatus)
++      DEALLOCATE (SWORK, STAT = AllocateStatus)
+ *
+       RETURN
+ *
+diff --git a/TESTING/EIG/dsyl01.f b/TESTING/EIG/dsyl01.f
+index 782d2cd42..0ea481382 100644
+--- a/TESTING/EIG/dsyl01.f
++++ b/TESTING/EIG/dsyl01.f
+@@ -117,13 +117,15 @@
+      $                   SCALE, SCALE3, SMLNUM, TNRM, XNRM
+ *     ..
+ *     .. Local Arrays ..
+-      DOUBLE PRECISION   A( MAXM, MAXM ), B( MAXN, MAXN ),
+-     $                   C( MAXM, MAXN ), CC( MAXM, MAXN ),
+-     $                   X( MAXM, MAXN ),
+-     $                   DUML( MAXM ), DUMR( MAXN ),
++      DOUBLE PRECISION   DUML( MAXM ), DUMR( MAXN ),
+      $                   D( MAX( MAXM, MAXN ) ), DUM( MAXN ),
+-     $                   SWORK( LDSWORK, 126 ), VM( 2 )
+-      INTEGER            ISEED( 4 ), IWORK( MAXM + MAXN + 2 ), IDUM( 2 )
++     $                   VM( 2 )
++      INTEGER            ISEED( 4 ), IWORK( MAXM + MAXN + 2 )
++*     ..
++*     .. Allocatable Arrays ..
++      INTEGER            AllocateStatus
++      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: A, B, C, CC, X,
++     $                   SWORK
+ *     ..
+ *     .. External Functions ..
+       LOGICAL            DISNAN
+@@ -136,6 +138,20 @@
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, DBLE, MAX
+ *     ..
++*     .. Allocate memory dynamically ..
++      ALLOCATE ( A( MAXM, MAXM ), STAT = AllocateStatus )
++      IF( AllocateStatus /= 0 ) STOP "*** Not enough memory ***"
++      ALLOCATE ( B( MAXN, MAXN ), STAT = AllocateStatus )
++      IF( AllocateStatus /= 0 ) STOP "*** Not enough memory ***"
++      ALLOCATE ( C( MAXM, MAXN ), STAT = AllocateStatus )
++      IF( AllocateStatus /= 0 ) STOP "*** Not enough memory ***"
++      ALLOCATE ( CC( MAXM, MAXN ), STAT = AllocateStatus )
++      IF( AllocateStatus /= 0 ) STOP "*** Not enough memory ***"
++      ALLOCATE ( X( MAXM, MAXN ), STAT = AllocateStatus )
++      IF( AllocateStatus /= 0 ) STOP "*** Not enough memory ***"
++      ALLOCATE ( SWORK( LDSWORK, 126 ), STAT = AllocateStatus )
++      IF( AllocateStatus /= 0 ) STOP "*** Not enough memory ***"
++*     ..
+ *     .. Executable Statements ..
+ *
+ *     Get machine parameters
+@@ -280,6 +296,13 @@
+             END DO
+          END DO
+       END DO
++*
++      DEALLOCATE (A, STAT = AllocateStatus)
++      DEALLOCATE (B, STAT = AllocateStatus)
++      DEALLOCATE (C, STAT = AllocateStatus)
++      DEALLOCATE (CC, STAT = AllocateStatus)
++      DEALLOCATE (X, STAT = AllocateStatus)
++      DEALLOCATE (SWORK, STAT = AllocateStatus)
+ *
+       RETURN
+ *
+diff --git a/TESTING/EIG/ssyl01.f b/TESTING/EIG/ssyl01.f
+index 22d089dc8..fda30a3c0 100644
+--- a/TESTING/EIG/ssyl01.f
++++ b/TESTING/EIG/ssyl01.f
+@@ -117,13 +117,15 @@
+      $                   SCALE, SCALE3, SMLNUM, TNRM, XNRM
+ *     ..
+ *     .. Local Arrays ..
+-      REAL               A( MAXM, MAXM ), B( MAXN, MAXN ),
+-     $                   C( MAXM, MAXN ), CC( MAXM, MAXN ),
+-     $                   X( MAXM, MAXN ),
+-     $                   DUML( MAXM ), DUMR( MAXN ),
++      REAL               DUML( MAXM ), DUMR( MAXN ),
+      $                   D( MAX( MAXM, MAXN ) ), DUM( MAXN ),
+-     $                   SWORK( LDSWORK, 54 ), VM( 2 )
+-      INTEGER            ISEED( 4 ), IWORK( MAXM + MAXN + 2 ), IDUM( 2 )
++     $                   VM( 2 )
++      INTEGER            ISEED( 4 ), IWORK( MAXM + MAXN + 2 )
++*     ..
++*     .. Allocatable Arrays ..
++      INTEGER            AllocateStatus
++      REAL, DIMENSION(:,:), ALLOCATABLE :: A, B, C, CC, X,
++     $                   SWORK
+ *     ..
+ *     .. External Functions ..
+       LOGICAL            SISNAN
+@@ -136,6 +138,20 @@
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, REAL, MAX
+ *     ..
++*     .. Allocate memory dynamically ..
++      ALLOCATE ( A( MAXM, MAXM ), STAT = AllocateStatus )
++      IF( AllocateStatus /= 0 ) STOP "*** Not enough memory ***"
++      ALLOCATE ( B( MAXN, MAXN ), STAT = AllocateStatus )
++      IF( AllocateStatus /= 0 ) STOP "*** Not enough memory ***"
++      ALLOCATE ( C( MAXM, MAXN ), STAT = AllocateStatus )
++      IF( AllocateStatus /= 0 ) STOP "*** Not enough memory ***"
++      ALLOCATE ( CC( MAXM, MAXN ), STAT = AllocateStatus )
++      IF( AllocateStatus /= 0 ) STOP "*** Not enough memory ***"
++      ALLOCATE ( X( MAXM, MAXN ), STAT = AllocateStatus )
++      IF( AllocateStatus /= 0 ) STOP "*** Not enough memory ***"
++      ALLOCATE ( SWORK( LDSWORK, 54 ), STAT = AllocateStatus )
++      IF( AllocateStatus /= 0 ) STOP "*** Not enough memory ***"
++*     ..
+ *     .. Executable Statements ..
+ *
+ *     Get machine parameters
+@@ -280,6 +296,13 @@
+             END DO
+          END DO
+       END DO
++*
++      DEALLOCATE (A, STAT = AllocateStatus)
++      DEALLOCATE (B, STAT = AllocateStatus)
++      DEALLOCATE (C, STAT = AllocateStatus)
++      DEALLOCATE (CC, STAT = AllocateStatus)
++      DEALLOCATE (X, STAT = AllocateStatus)
++      DEALLOCATE (SWORK, STAT = AllocateStatus)
+ *
+       RETURN
+ *
+diff --git a/TESTING/EIG/zsyl01.f b/TESTING/EIG/zsyl01.f
+index 329f39dc4..5d26d494c 100644
+--- a/TESTING/EIG/zsyl01.f
++++ b/TESTING/EIG/zsyl01.f
+@@ -120,14 +120,16 @@
+       COMPLEX*16         RMUL
+ *     ..
+ *     .. Local Arrays ..
+-      COMPLEX*16         A( MAXM, MAXM ), B( MAXN, MAXN ),
+-     $                   C( MAXM, MAXN ), CC( MAXM, MAXN ),
+-     $                   X( MAXM, MAXN ),
+-     $                   DUML( MAXM ), DUMR( MAXN ),
++      COMPLEX*16         DUML( MAXM ), DUMR( MAXN ),
+      $                   D( MAX( MAXM, MAXN ) )
+-      DOUBLE PRECISION   SWORK( LDSWORK, 103 ), DUM( MAXN ), VM( 2 )
++      DOUBLE PRECISION   DUM( MAXN ), VM( 2 )
+       INTEGER            ISEED( 4 ), IWORK( MAXM + MAXN + 2 )
+ *     ..
++*     .. Allocatable Arrays ..
++      INTEGER            AllocateStatus
++      COMPLEX*16,       DIMENSION(:,:), ALLOCATABLE :: A, B, C, CC, X
++      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: SWORK
++*     ..
+ *     .. External Functions ..
+       LOGICAL            DISNAN
+       DOUBLE PRECISION   DLAMCH, ZLANGE
+@@ -139,6 +141,20 @@
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, DBLE, MAX, SQRT
+ *     ..
++*     .. Allocate memory dynamically ..
++      ALLOCATE ( A( MAXM, MAXM ), STAT = AllocateStatus )
++      IF( AllocateStatus /= 0 ) STOP "*** Not enough memory ***"
++      ALLOCATE ( B( MAXN, MAXN ), STAT = AllocateStatus )
++      IF( AllocateStatus /= 0 ) STOP "*** Not enough memory ***"
++      ALLOCATE ( C( MAXM, MAXN ), STAT = AllocateStatus )
++      IF( AllocateStatus /= 0 ) STOP "*** Not enough memory ***"
++      ALLOCATE ( CC( MAXM, MAXN ), STAT = AllocateStatus )
++      IF( AllocateStatus /= 0 ) STOP "*** Not enough memory ***"
++      ALLOCATE ( X( MAXM, MAXN ), STAT = AllocateStatus )
++      IF( AllocateStatus /= 0 ) STOP "*** Not enough memory ***"
++      ALLOCATE ( SWORK( LDSWORK, 103 ), STAT = AllocateStatus )
++      IF( AllocateStatus /= 0 ) STOP "*** Not enough memory ***"
++*     ..
+ *     .. Executable Statements ..
+ *
+ *     Get machine parameters
+@@ -286,6 +302,13 @@
+             END DO
+          END DO
+       END DO
++*
++      DEALLOCATE (A, STAT = AllocateStatus)
++      DEALLOCATE (B, STAT = AllocateStatus)
++      DEALLOCATE (C, STAT = AllocateStatus)
++      DEALLOCATE (CC, STAT = AllocateStatus)
++      DEALLOCATE (X, STAT = AllocateStatus)
++      DEALLOCATE (SWORK, STAT = AllocateStatus)
+ *
+       RETURN
+ *
