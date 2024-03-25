@@ -1,7 +1,7 @@
 From 6ddc5a62badf0a2b4e1c29fd3ce32155985c1ba0 Mon Sep 17 00:00:00 2001
 From: Isuru Fernando <isuruf@gmail.com>
 Date: Mon, 7 Jan 2019 00:23:59 -0600
-Subject: [PATCH 1/4] Test BLAS and LAPACKE in addition to LAPACK
+Subject: [PATCH 1/6] Test BLAS and LAPACKE in addition to LAPACK
 
 ---
  CMakeLists.txt | 2 ++
