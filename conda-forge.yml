@@ -1,3 +1,7 @@
+azure:
+  settings_osx:
+    pool:
+      vmImage: macOS-13
 build_platform: {osx_arm64: osx_64}
 conda_forge_output_validation: true
 provider:
