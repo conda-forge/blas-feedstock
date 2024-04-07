@@ -4,6 +4,8 @@ blas_impl:
 - openblas
 blas_impl_lib:
 - openblas.dll
+c_stdlib:
+- vs
 channel_sources:
 - conda-forge
 channel_targets:

@@ -4,6 +4,8 @@ blas_impl:
 - blis
 blas_impl_lib:
 - libblis.4.dll
+c_stdlib:
+- vs
 channel_sources:
 - conda-forge
 channel_targets:
