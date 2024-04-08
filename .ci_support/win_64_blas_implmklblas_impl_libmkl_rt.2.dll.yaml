@@ -4,6 +4,8 @@ blas_impl:
 - mkl
 blas_impl_lib:
 - mkl_rt.2.dll
+c_stdlib:
+- vs
 channel_sources:
 - conda-forge
 channel_targets:
