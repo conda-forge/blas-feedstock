@@ -1,21 +1,17 @@
 MACOSX_DEPLOYMENT_TARGET:
 - '10.9'
 MACOSX_SDK_VERSION:
-- '10.9'
+- '13.3'
 blas_default_impl:
 - openblas
 blas_impl:
-- accelerate
+- newaccelerate
 blas_impl_lib:
-- libvecLibFort-ng.dylib
+- libblas_reexport.dylib
 c_compiler:
 - clang
 c_compiler_version:
 - '16'
-c_stdlib:
-- macosx_deployment_target
-c_stdlib_version:
-- '10.9'
 channel_sources:
 - conda-forge
 channel_targets:
