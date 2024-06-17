@@ -1,12 +1,12 @@
-{% set version = "3.9.0" %}
+{% set version = "3.11.0" %}
 # if build_num is reset to 0 (for new version), update increment for blas_minor below
-{% set build_num = 22 %}
+{% set build_num = 0 %}
 {% set version_major = version.split(".")[0] %}
 # blas_major denotes major infrastructural change to how blas is managed
 {% set blas_major = "2" %}
 # make sure we do not create colliding version strings of output "blas"
 # for builds across lapack-versions within the same blas_major
-{% set blas_minor = build_num + 100 %}
+{% set blas_minor = build_num + 300 %}
 {% set build_string_platform = target_platform | default("linux-64") %}
 {% set build_string_platform = build_string_platform.replace("-", "") %}
 
@@ -16,10 +16,14 @@ package:
 
 source:
   - url: https://github.com/Reference-LAPACK/lapack/archive/v{{ version }}.tar.gz
-    sha256: 106087f1bb5f46afdfba7f569d0cbe23dacb9a07cd24733765a0e89dbe1ad573
+    sha256: 4b9ba79bfd4921ca820e83979db76ab3363155709444a787979e81c22285ffa9
     patches:
       # Test BLAS and LAPACKE in addition to LAPACK
       - patches/0001-Test-BLAS-and-LAPACKE-in-addition-to-LAPACK.patch
+      # backport https://github.com/Reference-LAPACK/lapack/pull/758, can be dropped for 3.12
+      - patches/0002-fixed-bug-in-array-bounds-in-complex-syl01-test.patch
+      # backport https://github.com/Reference-LAPACK/lapack/pull/854, can be dropped for 3.12
+      - patches/0003-Use-dynamic-allocation-in-SYL01-tests.patch
       # Only the test-suite is compiled here, and we therefore do not need to
       # carry all the patches that the lapack-feedstock has (see comment below)
 
@@ -33,8 +37,10 @@ build:
 requirements:
   build:
     - {{ compiler("c") }}               # [unix]
+    - {{ stdlib("c") }}                 # [unix]
     - {{ compiler("fortran") }}         # [unix]
     - {{ compiler("m2w64_c") }}         # [win]
+    - {{ stdlib("m2w64_c") }}           # [win]
     - {{ compiler("m2w64_fortran") }}   # [win]
     - cmake
     - m2-make   # [win]
@@ -66,6 +72,7 @@ outputs:
     requirements:
       build:
         - {{ compiler('fortran') }}   # [blas_impl == 'accelerate']
+        - {{ stdlib('c') }}           # [blas_impl == 'accelerate']
       host:
         - libopenblas 0.3.27   # [blas_impl == 'openblas']
         # from https://github.com/conda-forge/intel_repack-feedstock/
@@ -230,8 +237,10 @@ outputs:
     requirements:
       build:
         - {{ compiler('c') }}                 # [unix]
+        - {{ stdlib('c') }}                   # [unix]
         - {{ compiler('fortran') }}           # [unix]
         - {{ compiler('m2w64_c') }}           # [win]
+        - {{ stdlib('m2w64_c') }}             # [win]
         - {{ compiler('m2w64_fortran') }}     # [win]
         - cmake
         - m2-make       # [win]
