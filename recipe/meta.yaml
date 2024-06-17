@@ -33,8 +33,10 @@ build:
 requirements:
   build:
     - {{ compiler("c") }}               # [unix]
+    - {{ stdlib("c") }}                 # [unix]
     - {{ compiler("fortran") }}         # [unix]
     - {{ compiler("m2w64_c") }}         # [win]
+    - {{ stdlib("m2w64_c") }}           # [win]
     - {{ compiler("m2w64_fortran") }}   # [win]
     - cmake
     - m2-make   # [win]
@@ -66,6 +68,7 @@ outputs:
     requirements:
       build:
         - {{ compiler('fortran') }}   # [blas_impl == 'accelerate']
+        - {{ stdlib('c') }}           # [blas_impl == 'accelerate']
       host:
         - libopenblas 0.3.27   # [blas_impl == 'openblas']
         # from https://github.com/conda-forge/intel_repack-feedstock/
@@ -230,8 +233,10 @@ outputs:
     requirements:
       build:
         - {{ compiler('c') }}                 # [unix]
+        - {{ stdlib('c') }}                   # [unix]
         - {{ compiler('fortran') }}           # [unix]
         - {{ compiler('m2w64_c') }}           # [win]
+        - {{ stdlib('m2w64_c') }}             # [win]
         - {{ compiler('m2w64_fortran') }}     # [win]
         - cmake
         - m2-make       # [win]
