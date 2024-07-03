@@ -1,5 +1,7 @@
 MACOSX_DEPLOYMENT_TARGET:
 - '11.0'
+MACOSX_SDK_VERSION:
+- '11.0'
 blas_default_impl:
 - openblas
 blas_impl:
@@ -15,7 +17,7 @@ c_stdlib:
 c_stdlib_version:
 - '11.0'
 channel_sources:
-- conda-forge
+- conda-forge/label/lapack_rc,conda-forge
 channel_targets:
 - conda-forge main
 fortran_compiler:
