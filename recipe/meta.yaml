@@ -1,6 +1,6 @@
 {% set version = "3.9.0" %}
 # if build_num is reset to 0 (for new version), update increment for blas_minor below
-{% set build_num = 22 %}
+{% set build_num = 23 %}
 {% set version_major = version.split(".")[0] %}
 # blas_major denotes major infrastructural change to how blas is managed
 {% set blas_major = "2" %}
@@ -20,8 +20,9 @@ source:
     patches:
       # Test BLAS and LAPACKE in addition to LAPACK
       - patches/0001-Test-BLAS-and-LAPACKE-in-addition-to-LAPACK.patch
-      # Only the test-suite is compiled here, and we therefore do not need to
-      # carry all the patches that the lapack-feedstock has (see comment below)
+      # backport https://github.com/Reference-LAPACK/lapack/pull/391
+      # to fix https://gcc.gnu.org/bugzilla/show_bug.cgi?id=114304
+      - patches/0002-remove-extraneous-semicolon.patch
 
   - url: https://github.com/isuruf/vecLibFort/archive/99af8640e98c829b41c3235e3706760cd5696fe4.tar.gz
     sha256: 80de7c6e83d1d84d016b4cb299f2c15f5a82b9d36865dd5c16bf221fe9a303ad
@@ -33,8 +34,10 @@ build:
 requirements:
   build:
     - {{ compiler("c") }}               # [unix]
+    - {{ stdlib("c") }}                 # [unix]
     - {{ compiler("fortran") }}         # [unix]
     - {{ compiler("m2w64_c") }}         # [win]
+    - {{ stdlib("m2w64_c") }}           # [win]
     - {{ compiler("m2w64_fortran") }}   # [win]
     - cmake
     - m2-make   # [win]
@@ -66,6 +69,7 @@ outputs:
     requirements:
       build:
         - {{ compiler('fortran') }}   # [blas_impl == 'accelerate']
+        - {{ stdlib('c') }}           # [blas_impl == 'accelerate']
       host:
         - libopenblas 0.3.27   # [blas_impl == 'openblas']
         # from https://github.com/conda-forge/intel_repack-feedstock/
@@ -230,8 +234,10 @@ outputs:
     requirements:
       build:
         - {{ compiler('c') }}                 # [unix]
+        - {{ stdlib('c') }}                   # [unix]
         - {{ compiler('fortran') }}           # [unix]
         - {{ compiler('m2w64_c') }}           # [win]
+        - {{ stdlib('m2w64_c') }}             # [win]
         - {{ compiler('m2w64_fortran') }}     # [win]
         - cmake
         - m2-make       # [win]
