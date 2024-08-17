@@ -16,6 +16,8 @@ set "CFLAGS=-I%LIBRARY_PREFIX%\include %CFLAGS%"
 set "FFLAGS=-I%LIBRARY_PREFIX%\include %FFLAGS%"
 set "LDFLAGS=/LIBPATH:%LIBRARY_PREFIX%\lib %LDFLAGS%"
 
+set "PYTHON_EXEC=%BUILD_PREFIX%\python.exe"
+
 %MINIFORGE_HOME%\Scripts\conda.exe create -p %NEW_ENV% -c conda-forge/label/lapack_rc -c conda-forge --yes --quiet ^
     libblas=%PKG_VERSION%=*netlib ^
     libcblas=%PKG_VERSION%=*netlib ^
@@ -33,6 +35,7 @@ cmake -LAH -G Ninja .. ^
     "-DBLAS_LIBRARIES=blas.lib;cblas.lib" ^
     "-DLAPACK_LIBRARIES=lapack.lib;lapacke.lib" ^
     -DBUILD_TESTING=yes ^
+    -DPYTHON_EXECUTABLE=%PYTHON_EXEC% ^
     -DCMAKE_BUILD_TYPE=Release
 if %ERRORLEVEL% neq 0 (type .\CMakeFiles\CMakeError.log && type .\CMakeFiles\CMakeOutput.log && exit 1)
 
