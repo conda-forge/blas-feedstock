@@ -5,7 +5,7 @@ blas_impl:
 blas_impl_lib:
 - libblis.4.dll
 channel_sources:
-- conda-forge
+- conda-forge/label/lapack_rc,conda-forge
 channel_targets:
 - conda-forge main
 m2w64_c_compiler:
