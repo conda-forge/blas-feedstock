@@ -60,7 +60,9 @@ requirements:
     - cmake <4
     - make      # [not win]
     - ninja     # [win]
-    - python *  # [win]
+    # in testing we end up calling a python script, see
+    # https://github.com/Reference-LAPACK/lapack/blame/master/lapack_testing.py
+    - python *
     # The following are actual build dependencies of this recipe; however, they
     # only get installed by the build scripts, since they must be installed in a
     # different environment (otherwise there'd be a variant collision)! The build
@@ -298,6 +300,9 @@ outputs:
         - {{ compiler("fortran") }}
         - cmake <4
         - ninja         # [win]
+        # we end up calling a python script, see
+        # https://github.com/Reference-LAPACK/lapack/blame/master/lapack_testing.py
+        - python *
         - llvm-openmp   # [linux and ((blas_impl == "openblas") or (blas_impl == "mkl"))]
         - python *                          # [win]
       host:
