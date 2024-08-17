@@ -44,6 +44,9 @@ requirements:
     - m2-make   # [win]
     - make      # [not win]
     - posix     # [win]
+    # in testing we end up calling a python script, see
+    # https://github.com/Reference-LAPACK/lapack/blame/master/lapack_testing.py
+    - python *
     # The following are actual build dependencies of this recipe; however, they
     # only get installed by the build scripts, since they must be installed in a
     # different environment (otherwise there'd be a variant collision)! The build
@@ -241,6 +244,9 @@ outputs:
         - {{ stdlib('m2w64_c') }}             # [win]
         - {{ compiler('m2w64_fortran') }}     # [win]
         - cmake
+        # we end up calling a python script, see
+        # https://github.com/Reference-LAPACK/lapack/blame/master/lapack_testing.py
+        - python *
         - m2-make       # [win]
         - posix         # [win]
         - llvm-openmp   # [linux and ((blas_impl == "openblas") or (blas_impl == "mkl"))]
