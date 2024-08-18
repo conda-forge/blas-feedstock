@@ -1,7 +1,7 @@
 From 06b3ed4e3486aff40c3d70baf2c13b07a2cae012 Mon Sep 17 00:00:00 2001
 From: Angelika Schwarz <angies@cs.umu.se>
 Date: Sat, 17 Jun 2023 10:51:33 +0200
-Subject: [PATCH 3/3] Use dynamic allocation in SYL01 tests
+Subject: [PATCH 3/4] Use dynamic allocation in SYL01 tests
 
 ---
  TESTING/EIG/csyl01.f | 33 ++++++++++++++++++++++++++++-----

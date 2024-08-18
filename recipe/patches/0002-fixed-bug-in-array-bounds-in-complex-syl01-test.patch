@@ -1,7 +1,7 @@
 From c309e44ff557e4bf138cc1f03898575630ac1c94 Mon Sep 17 00:00:00 2001
 From: Dmitry Klyuchinsky <dmitriy_klyuchinskiy@mail.ru>
 Date: Fri, 18 Nov 2022 17:58:06 +0700
-Subject: [PATCH 2/3] fixed bug in array bounds in complex syl01 test
+Subject: [PATCH 2/4] fixed bug in array bounds in complex syl01 test
 
 ---
  TESTING/EIG/csyl01.f | 2 +-
