@@ -10,7 +10,9 @@ if [[ "$target_platform" == linux* || "$target_platform" == osx* ]]; then
     export EXE_SUFFIX=""
     export LDFLAGS="-Wl,-rpath,${LIBRARY_PREFIX}/lib $LDFLAGS"
     export PYTHON_EXEC=$BUILD_PREFIX/bin/python
-
+    if [[ "$target_platform" == osx* ]]; then
+        export CMAKE_ARGS="$CMAKE_ARGS -DUSE_FLAT_NAMESPACE=ON"
+    fi
 else
     export LIBRARY_PREFIX=$NEW_ENV/Library
     export EXE_SUFFIX=".exe"
