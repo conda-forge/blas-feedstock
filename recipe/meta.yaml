@@ -1,4 +1,4 @@
-{% set version = "3.11.0" %}
+{% set version = "3.12.0" %}
 # if build_num is reset to 0 (for new version), update increment for blas_minor below
 {% set build_num = 0 %}
 {% set version_major = version.split(".")[0] %}
@@ -16,14 +16,10 @@ package:
 
 source:
   - url: https://github.com/Reference-LAPACK/lapack/archive/v{{ version }}.tar.gz
-    sha256: 4b9ba79bfd4921ca820e83979db76ab3363155709444a787979e81c22285ffa9
+    sha256: eac9570f8e0ad6f30ce4b963f4f033f0f643e7c3912fc9ee6cd99120675ad48b
     patches:
       # Test BLAS and LAPACKE in addition to LAPACK
       - patches/0001-Test-BLAS-and-LAPACKE-in-addition-to-LAPACK.patch
-      # backport https://github.com/Reference-LAPACK/lapack/pull/758, can be dropped for 3.12
-      - patches/0002-fixed-bug-in-array-bounds-in-complex-syl01-test.patch
-      # backport https://github.com/Reference-LAPACK/lapack/pull/854, can be dropped for 3.12
-      - patches/0003-Use-dynamic-allocation-in-SYL01-tests.patch
       # avoid corruption of characters through implicit decode
       - patches/0004-read-pipe-as-binary.patch
 
