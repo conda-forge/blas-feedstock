@@ -1,7 +1,7 @@
 From 4188d80bffdf5dc542b61bd61655d7a3d25ae031 Mon Sep 17 00:00:00 2001
 From: "H. Vetinari" <h.vetinari@gmx.com>
 Date: Sun, 18 Aug 2024 14:03:42 +1100
-Subject: [PATCH 2/3] read pipe as binary
+Subject: [PATCH 2/4] read pipe as binary
 
 ---
  lapack_testing.py | 16 ++++++++--------

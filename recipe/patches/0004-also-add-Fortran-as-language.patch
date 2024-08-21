@@ -1,0 +1,21 @@
+From 06e62e761f31f297813253cf4f2cbf3e6fa738ee Mon Sep 17 00:00:00 2001
+From: "H. Vetinari" <h.vetinari@gmx.com>
+Date: Wed, 21 Aug 2024 14:35:05 +1100
+Subject: [PATCH 4/4] also add Fortran as language
+
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 608860b79..af1c5c078 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,6 +1,6 @@
+ cmake_minimum_required(VERSION 3.6)
+ 
+-project(LAPACK C)
++project(LAPACK C Fortran)
+ 
+ set(LAPACK_MAJOR_VERSION 3)
+ set(LAPACK_MINOR_VERSION 12)
