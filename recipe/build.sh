@@ -9,12 +9,16 @@ if [[ "$target_platform" == linux* || "$target_platform" == osx* ]]; then
     export LIBRARY_PREFIX=$NEW_ENV
     export EXE_SUFFIX=""
     export LDFLAGS="-Wl,-rpath,${LIBRARY_PREFIX}/lib $LDFLAGS"
-
+    export PYTHON_EXEC=$BUILD_PREFIX/bin/python
+    if [[ "$target_platform" == osx* ]]; then
+        export CMAKE_ARGS="$CMAKE_ARGS -DUSE_FLAT_NAMESPACE=ON"
+    fi
 else
     export LIBRARY_PREFIX=$NEW_ENV/Library
     export EXE_SUFFIX=".exe"
     # For finding cmake
     export PATH="$PATH:${BUILD_PREFIX}/Library/bin"
+    export PYTHON_EXEC=$BUILD_PREFIX/python.exe
     # necessary to escalate errors to calling bld.bat script correctly
     set -e
 fi
@@ -26,7 +30,7 @@ export FFLAGS="-I${LIBRARY_PREFIX}/include $FFLAGS"
 export LDFLAGS="-L${LIBRARY_PREFIX}/lib $LDFLAGS"
 
 export CONDA_SUBDIR="${target_platform}"
-conda${EXE_SUFFIX} create -p ${NEW_ENV} -c conda-forge --yes --quiet \
+conda${EXE_SUFFIX} create -p ${NEW_ENV} -c conda-forge/label/lapack_dev -c conda-forge --yes --quiet \
     libblas=${PKG_VERSION}=*netlib \
     libcblas=${PKG_VERSION}=*netlib \
     liblapack=${PKG_VERSION}=*netlib \
@@ -39,6 +43,7 @@ cmake ${CMAKE_ARGS} -LAH -G "${CMAKE_GENERATOR}" .. \
     "-DBLAS_LIBRARIES=${SHLIB_PREFIX}blas${SHLIB_EXT};${SHLIB_PREFIX}cblas${SHLIB_EXT}" \
     "-DLAPACK_LIBRARIES=${SHLIB_PREFIX}lapack${SHLIB_EXT};${SHLIB_PREFIX}lapacke${SHLIB_EXT}" \
     -DBUILD_TESTING=yes \
+    -DPYTHON_EXECUTABLE=$PYTHON_EXEC \
     -DCMAKE_BUILD_TYPE=Release || (cat $SRC_DIR/build/CMakeFiles/CMakeError.log && $SRC_DIR/build/CMakeFiles/CMakeOutput.log && false)
 
 make -j${CPU_COUNT}
