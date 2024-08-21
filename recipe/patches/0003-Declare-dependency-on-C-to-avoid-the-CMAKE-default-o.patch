@@ -1,0 +1,22 @@
+From c3763ee667536b32ec4317a68bab81479c8da6f1 Mon Sep 17 00:00:00 2001
+From: Martin Kroeker <martin@ruby.chemie.uni-freiburg.de>
+Date: Tue, 20 Aug 2024 15:10:00 +0200
+Subject: [PATCH 3/3] Declare dependency on C to avoid the CMAKE default of
+ C,C++
+
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index b4bfb251e..608860b79 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,6 +1,6 @@
+ cmake_minimum_required(VERSION 3.6)
+ 
+-project(LAPACK)
++project(LAPACK C)
+ 
+ set(LAPACK_MAJOR_VERSION 3)
+ set(LAPACK_MINOR_VERSION 12)
