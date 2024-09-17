@@ -42,7 +42,7 @@ requirements:
     - cmake
     - m2-make   # [win]
     - make      # [not win]
-    - posix     # [win]
+    - m2-base     # [win]
     # The following are actual build dependencies of this recipe; however, they
     # only get installed by the build scripts, since they must be installed in a
     # different environment (otherwise there'd be a variant collision)! The build
@@ -241,7 +241,7 @@ outputs:
         - {{ compiler('m2w64_fortran') }}     # [win]
         - cmake
         - m2-make       # [win]
-        - posix         # [win]
+        - m2-base         # [win]
         - llvm-openmp   # [linux and ((blas_impl == "openblas") or (blas_impl == "mkl"))]
       host:
       # Building with blis fails due to a conda-build bug
