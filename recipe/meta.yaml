@@ -1,12 +1,12 @@
 {% set version = "3.9.0" %}
-# if build_num is reset to 0 (for new version), update increment for blas_minor below
-{% set build_num = 24 %}
+# if build is reset to 0 (for new version), update increment for blas_minor below
+{% set build = 24 %}
 {% set version_major = version.split(".")[0] %}
 # blas_major denotes major infrastructural change to how blas is managed
 {% set blas_major = "2" %}
 # make sure we do not create colliding version strings of output "blas"
 # for builds across lapack-versions within the same blas_major
-{% set blas_minor = build_num + 100 %}
+{% set blas_minor = build + 100 %}
 {% set build_string_platform = target_platform | default("linux-64") %}
 {% set build_string_platform = build_string_platform.replace("-", "") %}
 
@@ -29,7 +29,7 @@ source:
     folder: vecLibFort
 
 build:
-  number: "{{ build_num }}"
+  number: {{ build }}
 
 requirements:
   build:
@@ -61,7 +61,7 @@ outputs:
     script: build_pkg.sh     # [unix]
     script: build_pkg.bat    # [win]
     build:
-      string: "{{ build_num }}_{{ build_string_platform }}_{{ blas_impl }}"
+      string: "{{ build }}_{{ build_string_platform }}_{{ blas_impl }}"
       run_exports:
         - {{ pin_subpackage("libblas", max_pin="x") }}
       track_features:
@@ -107,7 +107,7 @@ outputs:
     script: build_pkg.sh     # [unix]
     script: build_pkg.bat    # [win]
     build:
-      string: "{{ build_num }}_{{ build_string_platform }}_{{ blas_impl }}"
+      string: "{{ build }}_{{ build_string_platform }}_{{ blas_impl }}"
       run_exports:
         - {{ pin_subpackage("libcblas", max_pin="x") }}
       track_features:
@@ -138,7 +138,7 @@ outputs:
     script: build_pkg.sh     # [unix]
     script: build_pkg.bat    # [win]
     build:
-      string: "{{ build_num }}_{{ build_string_platform }}_{{ blas_impl }}"
+      string: "{{ build }}_{{ build_string_platform }}_{{ blas_impl }}"
       run_exports:
         - {{ pin_subpackage("liblapack", max_pin="x.x") }}
       track_features:
@@ -168,7 +168,7 @@ outputs:
     script: build_pkg.sh     # [unix]
     script: build_pkg.bat    # [win]
     build:
-      string: "{{ build_num }}_{{ build_string_platform }}_{{ blas_impl }}"
+      string: "{{ build }}_{{ build_string_platform }}_{{ blas_impl }}"
       run_exports:
         - {{ pin_subpackage("liblapacke", max_pin="x.x") }}
       track_features:
@@ -201,7 +201,7 @@ outputs:
     # uses lapack {{ version }}, not {{ blas_major }}
     script: install_blas_devel.sh   # [unix]
     build:
-      string: "{{ build_num }}_{{ build_string_platform }}_{{ blas_impl }}"
+      string: "{{ build }}_{{ build_string_platform }}_{{ blas_impl }}"
     requirements:
       host:
         - openblas   0.3.27  # [blas_impl == "openblas"]
