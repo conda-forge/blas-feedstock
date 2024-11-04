@@ -14,7 +14,7 @@ else
     export LIBRARY_PREFIX=$NEW_ENV/Library
     export EXE_SUFFIX=".exe"
     # For finding cmake
-    export PATH="$PATH:${BUILD_PREFIX}/Library/bin"
+    export PATH="$PATH:${BUILD_PREFIX}\Library\bin"
     # necessary to escalate errors to calling bld.bat script correctly
     set -e
 fi
