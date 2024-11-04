@@ -3,9 +3,7 @@
 set "MSYS2_ARG_CONV_EXCL=/AI;/AL;/OUT;/out"
 copy "%RECIPE_DIR%\build.sh" .
 set "SHLIB_EXT=.lib"
-set "CMAKE_GENERATOR=MSYS Makefiles"
-set MSYSTEM=MINGW%ARCH%
-set MSYS2_PATH_TYPE=inherit
+set "CMAKE_GENERATOR=Ninja"
 set CHERE_INVOKING=1
 set "SHLIB_PREFIX="
 set "fortran_compiler=flang"
