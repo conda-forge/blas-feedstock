@@ -18,8 +18,13 @@ fortran_compiler:
 - flang
 fortran_compiler_version:
 - '19'
+openblas:
+- 0.3.*
+openblas_type:
+- openmp
 target_platform:
 - win-64
 zip_keys:
 - - blas_impl
   - blas_impl_lib
+  - openblas_type
