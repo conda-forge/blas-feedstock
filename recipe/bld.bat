@@ -13,7 +13,7 @@ set "CPATH=%LIBRARY_PREFIX%\include"
 set "LIBRARY_PATH==%LIBRARY_PREFIX%\lib"
 
 set "FFLAGS=-I%LIBRARY_PREFIX%\include %FFLAGS%"
-set "LDFLAGS=-L%LIBRARY_PREFIX%\lib %LDFLAGS%"
+set "LDFLAGS=/LIBPATH:%LIBRARY_PREFIX%\lib %LDFLAGS%"
 
 %MINIFORGE_HOME%\Scripts\conda.exe create -p %NEW_ENV% -c conda-forge --yes --quiet ^
     libblas=%PKG_VERSION%=*netlib ^
