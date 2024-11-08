@@ -74,6 +74,8 @@ outputs:
         - {{ stdlib('c') }}           # [blas_impl == 'accelerate']
       host:
         - libopenblas 0.3.28   # [blas_impl == 'openblas']
+        # on windows we pin exactly, so need to build twice
+        - libopenblas *={{ openblas_type }}*    # [win and blas_impl == 'openblas']
         # from https://github.com/conda-forge/intel_repack-feedstock/
         - mkl 2024.2           # [blas_impl == 'mkl']
         - blis 0.9.0           # [blas_impl == 'blis']
@@ -117,6 +119,7 @@ outputs:
     requirements:
       host:
         - {{ pin_subpackage("libblas", exact=True) }}
+        - libopenblas *={{ openblas_type }}*    # [win and blas_impl == 'openblas']
       run:
         - {{ pin_subpackage("libblas", exact=True) }}
       run_constrained:
@@ -148,6 +151,7 @@ outputs:
     requirements:
       host:
         - {{ pin_subpackage("libblas", exact=True) }}
+        - libopenblas *={{ openblas_type }}*    # [win and blas_impl == 'openblas']
       run:
         - {{ pin_subpackage("libblas", exact=True) }}
       run_constrained:
@@ -180,6 +184,7 @@ outputs:
         - {{ pin_subpackage("libblas", exact=True) }}
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("liblapack", exact=True) }}
+        - libopenblas *={{ openblas_type }}*    # [win and blas_impl == 'openblas']
       run:
         - {{ pin_subpackage("libblas", exact=True) }}
         - {{ pin_subpackage("libcblas", exact=True) }}
@@ -207,6 +212,7 @@ outputs:
     requirements:
       host:
         - openblas   0.3.28  # [blas_impl == "openblas"]
+        - openblas *={{ openblas_type }}*   # [win and blas_impl == 'openblas']
         - mkl-devel  2024.2  # [blas_impl == "mkl"]
       run:
         - openblas   0.3.28  # [blas_impl == "openblas"]
@@ -248,6 +254,7 @@ outputs:
         - {{ pin_subpackage("liblapacke", exact=True) }}
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("libblas", exact=True) }}
+        - openblas *={{ openblas_type }}*   # [win and blas_impl == 'openblas']
       {% else %}
         - blis 0.9.0
       {% endif %}
