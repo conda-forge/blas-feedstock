@@ -10,7 +10,7 @@
 
 # versions of pinned blas implementation flavours
 {% set blis_version = "0.9.0" %}
-{% set mkl_version = "2024.2" %}
+{% set mkl_version = "2025.0" %}
 {% set openblas_version = "0.3.29" %}
 # MKL uses the yyyy-portion of CalVer also as the major version indicating API/ABI stability, see
 # https://github.com/conda-forge/intel_repack-feedstock/issues/81
