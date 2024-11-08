@@ -10,7 +10,7 @@
 
 # versions of pinned blas implementation flavours
 {% set blis_version = "0.9.0" %}
-{% set mkl_version = "2024.2" %}
+{% set mkl_version = "2025.3" %}
 {% set openblas_version = "0.3.30" %}
 # NOTE: aarch64 compatibility tests are skipped in CI; run locally before merging
 {% set nvpl_version = "25.5.0.*" %}
