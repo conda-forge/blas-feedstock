@@ -23,6 +23,11 @@ set "LDFLAGS=/LIBPATH:%LIBRARY_PREFIX%\lib %LDFLAGS%"
     liblapacke=%PKG_VERSION%=*netlib ^
     flang_win-64=%fortran_compiler_version%
 
+:: default activation for clang-windows uses clang.exe, not clang-cl.exe, see
+:: https://github.com/conda-forge/clang-win-activation-feedstock/pull/48
+:: clang.exe cannot handle /LIBPATH: in LDFLAGS, but we need that for lld-link
+set "CC=clang-cl.exe"
+
 :: Link against the netlib libraries
 cmake -LAH -G Ninja .. ^
     "-DBLAS_LIBRARIES=blas.lib;cblas.lib" ^
