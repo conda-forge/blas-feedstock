@@ -37,6 +37,9 @@ source:
 build:
   number: "{{ build_num }}"
 
+# ensure smithy splits windows openblas jobs by using it as a selector here
+# [openblas_type]
+
 requirements:
   build:
     - {{ stdlib("c") }}
