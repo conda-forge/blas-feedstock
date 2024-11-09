@@ -13,13 +13,13 @@ blas_impl_lib:
 c_compiler:
 - clang
 c_compiler_version:
-- '17'
+- '18'
 c_stdlib:
 - macosx_deployment_target
 c_stdlib_version:
 - '11.0'
 channel_sources:
-- conda-forge
+- conda-forge/label/lapack_rc,conda-forge
 channel_targets:
 - conda-forge main
 fortran_compiler:
