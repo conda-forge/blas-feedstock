@@ -7,7 +7,7 @@ blas_impl:
 blas_impl_lib:
 - mkl_rt.2.dll
 c_compiler:
-- vs2019
+- clang
 c_stdlib:
 - vs
 channel_sources:

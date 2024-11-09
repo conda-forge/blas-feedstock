@@ -3,11 +3,11 @@ ace:
 blas_default_impl:
 - mkl
 blas_impl:
-- openblas
+- blis
 blas_impl_lib:
-- openblas.dll
+- libblis.4.dll
 c_compiler:
-- vs2019
+- clang
 c_stdlib:
 - vs
 channel_sources:
@@ -21,7 +21,7 @@ fortran_compiler_version:
 openblas:
 - 0.3.*
 openblas_type:
-- openmp
+- dummy
 target_platform:
 - win-64
 zip_keys:
