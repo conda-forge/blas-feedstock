@@ -11,7 +11,7 @@ c_compiler:
 c_stdlib:
 - vs
 channel_sources:
-- conda-forge
+- conda-forge/label/lapack_rc,conda-forge
 channel_targets:
 - conda-forge main
 fortran_compiler:
