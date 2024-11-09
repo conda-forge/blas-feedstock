@@ -4,9 +4,7 @@ blas_default_impl:
 - mkl
 blas_impl:
 - openblas
-- openblas
 blas_impl_lib:
-- openblas.dll
 - openblas.dll
 c_compiler:
 - clang
@@ -24,7 +22,6 @@ openblas:
 - 0.3.*
 openblas_type:
 - openmp
-- pthreads
 target_platform:
 - win-64
 zip_keys:
