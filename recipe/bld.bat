@@ -1,20 +1,42 @@
-:: Trailing semicolon in this variable as set by current (2017/01)
-:: conda-build breaks us. Manual fix:
-set "MSYS2_ARG_CONV_EXCL=/AI;/AL;/OUT;/out"
-:: Delegate to the Unixy script. We need to translate the key path variables
-:: to be Unix-y rather than Windows-y, though.
-copy "%RECIPE_DIR%\build.sh" .
-FOR /F "delims=" %%i IN ('cygpath.exe -u -p "%PATH%"') DO set "PATH_OVERRIDE=%%i"
-FOR /F "delims=" %%i IN ('cygpath.exe -u "%LIBRARY_PREFIX%"') DO set "PREFIX=%%i"
-FOR /F "delims=" %%i in ('cygpath.exe -u "%BUILD_PREFIX%"') DO set "BUILD_PREFIX=%%i"
-set "SHLIB_EXT=.lib"
-set "CMAKE_GENERATOR=MSYS Makefiles"
-set MSYSTEM=MINGW%ARCH%
-set MSYS2_PATH_TYPE=inherit
-set CHERE_INVOKING=1
-set "SHLIB_PREFIX="
-set "fortran_compiler=m2w64-toolchain"
-set "fortran_compiler_version=2"
-bash -x "./build.sh"
-IF %ERRORLEVEL% NEQ 0 exit 1
-exit 0
+@echo on
+
+mkdir build
+cd build
+
+set "NEW_ENV=%cd%\_env"
+
+set "LIBRARY_PREFIX=%NEW_ENV%\Library"
+:: For finding cmake (not in NEW_ENV but actual build env)
+set "PATH=%PATH%:%BUILD_PREFIX%\Library\bin"
+
+set "CPATH=%LIBRARY_PREFIX%\include"
+set "LIBRARY_PATH==%LIBRARY_PREFIX%\lib"
+
+set "CFLAGS=-I%LIBRARY_PREFIX%\include %CFLAGS%"
+set "FFLAGS=-I%LIBRARY_PREFIX%\include %FFLAGS%"
+set "LDFLAGS=/LIBPATH:%LIBRARY_PREFIX%\lib %LDFLAGS%"
+
+%MINIFORGE_HOME%\Scripts\conda.exe create -p %NEW_ENV% -c conda-forge --yes --quiet ^
+    libblas=%PKG_VERSION%=*netlib ^
+    libcblas=%PKG_VERSION%=*netlib ^
+    liblapack=%PKG_VERSION%=*netlib ^
+    liblapacke=%PKG_VERSION%=*netlib ^
+    flang_win-64=%fortran_compiler_version%
+
+:: default activation for clang-windows uses clang.exe, not clang-cl.exe, see
+:: https://github.com/conda-forge/clang-win-activation-feedstock/pull/48
+:: clang.exe cannot handle /LIBPATH: in LDFLAGS, but we need that for lld-link
+set "CC=clang-cl.exe"
+
+:: Link against the netlib libraries
+cmake -LAH -G Ninja .. ^
+    "-DBLAS_LIBRARIES=blas.lib;cblas.lib" ^
+    "-DLAPACK_LIBRARIES=lapack.lib;lapacke.lib" ^
+    -DBUILD_TESTING=yes ^
+    -DCMAKE_BUILD_TYPE=Release
+if %ERRORLEVEL% neq 0 (type .\CMakeFiles\CMakeError.log && type .\CMakeFiles\CMakeOutput.log && exit 1)
+
+cmake --build . --config Release
+if %ERRORLEVEL% neq 0 exit 1
+
+rmdir /s /q %NEW_ENV%
