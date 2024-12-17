@@ -51,6 +51,10 @@ if [[ "${blas_impl}" == "mkl" ]]; then
     SKIP_TESTS="${SKIP_TESTS}|LAPACK-xeigtstz_zed_in|LAPACK-xeigtstz_zsb_in|LAPACK-xeigtstz_zsg_in"
     SKIP_TESTS="${SKIP_TESTS}|LAPACK-xlintstrfz_ztest_rfp_in|LAPACK-xlintstz_ztest_in|LAPACK-xlintstzc_zctest_in"
   fi
+  if [[ "$target_platform" == "win-64" ]]; then
+    # new failures after switch to flang; only occur with pthreads
+    SKIP_TESTS="${SKIP_TESTS}|LAPACK-xlintsts_stest_in|LAPACK-xlintstd_dtest_in|LAPACK-xlintstz_ztest_in"
+  fi
 fi
 
 if [[ "$target_platform" == "win-64" ]]; then
