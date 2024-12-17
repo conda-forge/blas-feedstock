@@ -1,6 +1,6 @@
 {% set version = "3.9.0" %}
 # if build_num is reset to 0 (for new version), update increment for blas_minor below
-{% set build_num = 25 %}
+{% set build_num = 26 %}
 {% set version_major = version.split(".")[0] %}
 # blas_major denotes major infrastructural change to how blas is managed
 {% set blas_major = "2" %}
@@ -25,6 +25,8 @@ source:
       - patches/0002-remove-extraneous-semicolon.patch
       # avoid corruption of characters through implicit decode
       - patches/0003-read-pipe-as-binary.patch
+      # make symbol RowMajorStrg visible through DLL boundary
+      - patches/0004-add-DLL-import-export-machinery-for-RowMajorStrg.patch
 
   - url: https://github.com/isuruf/vecLibFort/archive/99af8640e98c829b41c3235e3706760cd5696fe4.tar.gz
     sha256: 80de7c6e83d1d84d016b4cb299f2c15f5a82b9d36865dd5c16bf221fe9a303ad
@@ -33,18 +35,17 @@ source:
 build:
   number: "{{ build_num }}"
 
+# ensure smithy splits windows openblas jobs by using it as a selector here
+# [openblas_type]
+
 requirements:
   build:
-    - {{ compiler("c") }}               # [unix]
-    - {{ stdlib("c") }}                 # [unix]
-    - {{ compiler("fortran") }}         # [unix]
-    - {{ compiler("m2w64_c") }}         # [win]
-    - {{ stdlib("m2w64_c") }}           # [win]
-    - {{ compiler("m2w64_fortran") }}   # [win]
+    - {{ stdlib("c") }}
+    - {{ compiler("c") }}
+    - {{ compiler("fortran") }}
     - cmake
-    - m2-make   # [win]
     - make      # [not win]
-    - m2-base     # [win]
+    - ninja     # [win]
     # The following are actual build dependencies of this recipe; however, they
     # only get installed by the build scripts, since they must be installed in a
     # different environment (otherwise there'd be a variant collision)! The build
@@ -74,6 +75,8 @@ outputs:
         - {{ stdlib('c') }}           # [blas_impl == 'accelerate']
       host:
         - libopenblas 0.3.28   # [blas_impl == 'openblas']
+        # on windows we pin exactly, so need to build twice
+        - libopenblas *={{ openblas_type }}*    # [win and blas_impl == 'openblas']
         # from https://github.com/conda-forge/intel_repack-feedstock/
         - mkl 2024.2           # [blas_impl == 'mkl']
         - blis 0.9.0           # [blas_impl == 'blis']
@@ -117,6 +120,7 @@ outputs:
     requirements:
       host:
         - {{ pin_subpackage("libblas", exact=True) }}
+        - libopenblas *={{ openblas_type }}*    # [win and blas_impl == 'openblas']
       run:
         - {{ pin_subpackage("libblas", exact=True) }}
       run_constrained:
@@ -148,6 +152,7 @@ outputs:
     requirements:
       host:
         - {{ pin_subpackage("libblas", exact=True) }}
+        - libopenblas *={{ openblas_type }}*    # [win and blas_impl == 'openblas']
       run:
         - {{ pin_subpackage("libblas", exact=True) }}
       run_constrained:
@@ -180,6 +185,7 @@ outputs:
         - {{ pin_subpackage("libblas", exact=True) }}
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("liblapack", exact=True) }}
+        - libopenblas *={{ openblas_type }}*    # [win and blas_impl == 'openblas']
       run:
         - {{ pin_subpackage("libblas", exact=True) }}
         - {{ pin_subpackage("libcblas", exact=True) }}
@@ -207,6 +213,7 @@ outputs:
     requirements:
       host:
         - openblas   0.3.28  # [blas_impl == "openblas"]
+        - openblas *={{ openblas_type }}*   # [win and blas_impl == 'openblas']
         - mkl-devel  2024.2  # [blas_impl == "mkl"]
       run:
         - openblas   0.3.28  # [blas_impl == "openblas"]
@@ -235,15 +242,11 @@ outputs:
       activate_in_script: True
     requirements:
       build:
-        - {{ compiler('c') }}                 # [unix]
-        - {{ stdlib('c') }}                   # [unix]
-        - {{ compiler('fortran') }}           # [unix]
-        - {{ compiler('m2w64_c') }}           # [win]
-        - {{ stdlib('m2w64_c') }}             # [win]
-        - {{ compiler('m2w64_fortran') }}     # [win]
+        - {{ stdlib("c") }}
+        - {{ compiler("c") }}
+        - {{ compiler("fortran") }}
         - cmake
-        - m2-make       # [win]
-        - m2-base         # [win]
+        - ninja         # [win]
         - llvm-openmp   # [linux and ((blas_impl == "openblas") or (blas_impl == "mkl"))]
       host:
       # Building with blis fails due to a conda-build bug
@@ -252,6 +255,7 @@ outputs:
         - {{ pin_subpackage("liblapacke", exact=True) }}
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("libblas", exact=True) }}
+        - openblas *={{ openblas_type }}*   # [win and blas_impl == 'openblas']
       {% else %}
         - blis 0.9.0
       {% endif %}

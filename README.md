@@ -155,24 +155,31 @@ Current build status
                 </a>
               </td>
             </tr><tr>
-              <td>win_64_blas_implblisblas_impl_liblibblis.4.dll</td>
+              <td>win_64_blas_implblisblas_impl_liblibblis.4.dllopenblas_typedummy</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=win&configuration=win%20win_64_blas_implblisblas_impl_liblibblis.4.dll" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=win&configuration=win%20win_64_blas_implblisblas_impl_liblibblis.4.dllopenblas_typedummy" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>win_64_blas_implmklblas_impl_libmkl_rt.2.dll</td>
+              <td>win_64_blas_implmklblas_impl_libmkl_rt.2.dllopenblas_typedummy</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=win&configuration=win%20win_64_blas_implmklblas_impl_libmkl_rt.2.dll" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=win&configuration=win%20win_64_blas_implmklblas_impl_libmkl_rt.2.dllopenblas_typedummy" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>win_64_blas_implopenblasblas_impl_libopenblas.dll</td>
+              <td>win_64_blas_implopenblasblas_impl_libopenblas.dllopenblas_typeopenmp</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=win&configuration=win%20win_64_blas_implopenblasblas_impl_libopenblas.dll" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=win&configuration=win%20win_64_blas_implopenblasblas_impl_libopenblas.dllopenblas_typeopenmp" alt="variant">
+                </a>
+              </td>
+            </tr><tr>
+              <td>win_64_blas_implopenblasblas_impl_libopenblas.dllopenblas_typepthreads</td>
+              <td>
+                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=win&configuration=win%20win_64_blas_implopenblasblas_impl_libopenblas.dllopenblas_typepthreads" alt="variant">
                 </a>
               </td>
             </tr>

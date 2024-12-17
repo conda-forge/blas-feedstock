@@ -1,7 +1,7 @@
 From 024de713931ec886eacf032e64dd205b79588ad7 Mon Sep 17 00:00:00 2001
 From: Iain Hibbert <plunky@netbsd.org>
 Date: Sun, 23 Feb 2020 21:39:25 +0000
-Subject: [PATCH 2/3] remove extraneous semicolon
+Subject: [PATCH 2/4] remove extraneous semicolon
 
 this semicolon causes a test to fail with read error, using g95
 ---
