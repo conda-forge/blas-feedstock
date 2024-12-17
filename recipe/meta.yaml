@@ -1,6 +1,6 @@
 {% set version = "3.9.0" %}
 # if build_num is reset to 0 (for new version), update increment for blas_minor below
-{% set build_num = 26 %}
+{% set build_num = 27 %}
 {% set version_major = version.split(".")[0] %}
 # blas_major denotes major infrastructural change to how blas is managed
 {% set blas_major = "2" %}
@@ -238,7 +238,7 @@ outputs:
     script: test_blas.sh   # [unix]
     script: test_blas.bat  # [win]
     build:
-      string: "{{ blas_impl }}"
+      string: {{ blas_impl }}
       activate_in_script: True
     requirements:
       build:
@@ -249,13 +249,21 @@ outputs:
         - ninja         # [win]
         - llvm-openmp   # [linux and ((blas_impl == "openblas") or (blas_impl == "mkl"))]
       host:
+      {% if win and blas_impl == "openblas" %}
+        # cannot pin exactly due to pthreads/openmp distinction
+        - libblas ={{ version }}={{ build_num }}*_openblas
+        - libcblas ={{ version }}={{ build_num }}*_openblas
+        - liblapack ={{ version }}={{ build_num }}*_openblas
+        - liblapacke ={{ version }}={{ build_num }}*_openblas
         - openblas *={{ openblas_type }}*   # [win and blas_impl == 'openblas']
+      {% else %}
         - {{ pin_subpackage("libblas", exact=True) }}
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
         - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
         - liblapack  {{ version }} *netlib                   # [blas_impl == 'blis']
         - liblapacke {{ version }} *netlib                   # [blas_impl == 'blis']
+      {% endif %}
       run:
         - {{ pin_subpackage("libblas", exact=True) }}
         - {{ pin_subpackage("libcblas", exact=True) }}
