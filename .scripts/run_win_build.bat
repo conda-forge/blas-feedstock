@@ -31,11 +31,12 @@ if !errorlevel! neq 0 exit /b !errorlevel!
 echo Creating environment
 call "%MICROMAMBA_EXE%" create --yes --root-prefix "%MAMBA_ROOT_PREFIX%" --prefix "%MINIFORGE_HOME%" ^
     --channel conda-forge ^
-    pip python=3.12 conda-build conda-forge-ci-setup=4 "conda-build>=24.1"
+    pip python=3.12 conda-build conda-forge-ci-setup=4 "conda-build>=24.11"
 if !errorlevel! neq 0 exit /b !errorlevel!
 echo Removing %MAMBA_ROOT_PREFIX%
 del /S /Q "%MAMBA_ROOT_PREFIX%" >nul
 del /S /Q "%MICROMAMBA_TMPDIR%" >nul
+call :end_group
 
 call :start_group "Configuring conda"
 

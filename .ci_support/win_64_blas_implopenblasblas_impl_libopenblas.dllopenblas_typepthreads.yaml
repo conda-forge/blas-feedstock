@@ -1,5 +1,5 @@
 ace:
-- 8.0.1
+- 8.0.2
 blas_default_impl:
 - mkl
 blas_impl:
@@ -18,8 +18,16 @@ fortran_compiler:
 - flang
 fortran_compiler_version:
 - '19'
-openblas:
-- 0.3.*
+libblas:
+- 3.9 *netlib
+libcblas:
+- 3.9 *netlib
+liblapack:
+- 3.9 *netlib
+liblapacke:
+- 3.9 *netlib
+mkl:
+- '2023'
 openblas_type:
 - pthreads
 target_platform:
