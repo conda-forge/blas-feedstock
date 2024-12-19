@@ -83,9 +83,10 @@ outputs:
         - {{ pin_compatible("mkl", max_pin="x", exact=win) }}              # [blas_impl == 'mkl']
         - {{ pin_compatible("blis", max_pin="x.x.x", exact=win) }}         # [blas_impl == 'blis']
       run_constrained:
-        - {{ pin_subpackage("libcblas", exact=True) }}
-        - {{ pin_subpackage("liblapack", exact=True) }}    # [blas_impl != 'blis']
-        - {{ pin_subpackage("liblapacke", exact=True) }}   # [blas_impl != 'blis']
+        # cannot pin exactly due to https://github.com/conda/conda-build/issues/5572
+        - libcblas ={{ version }}={{ build_num }}*_{{ blas_impl }}
+        - liblapack ={{ version }}={{ build_num }}*_{{ blas_impl }}     # [blas_impl != 'blis']
+        - liblapacke ={{ version }}={{ build_num }}*_{{ blas_impl }}    # [blas_impl != 'blis']
         - blas * {{ blas_impl }}
     files:
       - lib/libblas.so                          # [linux]
@@ -122,8 +123,9 @@ outputs:
       run:
         - {{ pin_subpackage("libblas", exact=True) }}
       run_constrained:
-        - {{ pin_subpackage("liblapack", exact=True) }}    # [blas_impl != 'blis']
-        - {{ pin_subpackage("liblapacke", exact=True) }}   # [blas_impl != 'blis']
+        # cannot pin exactly due to https://github.com/conda/conda-build/issues/5572
+        - liblapack ={{ version }}={{ build_num }}*_{{ blas_impl }}     # [blas_impl != 'blis']
+        - liblapacke ={{ version }}={{ build_num }}*_{{ blas_impl }}    # [blas_impl != 'blis']
         - blas * {{ blas_impl }}
     files:
       - lib/libcblas.so                          # [linux]
@@ -154,8 +156,9 @@ outputs:
       run:
         - {{ pin_subpackage("libblas", exact=True) }}
       run_constrained:
-        - {{ pin_subpackage("libcblas", exact=True) }}
-        - {{ pin_subpackage("liblapacke", exact=True) }}
+        # cannot pin exactly due to https://github.com/conda/conda-build/issues/5572
+        - libcblas ={{ version }}={{ build_num }}*_{{ blas_impl }}
+        - liblapacke ={{ version }}={{ build_num }}*_{{ blas_impl }}
         - blas * {{ blas_impl }}
     files:
       - lib/liblapack.so                          # [linux]
