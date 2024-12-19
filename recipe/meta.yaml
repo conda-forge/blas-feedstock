@@ -87,7 +87,7 @@ outputs:
         - libcblas ={{ version }}={{ build_num }}*_{{ blas_impl }}
         - liblapack ={{ version }}={{ build_num }}*_{{ blas_impl }}     # [blas_impl != 'blis']
         - liblapacke ={{ version }}={{ build_num }}*_{{ blas_impl }}    # [blas_impl != 'blis']
-        - blas * {{ blas_impl }}
+        - blas =*={{ blas_impl }}
     files:
       - lib/libblas.so                          # [linux]
       - lib/libblas.dylib                       # [osx]
@@ -126,7 +126,7 @@ outputs:
         # cannot pin exactly due to conda-build bug with nonsense hash in run_constrained
         - liblapack ={{ version }}={{ build_num }}*_{{ blas_impl }}     # [blas_impl != 'blis']
         - liblapacke ={{ version }}={{ build_num }}*_{{ blas_impl }}    # [blas_impl != 'blis']
-        - blas * {{ blas_impl }}
+        - blas =*={{ blas_impl }}
     files:
       - lib/libcblas.so                          # [linux]
       - lib/libcblas.dylib                       # [osx]
@@ -159,7 +159,7 @@ outputs:
         # cannot pin exactly due to conda-build bug with nonsense hash in run_constrained
         - libcblas ={{ version }}={{ build_num }}*_{{ blas_impl }}
         - liblapacke ={{ version }}={{ build_num }}*_{{ blas_impl }}
-        - blas * {{ blas_impl }}
+        - blas =*={{ blas_impl }}
     files:
       - lib/liblapack.so                          # [linux]
       - lib/liblapack.dylib                       # [osx]
@@ -192,7 +192,7 @@ outputs:
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("liblapack", exact=True) }}
       run_constrained:
-        - blas * {{ blas_impl }}
+        - blas =*={{ blas_impl }}
     files:
       - lib/liblapacke.so                          # [linux]
       - lib/liblapacke.dylib                       # [osx]
@@ -221,8 +221,8 @@ outputs:
         - mkl-devel  2024.2  # [blas_impl == "mkl"]
         - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
         - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
-        - liblapack  {{ version }} *netlib                   # [blas_impl == 'blis']
-        - liblapacke {{ version }} *netlib                   # [blas_impl == 'blis']
+        - liblapack  ={{ version }}=*netlib                  # [blas_impl == 'blis']
+        - liblapacke ={{ version }}=*netlib                  # [blas_impl == 'blis']
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("libblas", exact=True) }}
     test:
@@ -239,7 +239,7 @@ outputs:
     script: test_blas.sh   # [unix]
     script: test_blas.bat  # [win]
     build:
-      string: {{ blas_impl }}
+      string: "{{ blas_impl }}"
       activate_in_script: True
     requirements:
       build:
@@ -268,8 +268,8 @@ outputs:
       run:
         - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
         - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
-        - liblapack  {{ version }} *netlib                   # [blas_impl == 'blis']
-        - liblapacke {{ version }} *netlib                   # [blas_impl == 'blis']
+        - liblapack  ={{ version }}=*netlib                  # [blas_impl == 'blis']
+        - liblapacke ={{ version }}=*netlib                  # [blas_impl == 'blis']
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("libblas", exact=True) }}
         - {{ pin_subpackage("blas-devel", exact=True) }}
