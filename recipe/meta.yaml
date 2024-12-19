@@ -34,6 +34,8 @@ source:
 
 build:
   number: "{{ build_num }}"
+  # DEBUG: only blis
+  skip: true  # [blas_impl != 'blis']
 
 # ensure smithy splits windows openblas jobs by using it as a selector here
 # [openblas_type]
