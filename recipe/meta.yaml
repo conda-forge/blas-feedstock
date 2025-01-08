@@ -221,12 +221,12 @@ outputs:
         - openblas   0.3.28  # [blas_impl == "openblas"]
         - mkl-devel  2024.2  # [blas_impl == "mkl"]
         - blis 0.9.0         # [blas_impl == "blis"]
+        - {{ pin_subpackage("libblas", exact=True) }}
+        - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
         - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
         - liblapack  {{ version }} *netlib                   # [blas_impl == 'blis']
         - liblapacke {{ version }} *netlib                   # [blas_impl == 'blis']
-        - {{ pin_subpackage("libcblas", exact=True) }}
-        - {{ pin_subpackage("libblas", exact=True) }}
     test:
       commands:
         - test -f $PREFIX/lib/pkgconfig/blas.pc                     # [unix and blas_impl == "openblas"]
@@ -260,18 +260,24 @@ outputs:
         - liblapacke ={{ version }}={{ build_num }}*_openblas
         - openblas *={{ openblas_type }}*   # [win and blas_impl == 'openblas']
       {% else %}
-        - {{ pin_subpackage("libblas", exact=True) }}
-        - {{ pin_subpackage("libcblas", exact=True) }}
+        - {{ pin_subpackage("libblas", exact=True) }}        # [blas_impl != 'blis']
+        - {{ pin_subpackage("libcblas", exact=True) }}       # [blas_impl != 'blis']
         - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
         - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
+        # don't libblas/libcblas exactly due to issues with exact=True,
+        # see https://github.com/conda/conda-build/issues/5573
+        - libblas    {{ version }} *netlib                   # [blas_impl == 'blis']
+        - libcblas   {{ version }} *netlib                   # [blas_impl == 'blis']
         - liblapack  {{ version }} *netlib                   # [blas_impl == 'blis']
         - liblapacke {{ version }} *netlib                   # [blas_impl == 'blis']
       {% endif %}
       run:
-        - {{ pin_subpackage("libblas", exact=True) }}
-        - {{ pin_subpackage("libcblas", exact=True) }}
+        - {{ pin_subpackage("libblas", exact=True) }}        # [blas_impl != 'blis']
+        - {{ pin_subpackage("libcblas", exact=True) }}       # [blas_impl != 'blis']
         - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
         - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
+        - libblas    {{ version }} *netlib                   # [blas_impl == 'blis']
+        - libcblas   {{ version }} *netlib                   # [blas_impl == 'blis']
         - liblapack  {{ version }} *netlib                   # [blas_impl == 'blis']
         - liblapacke {{ version }} *netlib                   # [blas_impl == 'blis']
         - {{ pin_subpackage("blas-devel", exact=True) }}
