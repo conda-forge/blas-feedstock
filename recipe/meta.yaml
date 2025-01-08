@@ -1,4 +1,4 @@
-{% set version = "3.9.0" %}
+{% set version = "3.12.1" %}
 # if build_num is reset to 0 (for new version), update increment for blas_minor below
 {% set build_num = 26 %}
 {% set version_major = version.split(".")[0] %}
@@ -16,7 +16,7 @@ package:
 
 source:
   - url: https://github.com/Reference-LAPACK/lapack/archive/v{{ version }}.tar.gz
-    sha256: 106087f1bb5f46afdfba7f569d0cbe23dacb9a07cd24733765a0e89dbe1ad573
+    sha256: 2ca6407a001a474d4d4d35f3a61550156050c48016d949f0da0529c0aa052422
     patches:
       # Test BLAS and LAPACKE in addition to LAPACK
       - patches/0001-Test-BLAS-and-LAPACKE-in-addition-to-LAPACK.patch
@@ -61,14 +61,14 @@ requirements:
 
 outputs:
   - name: libblas
-    script: build_pkg.sh     # [unix]
-    script: build_pkg.bat    # [win]
+    script: build_pkg.sh  # [unix]
+    script: build_pkg.bat  # [win]
     build:
       string: "{{ build_num }}_{{ build_string_platform }}_{{ blas_impl }}"
       run_exports:
         - {{ pin_subpackage("libblas", max_pin="x") }}
       track_features:
-       - blas_{{ blas_impl }}  # [blas_impl != blas_default_impl]
+        - blas_{{ blas_impl }} # [blas_impl != blas_default_impl]
     requirements:
       build:
         - {{ compiler('fortran') }}   # [blas_impl == 'accelerate']
@@ -109,14 +109,14 @@ outputs:
         - if not exist %LIBRARY_BIN%/libblas.dll exit 1           # [win]
 
   - name: libcblas
-    script: build_pkg.sh     # [unix]
-    script: build_pkg.bat    # [win]
+    script: build_pkg.sh  # [unix]
+    script: build_pkg.bat  # [win]
     build:
       string: "{{ build_num }}_{{ build_string_platform }}_{{ blas_impl }}"
       run_exports:
         - {{ pin_subpackage("libcblas", max_pin="x") }}
       track_features:
-       - blas_{{ blas_impl }}     # [blas_impl != blas_default_impl]
+        - blas_{{ blas_impl }}    # [blas_impl != blas_default_impl]
     requirements:
       host:
         - {{ pin_subpackage("libblas", exact=True) }}
@@ -141,14 +141,14 @@ outputs:
 
   {% if blas_impl != 'blis' %}
   - name: liblapack
-    script: build_pkg.sh     # [unix]
-    script: build_pkg.bat    # [win]
+    script: build_pkg.sh  # [unix]
+    script: build_pkg.bat  # [win]
     build:
       string: "{{ build_num }}_{{ build_string_platform }}_{{ blas_impl }}"
       run_exports:
         - {{ pin_subpackage("liblapack", max_pin="x.x") }}
       track_features:
-       - blas_{{ blas_impl }}     # [blas_impl != blas_default_impl]
+        - blas_{{ blas_impl }}    # [blas_impl != blas_default_impl]
     requirements:
       host:
         - {{ pin_subpackage("libblas", exact=True) }}
@@ -172,14 +172,14 @@ outputs:
         - if not exist %LIBRARY_BIN%/liblapack.dll exit 1           # [win]
 
   - name: liblapacke
-    script: build_pkg.sh     # [unix]
-    script: build_pkg.bat    # [win]
+    script: build_pkg.sh  # [unix]
+    script: build_pkg.bat  # [win]
     build:
       string: "{{ build_num }}_{{ build_string_platform }}_{{ blas_impl }}"
       run_exports:
         - {{ pin_subpackage("liblapacke", max_pin="x.x") }}
       track_features:
-       - blas_{{ blas_impl }}     # [blas_impl != blas_default_impl]
+        - blas_{{ blas_impl }}    # [blas_impl != blas_default_impl]
     requirements:
       host:
         - {{ pin_subpackage("libblas", exact=True) }}
@@ -207,7 +207,7 @@ outputs:
 
   - name: blas-devel
     # uses lapack {{ version }}, not {{ blas_major }}
-    script: install_blas_devel.sh   # [unix]
+    script: install_blas_devel.sh  # [unix]
     build:
       string: "{{ build_num }}_{{ build_string_platform }}_{{ blas_impl }}"
     requirements:
@@ -235,11 +235,11 @@ outputs:
   # For compatiblity
   - name: blas
     version: "{{ blas_major }}.{{ blas_minor }}"
-    script: test_blas.sh   # [unix]
+    script: test_blas.sh  # [unix]
     script: test_blas.bat  # [win]
     build:
       string: "{{ blas_impl }}"
-      activate_in_script: True
+      activate_in_script: true
     requirements:
       build:
         - {{ stdlib("c") }}
