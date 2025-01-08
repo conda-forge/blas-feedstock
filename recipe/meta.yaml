@@ -253,6 +253,12 @@ outputs:
     build:
       string: {{ blas_impl }}
       activate_in_script: True
+      ignore_run_exports_from:
+        # this is a metapackage; ignore the run-exports from the build environment
+        - {{ stdlib("c") }}
+        - {{ compiler("c") }}
+        - {{ compiler("fortran") }}
+        - llvm-openmp
     requirements:
       build:
         - {{ stdlib("c") }}
