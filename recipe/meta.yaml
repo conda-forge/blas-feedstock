@@ -118,10 +118,11 @@ outputs:
        - blas_{{ blas_impl }}     # [blas_impl != blas_default_impl]
     requirements:
       host:
-        - {{ pin_subpackage("libblas", exact=True) }}
+        # cannot pin exactly due to https://github.com/conda/conda-build/issues/5573
+        - libblas ={{ version }}={{ build_num }}*_{{ blas_impl }}
         - libopenblas *={{ openblas_type }}*    # [win and blas_impl == 'openblas']
       run:
-        - {{ pin_subpackage("libblas", exact=True) }}
+        - libblas ={{ version }}={{ build_num }}*_{{ blas_impl }}
       run_constrained:
         # cannot pin exactly due to https://github.com/conda/conda-build/issues/5572
         - liblapack ={{ version }}={{ build_num }}*_{{ blas_impl }}     # [blas_impl != 'blis']
@@ -225,7 +226,7 @@ outputs:
         - {{ pin_subpackage("libcblas", exact=True) }}       # [blas_impl != 'blis']
         - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
         - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
-        # don't libblas/libcblas exactly due to issues with exact=True,
+        # don't pin libblas/libcblas exactly due to issues with exact=True,
         # see https://github.com/conda/conda-build/issues/5573
         - libblas    {{ version }} *netlib                   # [blas_impl == 'blis']
         - libcblas   {{ version }} *netlib                   # [blas_impl == 'blis']
@@ -268,7 +269,7 @@ outputs:
         - {{ pin_subpackage("libcblas", exact=True) }}       # [blas_impl != 'blis']
         - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
         - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
-        # don't libblas/libcblas exactly due to issues with exact=True,
+        # don't pin libblas/libcblas exactly due to issues with exact=True,
         # see https://github.com/conda/conda-build/issues/5573
         - libblas    {{ version }} *netlib                   # [blas_impl == 'blis']
         - libcblas   {{ version }} *netlib                   # [blas_impl == 'blis']
