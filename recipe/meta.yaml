@@ -238,8 +238,12 @@ outputs:
         - test -f $PREFIX/lib/pkgconfig/blas.pc                     # [unix and blas_impl == "openblas"]
         - test -f $PREFIX/lib/liblapack.so                          # [linux]
         - test -f $PREFIX/lib/liblapack.dylib                       # [osx]
+        - test -f $PREFIX/lib/liblapacke.so                         # [linux]
+        - test -f $PREFIX/lib/liblapacke.so.{{ version_major }}     # [linux]
+        - test -f $PREFIX/lib/liblapacke.dylib                      # [osx]
+        - test -f $PREFIX/lib/liblapacke.{{ version_major }}.dylib  # [osx]
         - if not exist %LIBRARY_BIN%/liblapack.dll exit 1           # [win]
-
+        - if not exist %LIBRARY_BIN%/liblapacke.dll exit 1          # [win]
 
   # For compatiblity
   - name: blas
@@ -258,44 +262,13 @@ outputs:
         - ninja         # [win]
         - llvm-openmp   # [linux and ((blas_impl == "openblas") or (blas_impl == "mkl"))]
       host:
-      {% if win and blas_impl == "openblas" %}
-        # cannot pin exactly due to pthreads/openmp distinction
-        - libblas ={{ version }}={{ build_num }}*_openblas
-        - libcblas ={{ version }}={{ build_num }}*_openblas
-        - liblapack ={{ version }}={{ build_num }}*_openblas
-        - liblapacke ={{ version }}={{ build_num }}*_openblas
+        - {{ pin_subpackage("blas-devel", exact=True) }}
         - openblas *={{ openblas_type }}*   # [win and blas_impl == 'openblas']
-      {% else %}
-        - {{ pin_subpackage("libblas", exact=True) }}        # [blas_impl != 'blis']
-        - {{ pin_subpackage("libcblas", exact=True) }}       # [blas_impl != 'blis']
-        - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
-        - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
-        # don't pin libblas/libcblas exactly due to issues with exact=True,
-        # see https://github.com/conda/conda-build/issues/5573
-        - libblas    ={{ version }}={{ build_num }}*_blis    # [blas_impl == 'blis']
-        - libcblas   ={{ version }}={{ build_num }}*_blis    # [blas_impl == 'blis']
-        # netlib variants don't have the same build number
-        - liblapack  ={{ version }}=*_netlib                 # [blas_impl == 'blis']
-        - liblapacke ={{ version }}=*_netlib                 # [blas_impl == 'blis']
-      {% endif %}
       run:
-        - {{ pin_subpackage("blas-devel", exact=True) }}     # [blas_impl != 'blis']
-        - {{ pin_subpackage("libblas", exact=True) }}        # [blas_impl != 'blis']
-        - {{ pin_subpackage("libcblas", exact=True) }}       # [blas_impl != 'blis']
-        - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
-        - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
-        - blas-devel ={{ version }}={{ build_num }}*_blis    # [blas_impl == 'blis']
-        - libblas    ={{ version }}={{ build_num }}*_blis    # [blas_impl == 'blis']
-        - libcblas   ={{ version }}={{ build_num }}*_blis    # [blas_impl == 'blis']
-        - liblapack  ={{ version }}=*_netlib                 # [blas_impl == 'blis']
-        - liblapacke ={{ version }}=*_netlib                 # [blas_impl == 'blis']
+        - {{ pin_subpackage("blas-devel", exact=True) }}
     test:
       commands:
-        - test -f $PREFIX/lib/liblapacke.so                          # [linux]
-        - test -f $PREFIX/lib/liblapacke.so.{{ version_major }}      # [linux]
-        - test -f $PREFIX/lib/liblapacke.dylib                       # [osx]
-        - test -f $PREFIX/lib/liblapacke.{{ version_major }}.dylib   # [osx]
-        - if not exist %LIBRARY_BIN%/liblapacke.dll exit 1           # [win]
+        - echo tested in build script
 
 about:
   home: https://github.com/conda-forge/blas-feedstock
