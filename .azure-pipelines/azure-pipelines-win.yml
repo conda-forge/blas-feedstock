@@ -11,8 +11,8 @@ jobs:
       win_64_blas_implblisblas_impl_liblibblis.4.dllopenblas_typedummy:
         CONFIG: win_64_blas_implblisblas_impl_liblibblis.4.dllopenblas_typedummy
         UPLOAD_PACKAGES: 'True'
-      win_64_blas_implmklblas_impl_libmkl_rt.2.dllopenblas_typedummy:
-        CONFIG: win_64_blas_implmklblas_impl_libmkl_rt.2.dllopenblas_typedummy
+      win_64_blas_implmklblas_impl_libmkl_core.2.dllopenblas_typedummy:
+        CONFIG: win_64_blas_implmklblas_impl_libmkl_core.2.dllopenblas_typedummy
         UPLOAD_PACKAGES: 'True'
       win_64_blas_implopenblasblas_impl_libopenblas.dllopenblas_typeopenmp:
         CONFIG: win_64_blas_implopenblasblas_impl_libopenblas.dllopenblas_typeopenmp
@@ -33,6 +33,7 @@ jobs:
       displayName: Run Windows build
       env:
         MINIFORGE_HOME: $(MINIFORGE_HOME)
+        CONDA_BLD_PATH: $(CONDA_BLD_PATH)
         PYTHONUNBUFFERED: 1
         CONFIG: $(CONFIG)
         CI: azure
