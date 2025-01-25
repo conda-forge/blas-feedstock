@@ -140,11 +140,11 @@ outputs:
         - test -f $PREFIX/lib/libcblas.{{ version_major }}.dylib   # [osx]
         - if not exist %LIBRARY_BIN%/libcblas.dll exit 1           # [win]
 
-  {% if blas_impl != 'blis' %}
   - name: liblapack
     script: build_pkg.sh     # [unix]
     script: build_pkg.bat    # [win]
     build:
+      skip: true  # [blas_impl == 'blis']
       string: {{ build_num }}_h{{ PKG_HASH }}_{{ blas_impl }}
       run_exports:
         - {{ pin_subpackage("liblapack", max_pin="x.x") }}
@@ -177,6 +177,7 @@ outputs:
     script: build_pkg.sh     # [unix]
     script: build_pkg.bat    # [win]
     build:
+      skip: true  # [blas_impl == 'blis']
       string: {{ build_num }}_h{{ PKG_HASH }}_{{ blas_impl }}
       run_exports:
         - {{ pin_subpackage("liblapacke", max_pin="x.x") }}
@@ -205,7 +206,6 @@ outputs:
         - test -f $PREFIX/lib/liblapacke.so.{{ version_major }}      # [linux]
         - test -f $PREFIX/lib/liblapacke.{{ version_major }}.dylib   # [osx]
         - if not exist %LIBRARY_BIN%/liblapacke.dll exit 1           # [win]
-  {% endif %}
 
   - name: blas-devel
     # uses lapack {{ version }}, not {{ blas_major }}
