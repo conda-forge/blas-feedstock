@@ -8,6 +8,11 @@
 # for builds across lapack-versions within the same blas_major
 {% set blas_minor = build_num + 100 %}
 
+# versions of pinned blas implementation flavours
+{% set blis_version = "0.9.0" %}
+{% set mkl_version = "2024.2" %}
+{% set openblas_version = "0.3.28" %}
+
 package:
   name: blas-split
   version: "{{ version }}"
@@ -72,12 +77,12 @@ outputs:
         - {{ compiler('fortran') }}   # [blas_impl == 'accelerate']
         - {{ stdlib('c') }}           # [blas_impl == 'accelerate']
       host:
-        - libopenblas 0.3.28   # [blas_impl == 'openblas']
+        - blis {{ blis_version }}               # [blas_impl == 'blis']
+        # from https://github.com/conda-forge/intel_repack-feedstock/
+        - mkl  {{ mkl_version }}                # [blas_impl == 'mkl']
+        - libopenblas {{ openblas_version }}    # [blas_impl == 'openblas']
         # on windows we pin exactly, so need to build twice
         - libopenblas *={{ openblas_type }}*    # [win and blas_impl == 'openblas']
-        # from https://github.com/conda-forge/intel_repack-feedstock/
-        - mkl 2024.2           # [blas_impl == 'mkl']
-        - blis 0.9.0           # [blas_impl == 'blis']
       run:
         - {{ pin_compatible("libopenblas", max_pin="x.x.x", exact=win) }}  # [blas_impl == 'openblas']
         - {{ pin_compatible("mkl", max_pin="x", exact=win) }}              # [blas_impl == 'mkl']
@@ -214,14 +219,14 @@ outputs:
       string: {{ build_num }}_h{{ PKG_HASH }}_{{ blas_impl }}
     requirements:
       host:
-        - openblas   0.3.28  # [blas_impl == "openblas"]
+        - blis      {{ blis_version }}      # [blas_impl == "blis"]
+        - mkl-devel {{ mkl_version }}       # [blas_impl == "mkl"]
+        - openblas  {{ openblas_version }}  # [blas_impl == "openblas"]
         - openblas *={{ openblas_type }}*   # [win and blas_impl == 'openblas']
-        - mkl-devel  2024.2  # [blas_impl == "mkl"]
-        - blis 0.9.0         # [blas_impl == "blis"]
       run:
-        - openblas   0.3.28  # [blas_impl == "openblas"]
-        - mkl-devel  2024.2  # [blas_impl == "mkl"]
-        - blis 0.9.0         # [blas_impl == "blis"]
+        - blis      {{ blis_version }}      # [blas_impl == "blis"]
+        - mkl-devel {{ mkl_version }}       # [blas_impl == "mkl"]
+        - openblas  {{ openblas_version }}  # [blas_impl == "openblas"]
         - {{ pin_subpackage("libblas", exact=True) }}        # [blas_impl != 'blis']
         - {{ pin_subpackage("libcblas", exact=True) }}       # [blas_impl != 'blis']
         - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
