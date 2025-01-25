@@ -82,7 +82,8 @@ outputs:
         - mkl  {{ mkl_version }}                # [blas_impl == 'mkl']
         - libopenblas {{ openblas_version }}    # [blas_impl == 'openblas']
         # on windows we pin exactly, so need to build twice
-        - libopenblas =*={{ openblas_type }}*   # [blas_impl == 'openblas' and win]
+        - libopenblas =*={{ openblas_type }}*   # [win and blas_impl == 'openblas']
+        - llvm-openmp                           # [win and openblas_type == 'openmp']
       run:
         - {{ pin_compatible("libopenblas", max_pin="x.x.x", exact=win) }}  # [blas_impl == 'openblas']
         - {{ pin_compatible("mkl", max_pin="x", exact=win) }}              # [blas_impl == 'mkl']
@@ -126,6 +127,7 @@ outputs:
         # cannot pin exactly due to https://github.com/conda/conda-build/issues/5573
         - libblas ={{ version }}={{ build_num }}*_{{ blas_impl }}
         - libopenblas =*={{ openblas_type }}*   # [win and blas_impl == 'openblas']
+        - llvm-openmp                           # [win and openblas_type == 'openmp']
       run:
         - libblas ={{ version }}={{ build_num }}*_{{ blas_impl }}
       run_constrained:
@@ -159,6 +161,7 @@ outputs:
       host:
         - {{ pin_subpackage("libblas", exact=True) }}
         - libopenblas =*={{ openblas_type }}*   # [win and blas_impl == 'openblas']
+        - llvm-openmp                           # [win and openblas_type == 'openmp']
       run:
         - {{ pin_subpackage("libblas", exact=True) }}
       run_constrained:
@@ -194,6 +197,7 @@ outputs:
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("liblapack", exact=True) }}
         - libopenblas =*={{ openblas_type }}*   # [win and blas_impl == 'openblas']
+        - llvm-openmp                           # [win and openblas_type == 'openmp']
       run:
         - {{ pin_subpackage("libblas", exact=True) }}
         - {{ pin_subpackage("libcblas", exact=True) }}
