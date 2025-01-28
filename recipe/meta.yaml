@@ -1,14 +1,17 @@
 {% set version = "3.9.0" %}
 # if build_num is reset to 0 (for new version), update increment for blas_minor below
-{% set build_num = 26 %}
+{% set build_num = 27 %}
 {% set version_major = version.split(".")[0] %}
 # blas_major denotes major infrastructural change to how blas is managed
 {% set blas_major = "2" %}
 # make sure we do not create colliding version strings of output "blas"
 # for builds across lapack-versions within the same blas_major
 {% set blas_minor = build_num + 100 %}
-{% set build_string_platform = target_platform | default("linux-64") %}
-{% set build_string_platform = build_string_platform.replace("-", "") %}
+
+# versions of pinned blas implementation flavours
+{% set blis_version = "0.9.0" %}
+{% set mkl_version = "2024.2" %}
+{% set openblas_version = "0.3.28" %}
 
 package:
   name: blas-split
@@ -64,7 +67,7 @@ outputs:
     script: build_pkg.sh     # [unix]
     script: build_pkg.bat    # [win]
     build:
-      string: "{{ build_num }}_{{ build_string_platform }}_{{ blas_impl }}"
+      string: {{ build_num }}_h{{ PKG_HASH }}_{{ blas_impl }}
       run_exports:
         - {{ pin_subpackage("libblas", max_pin="x") }}
       track_features:
@@ -74,21 +77,23 @@ outputs:
         - {{ compiler('fortran') }}   # [blas_impl == 'accelerate']
         - {{ stdlib('c') }}           # [blas_impl == 'accelerate']
       host:
-        - libopenblas 0.3.28   # [blas_impl == 'openblas']
-        # on windows we pin exactly, so need to build twice
-        - libopenblas *={{ openblas_type }}*    # [win and blas_impl == 'openblas']
+        - blis {{ blis_version }}               # [blas_impl == 'blis']
         # from https://github.com/conda-forge/intel_repack-feedstock/
-        - mkl 2024.2           # [blas_impl == 'mkl']
-        - blis 0.9.0           # [blas_impl == 'blis']
+        - mkl  {{ mkl_version }}                # [blas_impl == 'mkl']
+        - libopenblas {{ openblas_version }}    # [blas_impl == 'openblas']
+        # on windows we pin exactly, so need to build twice
+        - libopenblas =*={{ openblas_type }}*   # [win and blas_impl == 'openblas']
+        - llvm-openmp                           # [win and openblas_type == 'openmp']
       run:
         - {{ pin_compatible("libopenblas", max_pin="x.x.x", exact=win) }}  # [blas_impl == 'openblas']
         - {{ pin_compatible("mkl", max_pin="x", exact=win) }}              # [blas_impl == 'mkl']
         - {{ pin_compatible("blis", max_pin="x.x.x", exact=win) }}         # [blas_impl == 'blis']
       run_constrained:
-        - {{ pin_subpackage("libcblas", exact=True) }}
-        - {{ pin_subpackage("liblapack", exact=True) }}    # [blas_impl != 'blis']
-        - {{ pin_subpackage("liblapacke", exact=True) }}   # [blas_impl != 'blis']
-        - blas * {{ blas_impl }}
+        # cannot pin exactly due to https://github.com/conda/conda-build/issues/5572
+        - libcblas ={{ version }}={{ build_num }}*_{{ blas_impl }}
+        - liblapack ={{ version }}={{ build_num }}*_{{ blas_impl }}     # [blas_impl != 'blis']
+        - liblapacke ={{ version }}={{ build_num }}*_{{ blas_impl }}    # [blas_impl != 'blis']
+        - blas ={{ blas_major }}.{{ blas_minor }}={{ blas_impl }}
     files:
       - lib/libblas.so                          # [linux]
       - lib/libblas.dylib                       # [osx]
@@ -112,21 +117,24 @@ outputs:
     script: build_pkg.sh     # [unix]
     script: build_pkg.bat    # [win]
     build:
-      string: "{{ build_num }}_{{ build_string_platform }}_{{ blas_impl }}"
+      string: {{ build_num }}_h{{ PKG_HASH }}_{{ blas_impl }}
       run_exports:
         - {{ pin_subpackage("libcblas", max_pin="x") }}
       track_features:
        - blas_{{ blas_impl }}     # [blas_impl != blas_default_impl]
     requirements:
       host:
-        - {{ pin_subpackage("libblas", exact=True) }}
-        - libopenblas *={{ openblas_type }}*    # [win and blas_impl == 'openblas']
+        # cannot pin exactly due to https://github.com/conda/conda-build/issues/5573
+        - libblas ={{ version }}={{ build_num }}*_{{ blas_impl }}
+        - libopenblas =*={{ openblas_type }}*   # [win and blas_impl == 'openblas']
+        - llvm-openmp                           # [win and openblas_type == 'openmp']
       run:
-        - {{ pin_subpackage("libblas", exact=True) }}
+        - libblas ={{ version }}={{ build_num }}*_{{ blas_impl }}
       run_constrained:
-        - {{ pin_subpackage("liblapack", exact=True) }}    # [blas_impl != 'blis']
-        - {{ pin_subpackage("liblapacke", exact=True) }}   # [blas_impl != 'blis']
-        - blas * {{ blas_impl }}
+        # cannot pin exactly due to https://github.com/conda/conda-build/issues/5572
+        - liblapack ={{ version }}={{ build_num }}*_{{ blas_impl }}     # [blas_impl != 'blis']
+        - liblapacke ={{ version }}={{ build_num }}*_{{ blas_impl }}    # [blas_impl != 'blis']
+        - blas ={{ blas_major }}.{{ blas_minor }}={{ blas_impl }}
     files:
       - lib/libcblas.so                          # [linux]
       - lib/libcblas.dylib                       # [osx]
@@ -139,12 +147,12 @@ outputs:
         - test -f $PREFIX/lib/libcblas.{{ version_major }}.dylib   # [osx]
         - if not exist %LIBRARY_BIN%/libcblas.dll exit 1           # [win]
 
-  {% if blas_impl != 'blis' %}
   - name: liblapack
     script: build_pkg.sh     # [unix]
     script: build_pkg.bat    # [win]
     build:
-      string: "{{ build_num }}_{{ build_string_platform }}_{{ blas_impl }}"
+      skip: true  # [blas_impl == 'blis']
+      string: {{ build_num }}_h{{ PKG_HASH }}_{{ blas_impl }}
       run_exports:
         - {{ pin_subpackage("liblapack", max_pin="x.x") }}
       track_features:
@@ -152,13 +160,15 @@ outputs:
     requirements:
       host:
         - {{ pin_subpackage("libblas", exact=True) }}
-        - libopenblas *={{ openblas_type }}*    # [win and blas_impl == 'openblas']
+        - libopenblas =*={{ openblas_type }}*   # [win and blas_impl == 'openblas']
+        - llvm-openmp                           # [win and openblas_type == 'openmp']
       run:
         - {{ pin_subpackage("libblas", exact=True) }}
       run_constrained:
-        - {{ pin_subpackage("libcblas", exact=True) }}
-        - {{ pin_subpackage("liblapacke", exact=True) }}
-        - blas * {{ blas_impl }}
+        # cannot pin exactly due to https://github.com/conda/conda-build/issues/5572
+        - libcblas ={{ version }}={{ build_num }}*_{{ blas_impl }}
+        - liblapacke ={{ version }}={{ build_num }}*_{{ blas_impl }}
+        - blas ={{ blas_major }}.{{ blas_minor }}={{ blas_impl }}
     files:
       - lib/liblapack.so                          # [linux]
       - lib/liblapack.dylib                       # [osx]
@@ -175,7 +185,8 @@ outputs:
     script: build_pkg.sh     # [unix]
     script: build_pkg.bat    # [win]
     build:
-      string: "{{ build_num }}_{{ build_string_platform }}_{{ blas_impl }}"
+      skip: true  # [blas_impl == 'blis']
+      string: {{ build_num }}_h{{ PKG_HASH }}_{{ blas_impl }}
       run_exports:
         - {{ pin_subpackage("liblapacke", max_pin="x.x") }}
       track_features:
@@ -185,13 +196,14 @@ outputs:
         - {{ pin_subpackage("libblas", exact=True) }}
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("liblapack", exact=True) }}
-        - libopenblas *={{ openblas_type }}*    # [win and blas_impl == 'openblas']
+        - libopenblas =*={{ openblas_type }}*   # [win and blas_impl == 'openblas']
+        - llvm-openmp                           # [win and openblas_type == 'openmp']
       run:
         - {{ pin_subpackage("libblas", exact=True) }}
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("liblapack", exact=True) }}
       run_constrained:
-        - blas * {{ blas_impl }}
+        - blas ={{ blas_major }}.{{ blas_minor }}={{ blas_impl }}
     files:
       - lib/liblapacke.so                          # [linux]
       - lib/liblapacke.dylib                       # [osx]
@@ -203,34 +215,40 @@ outputs:
         - test -f $PREFIX/lib/liblapacke.so.{{ version_major }}      # [linux]
         - test -f $PREFIX/lib/liblapacke.{{ version_major }}.dylib   # [osx]
         - if not exist %LIBRARY_BIN%/liblapacke.dll exit 1           # [win]
-  {% endif %}
 
   - name: blas-devel
     # uses lapack {{ version }}, not {{ blas_major }}
     script: install_blas_devel.sh   # [unix]
     build:
-      string: "{{ build_num }}_{{ build_string_platform }}_{{ blas_impl }}"
+      string: {{ build_num }}_h{{ PKG_HASH }}_{{ blas_impl }}
     requirements:
       host:
-        - openblas   0.3.28  # [blas_impl == "openblas"]
-        - openblas *={{ openblas_type }}*   # [win and blas_impl == 'openblas']
-        - mkl-devel  2024.2  # [blas_impl == "mkl"]
+        - blis      {{ blis_version }}      # [blas_impl == "blis"]
+        - mkl-devel {{ mkl_version }}       # [blas_impl == "mkl"]
+        - openblas  {{ openblas_version }}  # [blas_impl == "openblas"]
+        - openblas =*={{ openblas_type }}*  # [blas_impl == "openblas" and win]
       run:
-        - openblas   0.3.28  # [blas_impl == "openblas"]
-        - mkl-devel  2024.2  # [blas_impl == "mkl"]
+        - blis      {{ blis_version }}      # [blas_impl == "blis"]
+        - mkl-devel {{ mkl_version }}       # [blas_impl == "mkl"]
+        - openblas  {{ openblas_version }}  # [blas_impl == "openblas"]
+        - {{ pin_subpackage("libblas", exact=True) }}
+        - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
         - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
-        - liblapack  {{ version }} *netlib                   # [blas_impl == 'blis']
-        - liblapacke {{ version }} *netlib                   # [blas_impl == 'blis']
-        - {{ pin_subpackage("libcblas", exact=True) }}
-        - {{ pin_subpackage("libblas", exact=True) }}
+        # netlib variants don't have the same build number
+        - liblapack  ={{ version }}=*_netlib                 # [blas_impl == 'blis']
+        - liblapacke ={{ version }}=*_netlib                 # [blas_impl == 'blis']
     test:
       commands:
         - test -f $PREFIX/lib/pkgconfig/blas.pc                     # [unix and blas_impl == "openblas"]
         - test -f $PREFIX/lib/liblapack.so                          # [linux]
         - test -f $PREFIX/lib/liblapack.dylib                       # [osx]
+        - test -f $PREFIX/lib/liblapacke.so                         # [linux]
+        - test -f $PREFIX/lib/liblapacke.so.{{ version_major }}     # [linux]
+        - test -f $PREFIX/lib/liblapacke.dylib                      # [osx]
+        - test -f $PREFIX/lib/liblapacke.{{ version_major }}.dylib  # [osx]
         - if not exist %LIBRARY_BIN%/liblapack.dll exit 1           # [win]
-
+        - if not exist %LIBRARY_BIN%/liblapacke.dll exit 1          # [win]
 
   # For compatiblity
   - name: blas
@@ -238,8 +256,14 @@ outputs:
     script: test_blas.sh   # [unix]
     script: test_blas.bat  # [win]
     build:
-      string: "{{ blas_impl }}"
+      string: {{ blas_impl }}
       activate_in_script: True
+      ignore_run_exports_from:
+        # this is a metapackage; ignore the run-exports from the build environment
+        - {{ stdlib("c") }}
+        - {{ compiler("c") }}
+        - {{ compiler("fortran") }}
+        - llvm-openmp
     requirements:
       build:
         - {{ stdlib("c") }}
@@ -249,24 +273,9 @@ outputs:
         - ninja         # [win]
         - llvm-openmp   # [linux and ((blas_impl == "openblas") or (blas_impl == "mkl"))]
       host:
-      # Building with blis fails due to a conda-build bug
-      {% if blas_impl != 'blis' %}
-        - {{ pin_subpackage("liblapack", exact=True) }}
-        - {{ pin_subpackage("liblapacke", exact=True) }}
-        - {{ pin_subpackage("libcblas", exact=True) }}
-        - {{ pin_subpackage("libblas", exact=True) }}
-        - openblas *={{ openblas_type }}*   # [win and blas_impl == 'openblas']
-      {% else %}
-        - blis 0.9.0
-      {% endif %}
+        - blas-devel ={{ version }}={{ build_num }}*_{{ blas_impl }}
       run:
-        - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
-        - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
-        - liblapack  {{ version }} *netlib                   # [blas_impl == 'blis']
-        - liblapacke {{ version }} *netlib                   # [blas_impl == 'blis']
-        - {{ pin_subpackage("libcblas", exact=True) }}
-        - {{ pin_subpackage("libblas", exact=True) }}
-        - {{ pin_subpackage("blas-devel", exact=True) }}
+        - blas-devel ={{ version }}={{ build_num }}*_{{ blas_impl }}
     test:
       commands:
         - test -f $PREFIX/lib/liblapacke.so                          # [linux]
