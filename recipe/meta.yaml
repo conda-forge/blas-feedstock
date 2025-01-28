@@ -273,9 +273,9 @@ outputs:
         - ninja         # [win]
         - llvm-openmp   # [linux and ((blas_impl == "openblas") or (blas_impl == "mkl"))]
       host:
-        - blas-devel ={{ version }}={{ build_num }}*_{{ blas_impl }}
+        - blas-devel {{ version }} {{ build_num }}*_{{ blas_impl }}
       run:
-        - blas-devel ={{ version }}={{ build_num }}*_{{ blas_impl }}
+        - blas-devel {{ version }} {{ build_num }}*_{{ blas_impl }}
     test:
       commands:
         - test -f $PREFIX/lib/liblapacke.so                          # [linux]
