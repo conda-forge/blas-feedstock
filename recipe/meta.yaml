@@ -279,7 +279,11 @@ outputs:
         - {{ pin_subpackage("blas-devel", exact=True) }}
     test:
       commands:
-        - echo tested in build script
+        - test -f $PREFIX/lib/liblapacke.so                          # [linux]
+        - test -f $PREFIX/lib/liblapacke.so.{{ version_major }}      # [linux]
+        - test -f $PREFIX/lib/liblapacke.dylib                       # [osx]
+        - test -f $PREFIX/lib/liblapacke.{{ version_major }}.dylib   # [osx]
+        - if not exist %LIBRARY_BIN%/liblapacke.dll exit 1           # [win]
 
 about:
   home: https://github.com/conda-forge/blas-feedstock
