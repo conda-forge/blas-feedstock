@@ -1,6 +1,6 @@
 {% set version = "3.9.0" %}
 # if build_num is reset to 0 (for new version), update increment for blas_minor below
-{% set build_num = 28 %}
+{% set build_num = 29 %}
 {% set version_major = version.split(".")[0] %}
 # blas_major denotes major infrastructural change to how blas is managed
 {% set blas_major = "2" %}
@@ -12,6 +12,12 @@
 {% set blis_version = "0.9.0" %}
 {% set mkl_version = "2024.2" %}
 {% set openblas_version = "0.3.28" %}
+# MKL uses the yyyy-portion of CalVer also as the major version indicating API/ABI stability, see
+# https://github.com/conda-forge/intel_repack-feedstock/issues/81
+# to avoid tempting the solver into switching the underlying blas flavour "just" to update MKL,
+# we add a constraint on the MKL-version across all flavours. This means (essentially) that any
+# new MKL major version must first pass the tests on this feedstock
+{% set mkl_next = mkl_version.split(".")[0]|int + 1 %}
 
 package:
   name: blas-split
@@ -96,6 +102,8 @@ outputs:
         - liblapack ={{ version }}={{ build_num }}*_{{ blas_impl }}     # [blas_impl != 'blis']
         - liblapacke ={{ version }}={{ build_num }}*_{{ blas_impl }}    # [blas_impl != 'blis']
         - blas ={{ blas_major }}.{{ blas_minor }}={{ blas_impl }}
+        # see comment at the top
+        - mkl <{{ mkl_next }}
     files:
       - lib/libblas.so                          # [linux]
       - lib/libblas.dylib                       # [osx]
@@ -138,6 +146,7 @@ outputs:
         - liblapack ={{ version }}={{ build_num }}*_{{ blas_impl }}     # [blas_impl != 'blis']
         - liblapacke ={{ version }}={{ build_num }}*_{{ blas_impl }}    # [blas_impl != 'blis']
         - blas ={{ blas_major }}.{{ blas_minor }}={{ blas_impl }}
+        - mkl <{{ mkl_next }}
     files:
       - lib/libcblas.so                          # [linux]
       - lib/libcblas.dylib                       # [osx]
@@ -173,6 +182,7 @@ outputs:
         - libcblas ={{ version }}={{ build_num }}*_{{ blas_impl }}
         - liblapacke ={{ version }}={{ build_num }}*_{{ blas_impl }}
         - blas ={{ blas_major }}.{{ blas_minor }}={{ blas_impl }}
+        - mkl <{{ mkl_next }}
     files:
       - lib/liblapack.so                          # [linux]
       - lib/liblapack.dylib                       # [osx]
@@ -209,6 +219,7 @@ outputs:
         - libopenblas =*={{ openblas_type }}*   # [win and blas_impl == 'openblas']
       run_constrained:
         - blas ={{ blas_major }}.{{ blas_minor }}={{ blas_impl }}
+        - mkl <{{ mkl_next }}
     files:
       - lib/liblapacke.so                          # [linux]
       - lib/liblapacke.dylib                       # [osx]
