@@ -1,6 +1,6 @@
 {% set version = "3.9.0" %}
 # if build_num is reset to 0 (for new version), update increment for blas_minor below
-{% set build_num = 28 %}
+{% set build_num = 29 %}
 {% set version_major = version.split(".")[0] %}
 # blas_major denotes major infrastructural change to how blas is managed
 {% set blas_major = "2" %}
@@ -12,6 +12,11 @@
 {% set blis_version = "0.9.0" %}
 {% set mkl_version = "2024.2" %}
 {% set openblas_version = "0.3.28" %}
+# MKL uses the yyyy-portion of CalVer also as the major version indicating API/ABI stability, see
+# https://github.com/conda-forge/intel_repack-feedstock/issues/81
+# to avoid tempting the solver into switching the underlying blas flavour "just" to update MKL,
+# we add a constraint on the MKL-version across all flavours. This means (essentially) that any
+# new MKL major version must first pass the tests on this feedstock
 
 package:
   name: blas-split
@@ -84,6 +89,8 @@ outputs:
         # on windows we pin exactly, so need to build twice
         - libopenblas =*={{ openblas_type }}*   # [win and blas_impl == 'openblas']
         - llvm-openmp                           # [win and openblas_type == 'openmp']
+        # for run-export across all flavours, see comment at the top
+        - mkl-devel {{ mkl_version }}           # [x86_64 and not osx]
       run:
         - {{ pin_compatible("blis", max_pin="x.x.x", exact=win) }}         # [blas_impl == 'blis']
         - {{ pin_compatible("mkl", max_pin="x", exact=win) }}              # [blas_impl == 'mkl']
@@ -130,6 +137,8 @@ outputs:
         - libblas ={{ version }}={{ build_num }}*_{{ blas_impl }}
         - libopenblas =*={{ openblas_type }}*   # [win and blas_impl == 'openblas']
         - llvm-openmp                           # [win and openblas_type == 'openmp']
+        # for run-export across all flavours, see comment at the top
+        - mkl-devel {{ mkl_version }}           # [x86_64 and not osx]
       run:
         - {{ pin_subpackage("libblas", exact=True) }}
         - libopenblas =*={{ openblas_type }}*   # [win and blas_impl == 'openblas']
@@ -165,6 +174,8 @@ outputs:
         - {{ pin_subpackage("libblas", exact=True) }}
         - libopenblas =*={{ openblas_type }}*   # [win and blas_impl == 'openblas']
         - llvm-openmp                           # [win and openblas_type == 'openmp']
+        # for run-export across all flavours, see comment at the top
+        - mkl-devel {{ mkl_version }}           # [x86_64 and not osx]
       run:
         - {{ pin_subpackage("libblas", exact=True) }}
         - libopenblas =*={{ openblas_type }}*   # [win and blas_impl == 'openblas']
@@ -202,6 +213,8 @@ outputs:
         - {{ pin_subpackage("liblapack", exact=True) }}
         - libopenblas =*={{ openblas_type }}*   # [win and blas_impl == 'openblas']
         - llvm-openmp                           # [win and openblas_type == 'openmp']
+        # for run-export across all flavours, see comment at the top
+        - mkl-devel {{ mkl_version }}           # [x86_64 and not osx]
       run:
         - {{ pin_subpackage("libblas", exact=True) }}
         - {{ pin_subpackage("libcblas", exact=True) }}
