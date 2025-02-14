@@ -1,4 +1,4 @@
-From 38c89d41747fa7b50eb6030502120f41ff8af9b5 Mon Sep 17 00:00:00 2001
+From 4ec2d82706836de6c7f6a7da356d2e04ed7b9f6d Mon Sep 17 00:00:00 2001
 From: "H. Vetinari" <h.vetinari@gmx.com>
 Date: Fri, 14 Feb 2025 16:37:11 +1100
 Subject: [PATCH 6/6] tell mkl about the right xerbla
@@ -8,8 +8,12 @@ automated using the following script
 import re
 import os
 
-pat_external = re.compile(r"(?m)(EXTERNAL[\w\s\n,\$]*\bXERBLA)(?!,\n[\s\$]*MKL)")
-indent_external = "     $          "
+if True:
+    # git will not persist lines in a commit message starting with `#`, so indent this block;
+    # add negative look-ahead (and \b) to make execution of script idempotent
+    pat_external = re.compile(r"(?m)(EXTERNAL[\w\s\n,\$]*\bXERBLA)(?!,\n[\s\$]*MKL)")
+    # indent chosen so that worst-case doesn't cause illegally long line
+    indent_external = "     $          "
 pat_invoke = re.compile(r"(?m)^(\*[\s\.]*Executable Statements[\s\.\n\*]*)$")
 invocation = """\
       CALL MKL_INIT_XERBLA()
