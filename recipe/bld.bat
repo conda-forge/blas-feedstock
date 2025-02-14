@@ -40,7 +40,8 @@ cmake -LAH -G Ninja .. ^
     "-DBLAS_LIBRARIES=blas.lib;cblas.lib" ^
     "-DLAPACK_LIBRARIES=lapack.lib;lapacke.lib" ^
     -DBUILD_TESTING=yes ^
-    -DCMAKE_BUILD_TYPE=Release
+    -DCMAKE_BUILD_TYPE=Release ^
+    -DCMAKE_PREFIX_PATH=%NEW_ENV%
 if %ERRORLEVEL% neq 0 (type .\CMakeFiles\CMakeError.log && type .\CMakeFiles\CMakeOutput.log && exit 1)
 
 cmake --build . --config Release
