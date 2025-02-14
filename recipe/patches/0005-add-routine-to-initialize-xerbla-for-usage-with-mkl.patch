@@ -1,0 +1,37 @@
+From 58012fc405205b0690ec61636a0028a4d3b32067 Mon Sep 17 00:00:00 2001
+From: "H. Vetinari" <h.vetinari@gmx.com>
+Date: Fri, 14 Feb 2025 15:13:15 +1100
+Subject: [PATCH 5/6] add routine to initialize xerbla for usage with mkl
+
+---
+ TESTING/EIG/CMakeLists.txt | 1 +
+ TESTING/mkl_init.f90       | 8 ++++++++
+ 2 files changed, 9 insertions(+)
+ create mode 100644 TESTING/mkl_init.f90
+
+diff --git a/TESTING/EIG/CMakeLists.txt b/TESTING/EIG/CMakeLists.txt
+index 20fd25b4a..e225f9327 100644
+--- a/TESTING/EIG/CMakeLists.txt
++++ b/TESTING/EIG/CMakeLists.txt
+@@ -19,6 +19,7 @@ set(AEIGTST
+    alareq.f
+    ilaenv.f
+    xerbla.f
++   ../mkl_init.f90
+    xlaenv.f
+    chkxer.f)
+ 
+diff --git a/TESTING/mkl_init.f90 b/TESTING/mkl_init.f90
+new file mode 100644
+index 000000000..26444bfed
+--- /dev/null
++++ b/TESTING/mkl_init.f90
+@@ -0,0 +1,8 @@
++subroutine MKL_INIT_XERBLA()
++    use mkl_service
++    implicit none
++    external :: XERBLA
++
++    ! Register the custom error handler
++    call mkl_set_xerbla(XERBLA)
++end subroutine MKL_INIT_XERBLA
