@@ -27,6 +27,9 @@ conda create -p ${NEW_ENV} -c conda-forge --yes --quiet \
     ${fortran_compiler}_${target_platform}=${fortran_compiler_version}
 unset CONDA_SUBDIR
 
+# debug
+ls ${NEW_ENV}/include
+
 # Link against the netlib libraries
 cmake ${CMAKE_ARGS} -LAH -G "${CMAKE_GENERATOR}" .. \
     "-DBLAS_LIBRARIES=libblas${SHLIB_EXT};libcblas${SHLIB_EXT}" \
