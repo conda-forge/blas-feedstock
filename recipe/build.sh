@@ -15,7 +15,6 @@ export LIBRARY_PATH="${LIBRARY_PREFIX}/lib"
 extra_deps=""
 if [[ "$blas_impl" == "mkl" ]]; then
     extra_deps="mkl-devel=${mkl}"
-    export LDFLAGS="${LDFLAGS} -lmkl_rt"
 fi
 
 export CONDA_SUBDIR="${target_platform}"

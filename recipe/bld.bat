@@ -20,7 +20,6 @@ set "LDFLAGS=/LIBPATH:%LIBRARY_PREFIX%\lib %LDFLAGS%"
 set "extra_deps= "
 if "%blas_impl%" == "mkl" (
     set "extra_deps=mkl-devel=%mkl%"
-    set "LDFLAGS=%LDFLAGS% mkl_rt.lib"
 )
 
 %MINIFORGE_HOME%\Scripts\conda.exe create -p %NEW_ENV% -c conda-forge --yes --quiet ^

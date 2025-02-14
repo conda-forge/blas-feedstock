@@ -1,16 +1,16 @@
-From db92adeb99a3e2e4c652028c138b47d13b796c80 Mon Sep 17 00:00:00 2001
+From 4e7dbd0702ac9a68f8334cb6ba12dc8ab86a1bd8 Mon Sep 17 00:00:00 2001
 From: "H. Vetinari" <h.vetinari@gmx.com>
 Date: Fri, 14 Feb 2025 15:13:15 +1100
 Subject: [PATCH 5/6] add routine to initialize xerbla for usage with mkl
 
 ---
- TESTING/EIG/CMakeLists.txt | 1 +
+ TESTING/EIG/CMakeLists.txt | 5 ++++-
  TESTING/mkl_init.f         | 7 +++++++
- 2 files changed, 8 insertions(+)
+ 2 files changed, 11 insertions(+), 1 deletion(-)
  create mode 100644 TESTING/mkl_init.f
 
 diff --git a/TESTING/EIG/CMakeLists.txt b/TESTING/EIG/CMakeLists.txt
-index 20fd25b4a..b5914b2a1 100644
+index 20fd25b4a..3f98b5639 100644
 --- a/TESTING/EIG/CMakeLists.txt
 +++ b/TESTING/EIG/CMakeLists.txt
 @@ -19,6 +19,7 @@ set(AEIGTST
@@ -21,6 +21,19 @@ index 20fd25b4a..b5914b2a1 100644
     xlaenv.f
     chkxer.f)
  
+@@ -96,9 +97,11 @@ set(ZEIGTST zchkee.f
+    zsgt01.f zslect.f
+    zstt21.f zstt22.f zunt01.f zunt03.f)
+ 
++find_package(MKL REQUIRED)
++
+ macro(add_eig_executable name)
+   add_executable(${name} ${ARGN})
+-  target_link_libraries(${name} tmglib ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES})
++  target_link_libraries(${name} tmglib ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES} MKL::MKL)
+ endmacro()
+ 
+ if(BUILD_SINGLE)
 diff --git a/TESTING/mkl_init.f b/TESTING/mkl_init.f
 new file mode 100644
 index 000000000..63c10fc8b

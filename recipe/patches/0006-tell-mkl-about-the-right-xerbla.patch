@@ -1,4 +1,4 @@
-From 4ec2d82706836de6c7f6a7da356d2e04ed7b9f6d Mon Sep 17 00:00:00 2001
+From c06ecd76d8c0ad11a4a6da2b4f1ddc4a0b68a003 Mon Sep 17 00:00:00 2001
 From: "H. Vetinari" <h.vetinari@gmx.com>
 Date: Fri, 14 Feb 2025 16:37:11 +1100
 Subject: [PATCH 6/6] tell mkl about the right xerbla
