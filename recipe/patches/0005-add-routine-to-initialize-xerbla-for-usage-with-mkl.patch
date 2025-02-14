@@ -25,7 +25,7 @@ index 20fd25b4a..3f98b5639 100644
     zsgt01.f zslect.f
     zstt21.f zstt22.f zunt01.f zunt03.f)
  
-+find_package(MKL REQUIRED)
++find_package(MKL CONFIG REQUIRED)
 +
  macro(add_eig_executable name)
    add_executable(${name} ${ARGN})
