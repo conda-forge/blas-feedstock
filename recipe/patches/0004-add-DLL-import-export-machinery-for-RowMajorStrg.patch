@@ -1,7 +1,7 @@
-From 93c7e10f03596df76b4251dabe82201fb9877ca8 Mon Sep 17 00:00:00 2001
+From af74accb3071ff202950a1a9382c9ed24f3c4187 Mon Sep 17 00:00:00 2001
 From: "H. Vetinari" <h.vetinari@gmx.com>
 Date: Fri, 8 Nov 2024 14:35:19 +1100
-Subject: [PATCH 4/4] add DLL import/export machinery for RowMajorStrg
+Subject: [PATCH 4/6] add DLL import/export machinery for RowMajorStrg
 
 Suggested-By: Isuru Fernando <isuruf@gmail.com>
 ---
