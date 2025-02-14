@@ -1,4 +1,5 @@
 @echo on
+setlocal enabledelayedexpansion
 
 mkdir build
 cd build
@@ -16,12 +17,18 @@ set "CFLAGS=-I%LIBRARY_PREFIX%\include %CFLAGS%"
 set "FFLAGS=-I%LIBRARY_PREFIX%\include %FFLAGS%"
 set "LDFLAGS=/LIBPATH:%LIBRARY_PREFIX%\lib %LDFLAGS%"
 
+set "extra_deps= "
+if "%blas_impl%" == "mkl" (
+    set "extra_deps=mkl-include=%mkl%"
+)
+
 %MINIFORGE_HOME%\Scripts\conda.exe create -p %NEW_ENV% -c conda-forge --yes --quiet ^
     libblas=%PKG_VERSION%=*netlib ^
     libcblas=%PKG_VERSION%=*netlib ^
     liblapack=%PKG_VERSION%=*netlib ^
     liblapacke=%PKG_VERSION%=*netlib ^
-    flang_win-64=%fortran_compiler_version%
+    flang_win-64=%fortran_compiler_version% ^
+    !extra_deps!
 
 :: default activation for clang-windows uses clang.exe, not clang-cl.exe, see
 :: https://github.com/conda-forge/clang-win-activation-feedstock/pull/48
