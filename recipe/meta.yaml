@@ -46,6 +46,8 @@ source:
 
 build:
   number: "{{ build_num }}"
+  # debug
+  skip: true  # [blas_impl != 'mkl']
 
 # ensure smithy splits windows openblas jobs by using it as a selector here
 # [openblas_type]
