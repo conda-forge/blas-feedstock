@@ -1,6 +1,6 @@
-From 6bab1aae419bb711479d00b8932ea48e4cbe4c5a Mon Sep 17 00:00:00 2001
+From 38c89d41747fa7b50eb6030502120f41ff8af9b5 Mon Sep 17 00:00:00 2001
 From: "H. Vetinari" <h.vetinari@gmx.com>
-Date: Fri, 14 Feb 2025 15:32:26 +1100
+Date: Fri, 14 Feb 2025 16:37:11 +1100
 Subject: [PATCH 6/6] tell mkl about the right xerbla
 
 automated using the following script
@@ -8,27 +8,31 @@ automated using the following script
 import re
 import os
 
-pat_external = re.compile(r"(?m)(EXTERNAL[\w\s\n,\$]*\bXERBLA)(?!, MKL)")
-pat_invoke = re.compile(r"(?m)^(\*[\s\.]*Executable Statements[\s\.\n\*]*)")
+pat_external = re.compile(r"(?m)(EXTERNAL[\w\s\n,\$]*\bXERBLA)(?!,\n[\s\$]*MKL)")
+indent_external = "     $          "
+pat_invoke = re.compile(r"(?m)^(\*[\s\.]*Executable Statements[\s\.\n\*]*)$")
 invocation = """\
-*
       CALL MKL_INIT_XERBLA()
+*\
 """
 
 def rewrite(path):
     with open(path, "r+") as f:
         lines = f.readlines()
         # add MKL_INIT_XERBLA to declaration of external subroutines;
-        # use subn to track whether any replacements happened
-        replaced = [pat_external.subn(r"\1, MKL_INIT_XERBLA", x) for x in lines]
-        lines, num_replaced = zip(*replaced)
-        if not any(num_replaced):
+        # use subn to track whether any replacements happened; always
+        # begin a new line because old-style fortran files have a
+        # hard limit of 72 characters per line
+        full_text, replaced = pat_external.subn(f"\\1,\n{indent_external}MKL_INIT_XERBLA", "".join(lines))
+        if not replaced:
             return
+        if any(len(problem := x) > 72 for x in full_text.splitlines() if not x.startswith("*")):
+            raise RuntimeError(f"replacement created illegally long line in {path}:\n{problem}")
         # still need to call MKL_INIT_XERBLA after we've added it to the external declarations
-        lines = [pat_invoke.sub(r"\1" + invocation, x) for x in lines]
+        full_text = pat_invoke.sub(f"\\1\n{invocation}", full_text)
         # overwrite file
         f.seek(0)
-        f.write("".join(lines))
+        f.write(full_text)
         f.truncate()
 
 for folder, _, files in os.walk("./TESTING"):
@@ -36,165 +40,255 @@ for folder, _, files in os.walk("./TESTING"):
         rewrite(os.path.join(folder, file))
 ```
 ---
- TESTING/EIG/cchkhb2stg.f  | 4 +++-
- TESTING/EIG/cdrgvx.f      | 4 +++-
- TESTING/EIG/cdrvbd.f      | 4 +++-
- TESTING/EIG/cdrvsg2stg.f  | 4 +++-
- TESTING/EIG/cdrvst2stg.f  | 4 +++-
- TESTING/EIG/cget23.f      | 4 +++-
- TESTING/EIG/cget24.f      | 4 +++-
- TESTING/EIG/csbmv.f       | 4 +++-
- TESTING/EIG/cunt03.f      | 4 +++-
- TESTING/EIG/ddrgvx.f      | 4 +++-
- TESTING/EIG/dget23.f      | 4 +++-
- TESTING/EIG/dget24.f      | 4 +++-
- TESTING/EIG/dort03.f      | 4 +++-
- TESTING/EIG/sdrgvx.f      | 4 +++-
- TESTING/EIG/sget23.f      | 4 +++-
- TESTING/EIG/sget24.f      | 4 +++-
- TESTING/EIG/sort03.f      | 4 +++-
- TESTING/EIG/zchkbb.f      | 4 +++-
- TESTING/EIG/zchkbd.f      | 4 +++-
- TESTING/EIG/zchkgg.f      | 4 +++-
- TESTING/EIG/zchkhb.f      | 4 +++-
- TESTING/EIG/zchkhb2stg.f  | 4 +++-
- TESTING/EIG/zchkhs.f      | 4 +++-
- TESTING/EIG/zdrges.f      | 4 +++-
- TESTING/EIG/zdrges3.f     | 4 +++-
- TESTING/EIG/zdrgev.f      | 4 +++-
- TESTING/EIG/zdrgev3.f     | 4 +++-
- TESTING/EIG/zdrgsx.f      | 4 +++-
- TESTING/EIG/zdrgvx.f      | 4 +++-
- TESTING/EIG/zdrvbd.f      | 4 +++-
- TESTING/EIG/zdrves.f      | 4 +++-
- TESTING/EIG/zdrvev.f      | 4 +++-
- TESTING/EIG/zdrvsg.f      | 4 +++-
- TESTING/EIG/zdrvsg2stg.f  | 4 +++-
- TESTING/EIG/zdrvst.f      | 4 +++-
- TESTING/EIG/zdrvst2stg.f  | 4 +++-
- TESTING/EIG/zdrvsx.f      | 4 +++-
- TESTING/EIG/zdrvvx.f      | 4 +++-
- TESTING/EIG/zget23.f      | 4 +++-
- TESTING/EIG/zget24.f      | 4 +++-
- TESTING/EIG/zlarhs.f      | 4 +++-
- TESTING/EIG/zsbmv.f       | 4 +++-
- TESTING/EIG/zunt03.f      | 4 +++-
- TESTING/LIN/cgelqs.f      | 4 +++-
- TESTING/LIN/cgeqls.f      | 4 +++-
- TESTING/LIN/cgeqrs.f      | 4 +++-
- TESTING/LIN/cgerqs.f      | 4 +++-
- TESTING/LIN/clavhe.f      | 4 +++-
- TESTING/LIN/clavhe_rook.f | 4 +++-
- TESTING/LIN/clavhp.f      | 4 +++-
- TESTING/LIN/clavsp.f      | 4 +++-
- TESTING/LIN/clavsy.f      | 4 +++-
- TESTING/LIN/clavsy_rook.f | 4 +++-
- TESTING/LIN/cqpt01.f      | 4 +++-
- TESTING/LIN/cqrt11.f      | 4 +++-
- TESTING/LIN/cqrt14.f      | 4 +++-
- TESTING/LIN/cqrt17.f      | 4 +++-
- TESTING/LIN/crzt01.f      | 4 +++-
- TESTING/LIN/crzt02.f      | 4 +++-
- TESTING/LIN/csbmv.f       | 4 +++-
- TESTING/LIN/dgelqs.f      | 4 +++-
- TESTING/LIN/dgeqls.f      | 4 +++-
- TESTING/LIN/dgeqrs.f      | 4 +++-
- TESTING/LIN/dgerqs.f      | 4 +++-
- TESTING/LIN/dlavsp.f      | 4 +++-
- TESTING/LIN/dlavsy.f      | 4 +++-
- TESTING/LIN/dlavsy_rook.f | 4 +++-
- TESTING/LIN/dqpt01.f      | 4 +++-
- TESTING/LIN/dqrt11.f      | 4 +++-
- TESTING/LIN/dqrt14.f      | 4 +++-
- TESTING/LIN/dqrt17.f      | 4 +++-
- TESTING/LIN/drzt01.f      | 4 +++-
- TESTING/LIN/drzt02.f      | 4 +++-
- TESTING/LIN/dtplqt.f      | 4 +++-
- TESTING/LIN/sgelqs.f      | 4 +++-
- TESTING/LIN/sgeqls.f      | 4 +++-
- TESTING/LIN/sgeqrs.f      | 4 +++-
- TESTING/LIN/sgerqs.f      | 4 +++-
- TESTING/LIN/slavsp.f      | 4 +++-
- TESTING/LIN/slavsy.f      | 4 +++-
- TESTING/LIN/slavsy_rook.f | 4 +++-
- TESTING/LIN/sqpt01.f      | 4 +++-
- TESTING/LIN/sqrt11.f      | 4 +++-
- TESTING/LIN/sqrt14.f      | 4 +++-
- TESTING/LIN/sqrt17.f      | 4 +++-
- TESTING/LIN/srzt01.f      | 4 +++-
- TESTING/LIN/srzt02.f      | 4 +++-
- TESTING/LIN/stplqt.f      | 4 +++-
- TESTING/LIN/zgelqs.f      | 4 +++-
- TESTING/LIN/zgeqls.f      | 4 +++-
- TESTING/LIN/zgeqrs.f      | 4 +++-
- TESTING/LIN/zgerqs.f      | 4 +++-
- TESTING/LIN/zlarhs.f      | 4 +++-
- TESTING/LIN/zlavhe.f      | 4 +++-
- TESTING/LIN/zlavhe_rook.f | 4 +++-
- TESTING/LIN/zlavhp.f      | 4 +++-
- TESTING/LIN/zlavsp.f      | 4 +++-
- TESTING/LIN/zlavsy.f      | 4 +++-
- TESTING/LIN/zlavsy_rook.f | 4 +++-
- TESTING/LIN/zqpt01.f      | 4 +++-
- TESTING/LIN/zqrt11.f      | 4 +++-
- TESTING/LIN/zqrt12.f      | 4 +++-
- TESTING/LIN/zqrt14.f      | 4 +++-
- TESTING/LIN/zqrt15.f      | 4 +++-
- TESTING/LIN/zqrt17.f      | 4 +++-
- TESTING/LIN/zrzt01.f      | 4 +++-
- TESTING/LIN/zrzt02.f      | 4 +++-
- TESTING/LIN/zsbmv.f       | 4 +++-
- TESTING/MATGEN/clagge.f   | 4 +++-
- TESTING/MATGEN/clahilb.f  | 4 +++-
- TESTING/MATGEN/clarge.f   | 4 +++-
- TESTING/MATGEN/claror.f   | 4 +++-
- TESTING/MATGEN/clarot.f   | 4 +++-
- TESTING/MATGEN/clatm1.f   | 4 +++-
- TESTING/MATGEN/clatmr.f   | 4 +++-
- TESTING/MATGEN/dlagge.f   | 4 +++-
- TESTING/MATGEN/dlahilb.f  | 4 +++-
- TESTING/MATGEN/dlarge.f   | 4 +++-
- TESTING/MATGEN/dlaror.f   | 4 +++-
- TESTING/MATGEN/dlarot.f   | 4 +++-
- TESTING/MATGEN/dlatm1.f   | 4 +++-
- TESTING/MATGEN/dlatm7.f   | 4 +++-
- TESTING/MATGEN/dlatmr.f   | 4 +++-
- TESTING/MATGEN/slagge.f   | 4 +++-
- TESTING/MATGEN/slahilb.f  | 4 +++-
- TESTING/MATGEN/slarge.f   | 4 +++-
- TESTING/MATGEN/slaror.f   | 4 +++-
- TESTING/MATGEN/slarot.f   | 4 +++-
- TESTING/MATGEN/slatm1.f   | 4 +++-
- TESTING/MATGEN/slatm7.f   | 4 +++-
- TESTING/MATGEN/slatmr.f   | 4 +++-
- TESTING/MATGEN/zlagge.f   | 4 +++-
- TESTING/MATGEN/zlaghe.f   | 4 +++-
- TESTING/MATGEN/zlagsy.f   | 4 +++-
- TESTING/MATGEN/zlahilb.f  | 4 +++-
- TESTING/MATGEN/zlarge.f   | 4 +++-
- TESTING/MATGEN/zlaror.f   | 4 +++-
- TESTING/MATGEN/zlarot.f   | 4 +++-
- TESTING/MATGEN/zlatm1.f   | 4 +++-
- TESTING/MATGEN/zlatme.f   | 4 +++-
- TESTING/MATGEN/zlatmr.f   | 4 +++-
- TESTING/MATGEN/zlatms.f   | 4 +++-
- TESTING/MATGEN/zlatmt.f   | 4 +++-
- 143 files changed, 429 insertions(+), 143 deletions(-)
+ TESTING/EIG/cchkbb.f      | 5 ++++-
+ TESTING/EIG/cchkbd.f      | 5 ++++-
+ TESTING/EIG/cchkgg.f      | 5 ++++-
+ TESTING/EIG/cchkhb.f      | 5 ++++-
+ TESTING/EIG/cchkhb2stg.f  | 5 ++++-
+ TESTING/EIG/cchkhs.f      | 5 ++++-
+ TESTING/EIG/cchkst.f      | 5 ++++-
+ TESTING/EIG/cchkst2stg.f  | 5 ++++-
+ TESTING/EIG/cdrges.f      | 5 ++++-
+ TESTING/EIG/cdrges3.f     | 5 ++++-
+ TESTING/EIG/cdrgev.f      | 5 ++++-
+ TESTING/EIG/cdrgev3.f     | 5 ++++-
+ TESTING/EIG/cdrgsx.f      | 5 ++++-
+ TESTING/EIG/cdrgvx.f      | 5 ++++-
+ TESTING/EIG/cdrvbd.f      | 5 ++++-
+ TESTING/EIG/cdrves.f      | 5 ++++-
+ TESTING/EIG/cdrvev.f      | 5 ++++-
+ TESTING/EIG/cdrvsg.f      | 5 ++++-
+ TESTING/EIG/cdrvsg2stg.f  | 5 ++++-
+ TESTING/EIG/cdrvst.f      | 5 ++++-
+ TESTING/EIG/cdrvst2stg.f  | 5 ++++-
+ TESTING/EIG/cdrvsx.f      | 5 ++++-
+ TESTING/EIG/cdrvvx.f      | 5 ++++-
+ TESTING/EIG/cget23.f      | 5 ++++-
+ TESTING/EIG/cget24.f      | 5 ++++-
+ TESTING/EIG/clarhs.f      | 5 ++++-
+ TESTING/EIG/csbmv.f       | 5 ++++-
+ TESTING/EIG/cunt03.f      | 5 ++++-
+ TESTING/EIG/dchkbb.f      | 5 ++++-
+ TESTING/EIG/dchkbd.f      | 5 ++++-
+ TESTING/EIG/dchkgg.f      | 5 ++++-
+ TESTING/EIG/dchkhs.f      | 5 ++++-
+ TESTING/EIG/dchksb.f      | 5 ++++-
+ TESTING/EIG/dchksb2stg.f  | 5 ++++-
+ TESTING/EIG/dchkst.f      | 5 ++++-
+ TESTING/EIG/dchkst2stg.f  | 3 +++
+ TESTING/EIG/ddrges.f      | 5 ++++-
+ TESTING/EIG/ddrges3.f     | 5 ++++-
+ TESTING/EIG/ddrgev.f      | 5 ++++-
+ TESTING/EIG/ddrgev3.f     | 5 ++++-
+ TESTING/EIG/ddrgsx.f      | 5 ++++-
+ TESTING/EIG/ddrgvx.f      | 5 ++++-
+ TESTING/EIG/ddrvbd.f      | 5 ++++-
+ TESTING/EIG/ddrves.f      | 5 ++++-
+ TESTING/EIG/ddrvev.f      | 5 ++++-
+ TESTING/EIG/ddrvsg.f      | 5 ++++-
+ TESTING/EIG/ddrvsg2stg.f  | 3 +++
+ TESTING/EIG/ddrvst.f      | 5 ++++-
+ TESTING/EIG/ddrvst2stg.f  | 5 ++++-
+ TESTING/EIG/ddrvsx.f      | 5 ++++-
+ TESTING/EIG/ddrvvx.f      | 5 ++++-
+ TESTING/EIG/dget23.f      | 5 ++++-
+ TESTING/EIG/dget24.f      | 5 ++++-
+ TESTING/EIG/dlarhs.f      | 5 ++++-
+ TESTING/EIG/dort03.f      | 5 ++++-
+ TESTING/EIG/schkbb.f      | 5 ++++-
+ TESTING/EIG/schkbd.f      | 5 ++++-
+ TESTING/EIG/schkgg.f      | 5 ++++-
+ TESTING/EIG/schkhs.f      | 5 ++++-
+ TESTING/EIG/schksb.f      | 5 ++++-
+ TESTING/EIG/schksb2stg.f  | 5 ++++-
+ TESTING/EIG/schkst.f      | 5 ++++-
+ TESTING/EIG/schkst2stg.f  | 3 +++
+ TESTING/EIG/sdrges.f      | 5 ++++-
+ TESTING/EIG/sdrges3.f     | 5 ++++-
+ TESTING/EIG/sdrgev.f      | 5 ++++-
+ TESTING/EIG/sdrgev3.f     | 5 ++++-
+ TESTING/EIG/sdrgsx.f      | 5 ++++-
+ TESTING/EIG/sdrgvx.f      | 5 ++++-
+ TESTING/EIG/sdrvbd.f      | 5 ++++-
+ TESTING/EIG/sdrves.f      | 5 ++++-
+ TESTING/EIG/sdrvev.f      | 5 ++++-
+ TESTING/EIG/sdrvsg.f      | 5 ++++-
+ TESTING/EIG/sdrvsg2stg.f  | 3 +++
+ TESTING/EIG/sdrvst.f      | 5 ++++-
+ TESTING/EIG/sdrvst2stg.f  | 5 ++++-
+ TESTING/EIG/sdrvsx.f      | 5 ++++-
+ TESTING/EIG/sdrvvx.f      | 5 ++++-
+ TESTING/EIG/sget23.f      | 5 ++++-
+ TESTING/EIG/sget24.f      | 5 ++++-
+ TESTING/EIG/slarhs.f      | 5 ++++-
+ TESTING/EIG/sort03.f      | 5 ++++-
+ TESTING/EIG/zchkbb.f      | 5 ++++-
+ TESTING/EIG/zchkbd.f      | 3 +++
+ TESTING/EIG/zchkgg.f      | 5 ++++-
+ TESTING/EIG/zchkhb.f      | 5 ++++-
+ TESTING/EIG/zchkhb2stg.f  | 5 ++++-
+ TESTING/EIG/zchkhs.f      | 5 ++++-
+ TESTING/EIG/zchkst.f      | 5 ++++-
+ TESTING/EIG/zchkst2stg.f  | 5 ++++-
+ TESTING/EIG/zdrges.f      | 5 ++++-
+ TESTING/EIG/zdrges3.f     | 5 ++++-
+ TESTING/EIG/zdrgev.f      | 5 ++++-
+ TESTING/EIG/zdrgev3.f     | 5 ++++-
+ TESTING/EIG/zdrgsx.f      | 5 ++++-
+ TESTING/EIG/zdrgvx.f      | 5 ++++-
+ TESTING/EIG/zdrvbd.f      | 5 ++++-
+ TESTING/EIG/zdrves.f      | 5 ++++-
+ TESTING/EIG/zdrvev.f      | 5 ++++-
+ TESTING/EIG/zdrvsg.f      | 5 ++++-
+ TESTING/EIG/zdrvsg2stg.f  | 5 ++++-
+ TESTING/EIG/zdrvst.f      | 5 ++++-
+ TESTING/EIG/zdrvst2stg.f  | 5 ++++-
+ TESTING/EIG/zdrvsx.f      | 5 ++++-
+ TESTING/EIG/zdrvvx.f      | 5 ++++-
+ TESTING/EIG/zget23.f      | 5 ++++-
+ TESTING/EIG/zget24.f      | 5 ++++-
+ TESTING/EIG/zlarhs.f      | 5 ++++-
+ TESTING/EIG/zsbmv.f       | 5 ++++-
+ TESTING/EIG/zunt03.f      | 5 ++++-
+ TESTING/LIN/cgelqs.f      | 5 ++++-
+ TESTING/LIN/cgeqls.f      | 5 ++++-
+ TESTING/LIN/cgeqrs.f      | 5 ++++-
+ TESTING/LIN/cgerqs.f      | 5 ++++-
+ TESTING/LIN/clarhs.f      | 5 ++++-
+ TESTING/LIN/clavhe.f      | 5 ++++-
+ TESTING/LIN/clavhe_rook.f | 5 ++++-
+ TESTING/LIN/clavhp.f      | 5 ++++-
+ TESTING/LIN/clavsp.f      | 5 ++++-
+ TESTING/LIN/clavsy.f      | 5 ++++-
+ TESTING/LIN/clavsy_rook.f | 5 ++++-
+ TESTING/LIN/cqpt01.f      | 5 ++++-
+ TESTING/LIN/cqrt11.f      | 5 ++++-
+ TESTING/LIN/cqrt12.f      | 5 ++++-
+ TESTING/LIN/cqrt14.f      | 5 ++++-
+ TESTING/LIN/cqrt15.f      | 5 ++++-
+ TESTING/LIN/cqrt17.f      | 5 ++++-
+ TESTING/LIN/crzt01.f      | 5 ++++-
+ TESTING/LIN/crzt02.f      | 5 ++++-
+ TESTING/LIN/csbmv.f       | 5 ++++-
+ TESTING/LIN/dgelqs.f      | 5 ++++-
+ TESTING/LIN/dgeqls.f      | 5 ++++-
+ TESTING/LIN/dgeqrs.f      | 5 ++++-
+ TESTING/LIN/dgerqs.f      | 5 ++++-
+ TESTING/LIN/dlarhs.f      | 5 ++++-
+ TESTING/LIN/dlavsp.f      | 5 ++++-
+ TESTING/LIN/dlavsy.f      | 5 ++++-
+ TESTING/LIN/dlavsy_rook.f | 5 ++++-
+ TESTING/LIN/dqpt01.f      | 5 ++++-
+ TESTING/LIN/dqrt11.f      | 5 ++++-
+ TESTING/LIN/dqrt12.f      | 5 ++++-
+ TESTING/LIN/dqrt14.f      | 5 ++++-
+ TESTING/LIN/dqrt15.f      | 5 ++++-
+ TESTING/LIN/dqrt17.f      | 5 ++++-
+ TESTING/LIN/drzt01.f      | 5 ++++-
+ TESTING/LIN/drzt02.f      | 5 ++++-
+ TESTING/LIN/dtplqt.f      | 5 ++++-
+ TESTING/LIN/sgelqs.f      | 5 ++++-
+ TESTING/LIN/sgeqls.f      | 5 ++++-
+ TESTING/LIN/sgeqrs.f      | 5 ++++-
+ TESTING/LIN/sgerqs.f      | 5 ++++-
+ TESTING/LIN/slarhs.f      | 5 ++++-
+ TESTING/LIN/slavsp.f      | 5 ++++-
+ TESTING/LIN/slavsy.f      | 5 ++++-
+ TESTING/LIN/slavsy_rook.f | 5 ++++-
+ TESTING/LIN/sqpt01.f      | 5 ++++-
+ TESTING/LIN/sqrt11.f      | 5 ++++-
+ TESTING/LIN/sqrt12.f      | 5 ++++-
+ TESTING/LIN/sqrt14.f      | 5 ++++-
+ TESTING/LIN/sqrt15.f      | 5 ++++-
+ TESTING/LIN/sqrt17.f      | 5 ++++-
+ TESTING/LIN/srzt01.f      | 5 ++++-
+ TESTING/LIN/srzt02.f      | 5 ++++-
+ TESTING/LIN/stplqt.f      | 5 ++++-
+ TESTING/LIN/zgelqs.f      | 5 ++++-
+ TESTING/LIN/zgeqls.f      | 5 ++++-
+ TESTING/LIN/zgeqrs.f      | 5 ++++-
+ TESTING/LIN/zgerqs.f      | 5 ++++-
+ TESTING/LIN/zlarhs.f      | 5 ++++-
+ TESTING/LIN/zlavhe.f      | 5 ++++-
+ TESTING/LIN/zlavhe_rook.f | 5 ++++-
+ TESTING/LIN/zlavhp.f      | 5 ++++-
+ TESTING/LIN/zlavsp.f      | 5 ++++-
+ TESTING/LIN/zlavsy.f      | 5 ++++-
+ TESTING/LIN/zlavsy_rook.f | 5 ++++-
+ TESTING/LIN/zqpt01.f      | 5 ++++-
+ TESTING/LIN/zqrt11.f      | 5 ++++-
+ TESTING/LIN/zqrt12.f      | 5 ++++-
+ TESTING/LIN/zqrt14.f      | 5 ++++-
+ TESTING/LIN/zqrt15.f      | 5 ++++-
+ TESTING/LIN/zqrt17.f      | 5 ++++-
+ TESTING/LIN/zrzt01.f      | 5 ++++-
+ TESTING/LIN/zrzt02.f      | 5 ++++-
+ TESTING/LIN/zsbmv.f       | 5 ++++-
+ TESTING/MATGEN/clagge.f   | 5 ++++-
+ TESTING/MATGEN/claghe.f   | 5 ++++-
+ TESTING/MATGEN/clagsy.f   | 5 ++++-
+ TESTING/MATGEN/clahilb.f  | 5 ++++-
+ TESTING/MATGEN/clarge.f   | 5 ++++-
+ TESTING/MATGEN/claror.f   | 5 ++++-
+ TESTING/MATGEN/clarot.f   | 5 ++++-
+ TESTING/MATGEN/clatm1.f   | 5 ++++-
+ TESTING/MATGEN/clatme.f   | 5 ++++-
+ TESTING/MATGEN/clatmr.f   | 5 ++++-
+ TESTING/MATGEN/clatms.f   | 5 ++++-
+ TESTING/MATGEN/clatmt.f   | 5 ++++-
+ TESTING/MATGEN/dlagge.f   | 5 ++++-
+ TESTING/MATGEN/dlagsy.f   | 5 ++++-
+ TESTING/MATGEN/dlahilb.f  | 5 ++++-
+ TESTING/MATGEN/dlarge.f   | 5 ++++-
+ TESTING/MATGEN/dlaror.f   | 5 ++++-
+ TESTING/MATGEN/dlarot.f   | 5 ++++-
+ TESTING/MATGEN/dlatm1.f   | 5 ++++-
+ TESTING/MATGEN/dlatm7.f   | 5 ++++-
+ TESTING/MATGEN/dlatme.f   | 5 ++++-
+ TESTING/MATGEN/dlatmr.f   | 5 ++++-
+ TESTING/MATGEN/dlatms.f   | 5 ++++-
+ TESTING/MATGEN/dlatmt.f   | 5 ++++-
+ TESTING/MATGEN/slagge.f   | 5 ++++-
+ TESTING/MATGEN/slagsy.f   | 5 ++++-
+ TESTING/MATGEN/slahilb.f  | 5 ++++-
+ TESTING/MATGEN/slarge.f   | 5 ++++-
+ TESTING/MATGEN/slaror.f   | 5 ++++-
+ TESTING/MATGEN/slarot.f   | 5 ++++-
+ TESTING/MATGEN/slatm1.f   | 5 ++++-
+ TESTING/MATGEN/slatm7.f   | 5 ++++-
+ TESTING/MATGEN/slatme.f   | 5 ++++-
+ TESTING/MATGEN/slatmr.f   | 5 ++++-
+ TESTING/MATGEN/slatms.f   | 5 ++++-
+ TESTING/MATGEN/slatmt.f   | 5 ++++-
+ TESTING/MATGEN/zlagge.f   | 5 ++++-
+ TESTING/MATGEN/zlaghe.f   | 5 ++++-
+ TESTING/MATGEN/zlagsy.f   | 5 ++++-
+ TESTING/MATGEN/zlahilb.f  | 5 ++++-
+ TESTING/MATGEN/zlarge.f   | 5 ++++-
+ TESTING/MATGEN/zlaror.f   | 5 ++++-
+ TESTING/MATGEN/zlarot.f   | 5 ++++-
+ TESTING/MATGEN/zlatm1.f   | 5 ++++-
+ TESTING/MATGEN/zlatme.f   | 5 ++++-
+ TESTING/MATGEN/zlatmr.f   | 5 ++++-
+ TESTING/MATGEN/zlatms.f   | 5 ++++-
+ TESTING/MATGEN/zlatmt.f   | 5 ++++-
+ 232 files changed, 923 insertions(+), 227 deletions(-)
 
-diff --git a/TESTING/EIG/cchkhb2stg.f b/TESTING/EIG/cchkhb2stg.f
-index 61537f44b..fdc9e40d5 100644
---- a/TESTING/EIG/cchkhb2stg.f
-+++ b/TESTING/EIG/cchkhb2stg.f
-@@ -372,7 +372,7 @@
-       EXTERNAL           SLAMCH
+diff --git a/TESTING/EIG/cchkbb.f b/TESTING/EIG/cchkbb.f
+index f4a95fa65..98ad44c65 100644
+--- a/TESTING/EIG/cchkbb.f
++++ b/TESTING/EIG/cchkbb.f
+@@ -410,7 +410,8 @@
  *     ..
  *     .. External Subroutines ..
--      EXTERNAL           SLASUM, XERBLA, CHBT21, CHBTRD, CLACPY, CLASET,
-+      EXTERNAL           SLASUM, XERBLA, MKL_INIT_XERBLA, CHBT21, CHBTRD, CLACPY, CLASET,
-      $                   CLATMR, CLATMS, CHETRD_HB2ST, CSTEQR
+       EXTERNAL           CBDT01, CBDT02, CGBBRD, CLACPY, CLASET, CLATMR,
+-     $                   CLATMS, CUNT01, SLAHD2, SLASUM, XERBLA
++     $                   CLATMS, CUNT01, SLAHD2, SLASUM, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
-@@ -386,6 +386,8 @@
+       INTRINSIC          ABS, MAX, MIN, REAL, SQRT
+@@ -422,6 +423,8 @@
       $                   0, 0 /
  *     ..
  *     .. Executable Statements ..
@@ -203,16 +297,293 @@ index 61537f44b..fdc9e40d5 100644
  *
  *     Check for errors
  *
+diff --git a/TESTING/EIG/cchkbd.f b/TESTING/EIG/cchkbd.f
+index a3c5b6027..8f7c06639 100644
+--- a/TESTING/EIG/cchkbd.f
++++ b/TESTING/EIG/cchkbd.f
+@@ -469,7 +469,8 @@
+       EXTERNAL           ALASUM, CBDSQR, CBDT01, CBDT02, CBDT03,
+      $                   CGEBRD, CGEMM, CLACPY, CLASET, CLATMR,
+      $                   CLATMS, CUNGBR, CUNT01, SCOPY, SLABAD,
+-     $                   SLAHD2, SSVDCH, XERBLA
++     $                   SLAHD2, SSVDCH, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, EXP, INT, LOG, MAX, MIN, SQRT
+@@ -490,6 +491,8 @@
+      $                   0, 0, 0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/cchkgg.f b/TESTING/EIG/cchkgg.f
+index fb9c2bcdf..e4fe9b02f 100644
+--- a/TESTING/EIG/cchkgg.f
++++ b/TESTING/EIG/cchkgg.f
+@@ -564,7 +564,8 @@
+ *     .. External Subroutines ..
+       EXTERNAL           CGEQR2, CGET51, CGET52, CGGHRD, CHGEQZ, CLACPY,
+      $                   CLARFG, CLASET, CLATM4, CTGEVC, CUNM2R, SLABAD,
+-     $                   SLASUM, XERBLA
++     $                   SLASUM, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, CONJG, MAX, MIN, REAL, SIGN
+@@ -595,6 +596,8 @@
+      $                   9*.FALSE. /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/cchkhb.f b/TESTING/EIG/cchkhb.f
+index eb6cb7da5..ce040c335 100644
+--- a/TESTING/EIG/cchkhb.f
++++ b/TESTING/EIG/cchkhb.f
+@@ -347,7 +347,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           CHBT21, CHBTRD, CLACPY, CLATMR, CLATMS, CLASET,
+-     $                   SLASUM, XERBLA
++     $                   SLASUM, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, CONJG, MAX, MIN, REAL, SQRT
+@@ -360,6 +361,8 @@
+      $                   0, 0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/cchkhb2stg.f b/TESTING/EIG/cchkhb2stg.f
+index 61537f44b..150fd7494 100644
+--- a/TESTING/EIG/cchkhb2stg.f
++++ b/TESTING/EIG/cchkhb2stg.f
+@@ -372,7 +372,8 @@
+       EXTERNAL           SLAMCH
+ *     ..
+ *     .. External Subroutines ..
+-      EXTERNAL           SLASUM, XERBLA, CHBT21, CHBTRD, CLACPY, CLASET,
++      EXTERNAL           SLASUM, XERBLA,
++     $          MKL_INIT_XERBLA, CHBT21, CHBTRD, CLACPY, CLASET,
+      $                   CLATMR, CLATMS, CHETRD_HB2ST, CSTEQR
+ *     ..
+ *     .. Intrinsic Functions ..
+@@ -386,6 +387,8 @@
+      $                   0, 0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/cchkhs.f b/TESTING/EIG/cchkhs.f
+index 446938993..b17ee2a3d 100644
+--- a/TESTING/EIG/cchkhs.f
++++ b/TESTING/EIG/cchkhs.f
+@@ -467,7 +467,8 @@
+       EXTERNAL           CCOPY, CGEHRD, CGEMM, CGET10, CGET22, CHSEIN,
+      $                   CHSEQR, CHST01, CLACPY, CLASET, CLATME, CLATMR,
+      $                   CLATMS, CTREVC, CUNGHR, CUNMHR, SLABAD, SLAFTS,
+-     $                   SLASUM, XERBLA
++     $                   SLASUM, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, MAX, MIN, REAL, SQRT
+@@ -481,6 +482,8 @@
+       DATA               KCONDS / 3*0, 5*0, 4*1, 6*2, 3*0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/cchkst.f b/TESTING/EIG/cchkst.f
+index 2d25f3fb1..4e9d95230 100644
+--- a/TESTING/EIG/cchkst.f
++++ b/TESTING/EIG/cchkst.f
+@@ -669,7 +669,8 @@
+      $                   CLASET, CLATMR, CLATMS, CPTEQR, CSTEDC, CSTEMR,
+      $                   CSTEIN, CSTEQR, CSTT21, CSTT22, CUNGTR, CUPGTR,
+      $                   SCOPY, SLABAD, SLASUM, SSTEBZ, SSTECH, SSTERF,
+-     $                   XERBLA
++     $                   XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, CONJG, INT, LOG, MAX, MIN, REAL, SQRT
+@@ -683,6 +684,8 @@
+      $                   0, 0, 4, 3, 1, 4, 4, 3 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Keep ftnchek happy
+       IDUMMA( 1 ) = 1
+diff --git a/TESTING/EIG/cchkst2stg.f b/TESTING/EIG/cchkst2stg.f
+index 5c478577f..5936caba3 100644
+--- a/TESTING/EIG/cchkst2stg.f
++++ b/TESTING/EIG/cchkst2stg.f
+@@ -687,7 +687,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           SCOPY, SLABAD, SLASUM, SSTEBZ, SSTECH, SSTERF,
+-     $                   XERBLA, CCOPY, CHET21, CHETRD, CHPT21, CHPTRD,
++     $                   XERBLA,
++     $          MKL_INIT_XERBLA, CCOPY, CHET21, CHETRD, CHPT21, CHPTRD,
+      $                   CLACPY, CLASET, CLATMR, CLATMS, CPTEQR, CSTEDC,
+      $                   CSTEMR, CSTEIN, CSTEQR, CSTT21, CSTT22, CUNGTR,
+      $                   CUPGTR, CHETRD_2STAGE
+@@ -704,6 +705,8 @@
+      $                   0, 0, 4, 3, 1, 4, 4, 3 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Keep ftnchek happy
+       IDUMMA( 1 ) = 1
+diff --git a/TESTING/EIG/cdrges.f b/TESTING/EIG/cdrges.f
+index d6e28f284..7d9a52f79 100644
+--- a/TESTING/EIG/cdrges.f
++++ b/TESTING/EIG/cdrges.f
+@@ -438,7 +438,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           ALASVM, CGET51, CGET54, CGGES, CLACPY, CLARFG,
+-     $                   CLASET, CLATM4, CUNM2R, SLABAD, XERBLA
++     $                   CLASET, CLATM4, CUNM2R, SLABAD, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, AIMAG, CONJG, MAX, MIN, REAL, SIGN
+@@ -475,6 +476,8 @@
+      $                   9*.FALSE. /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/cdrges3.f b/TESTING/EIG/cdrges3.f
+index cea7f8b75..d217976dd 100644
+--- a/TESTING/EIG/cdrges3.f
++++ b/TESTING/EIG/cdrges3.f
+@@ -439,7 +439,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           ALASVM, CGET51, CGET54, CGGES3, CLACPY, CLARFG,
+-     $                   CLASET, CLATM4, CUNM2R, SLABAD, XERBLA
++     $                   CLASET, CLATM4, CUNM2R, SLABAD, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, AIMAG, CONJG, MAX, MIN, REAL, SIGN
+@@ -476,6 +477,8 @@
+      $                   9*.FALSE. /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/cdrgev.f b/TESTING/EIG/cdrgev.f
+index 2a8ce8f70..7204ad123 100644
+--- a/TESTING/EIG/cdrgev.f
++++ b/TESTING/EIG/cdrgev.f
+@@ -455,7 +455,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           ALASVM, CGET52, CGGEV, CLACPY, CLARFG, CLASET,
+-     $                   CLATM4, CUNM2R, SLABAD, XERBLA
++     $                   CLATM4, CUNM2R, SLABAD, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, CONJG, MAX, MIN, REAL, SIGN
+@@ -486,6 +487,8 @@
+      $                   9*.FALSE. /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/cdrgev3.f b/TESTING/EIG/cdrgev3.f
+index 13fb366e4..f7b940f20 100644
+--- a/TESTING/EIG/cdrgev3.f
++++ b/TESTING/EIG/cdrgev3.f
+@@ -455,7 +455,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           ALASVM, CGET52, CGGEV3, CLACPY, CLARFG, CLASET,
+-     $                   CLATM4, CUNM2R, SLABAD, XERBLA
++     $                   CLATM4, CUNM2R, SLABAD, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, CONJG, MAX, MIN, REAL, SIGN
+@@ -486,6 +487,8 @@
+      $                   9*.FALSE. /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/cdrgsx.f b/TESTING/EIG/cdrgsx.f
+index 746946d07..8e09d1896 100644
+--- a/TESTING/EIG/cdrgsx.f
++++ b/TESTING/EIG/cdrgsx.f
+@@ -398,7 +398,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           ALASVM, CGESVD, CGET51, CGGESX, CLACPY, CLAKF2,
+-     $                   CLASET, CLATM5, SLABAD, XERBLA
++     $                   CLASET, CLATM5, SLABAD, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Scalars in Common ..
+       LOGICAL            FS
+@@ -417,6 +418,8 @@
+       ABS1( X ) = ABS( REAL( X ) ) + ABS( AIMAG( X ) )
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
 diff --git a/TESTING/EIG/cdrgvx.f b/TESTING/EIG/cdrgvx.f
-index bed8e472f..ccaae40c7 100644
+index bed8e472f..94d2546a2 100644
 --- a/TESTING/EIG/cdrgvx.f
 +++ b/TESTING/EIG/cdrgvx.f
-@@ -341,12 +341,14 @@
+@@ -341,12 +341,15 @@
        EXTERNAL           ILAENV, CLANGE, SLAMCH
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           ALASVM, CGET52, CGGEVX, CLACPY, CLATM6, XERBLA
-+      EXTERNAL           ALASVM, CGET52, CGGEVX, CLACPY, CLATM6, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           ALASVM, CGET52, CGGEVX, CLACPY, CLATM6, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, CMPLX, MAX, SQRT
@@ -224,19 +595,20 @@ index bed8e472f..ccaae40c7 100644
  *     Check for errors
  *
 diff --git a/TESTING/EIG/cdrvbd.f b/TESTING/EIG/cdrvbd.f
-index 7b7b01b47..6b15c4125 100644
+index 7b7b01b47..410147797 100644
 --- a/TESTING/EIG/cdrvbd.f
 +++ b/TESTING/EIG/cdrvbd.f
-@@ -458,7 +458,7 @@
+@@ -458,7 +458,8 @@
        EXTERNAL           SLAMCH, SLARND
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           ALASVM, XERBLA, CBDT01, CBDT05, CGESDD,
-+      EXTERNAL           ALASVM, XERBLA, MKL_INIT_XERBLA, CBDT01, CBDT05, CGESDD,
++      EXTERNAL           ALASVM, XERBLA,
++     $          MKL_INIT_XERBLA, CBDT01, CBDT05, CGESDD,
       $                   CGESVD, CGESVDQ, CGESVJ, CGEJSV, CGESVDX,
       $                   CLACPY, CLASET, CLATMS, CUNT01, CUNT03
  *     ..
-@@ -477,6 +477,8 @@
+@@ -477,6 +478,8 @@
        DATA               CJOBV / 'N', 'V' /
  *     ..
  *     .. Executable Statements ..
@@ -245,20 +617,67 @@ index 7b7b01b47..6b15c4125 100644
  *
  *     Check for errors
  *
-diff --git a/TESTING/EIG/cdrvsg2stg.f b/TESTING/EIG/cdrvsg2stg.f
-index 3b7156b42..57642acc8 100644
---- a/TESTING/EIG/cdrvsg2stg.f
-+++ b/TESTING/EIG/cdrvsg2stg.f
-@@ -429,7 +429,7 @@
-       EXTERNAL           LSAME, SLAMCH, SLARND
+diff --git a/TESTING/EIG/cdrves.f b/TESTING/EIG/cdrves.f
+index 3e4a7ff3f..6774d7713 100644
+--- a/TESTING/EIG/cdrves.f
++++ b/TESTING/EIG/cdrves.f
+@@ -441,7 +441,8 @@
  *     ..
  *     .. External Subroutines ..
--      EXTERNAL           SLABAD, SLAFTS, SLASUM, XERBLA, CHBGV, CHBGVD,
-+      EXTERNAL           SLABAD, SLAFTS, SLASUM, XERBLA, MKL_INIT_XERBLA, CHBGV, CHBGVD,
-      $                   CHBGVX, CHEGV, CHEGVD, CHEGVX, CHPGV, CHPGVD,
-      $                   CHPGVX, CLACPY, CLASET, CLATMR, CLATMS, CSGT01,
-      $                   CHEGV_2STAGE
-@@ -445,6 +445,8 @@
+       EXTERNAL           CGEES, CHST01, CLACPY, CLATME, CLATMR, CLATMS,
+-     $                   CLASET, SLABAD, SLASUM, XERBLA
++     $                   CLASET, SLABAD, SLASUM, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, CMPLX, MAX, MIN, SQRT
+@@ -455,6 +456,8 @@
+       DATA               KCONDS / 3*0, 5*0, 4*1, 6*2, 3*0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+       PATH( 1: 1 ) = 'Complex precision'
+       PATH( 2: 3 ) = 'ES'
+diff --git a/TESTING/EIG/cdrvev.f b/TESTING/EIG/cdrvev.f
+index d1e289bf4..67632f155 100644
+--- a/TESTING/EIG/cdrvev.f
++++ b/TESTING/EIG/cdrvev.f
+@@ -446,7 +446,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           CGEEV, CGET22, CLACPY, CLATME, CLATMR, CLATMS,
+-     $                   CLASET, SLABAD, SLASUM, XERBLA
++     $                   CLASET, SLABAD, SLASUM, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, AIMAG, CMPLX, MAX, MIN, REAL, SQRT
+@@ -460,6 +461,8 @@
+       DATA               KCONDS / 3*0, 5*0, 4*1, 6*2, 3*0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+       PATH( 1: 1 ) = 'Complex precision'
+       PATH( 2: 3 ) = 'EV'
+diff --git a/TESTING/EIG/cdrvsg.f b/TESTING/EIG/cdrvsg.f
+index 7e34ad0db..3221d6b84 100644
+--- a/TESTING/EIG/cdrvsg.f
++++ b/TESTING/EIG/cdrvsg.f
+@@ -423,7 +423,8 @@
+ *     .. External Subroutines ..
+       EXTERNAL           CHBGV, CHBGVD, CHBGVX, CHEGV, CHEGVD, CHEGVX,
+      $                   CHPGV, CHPGVD, CHPGVX, CLACPY, CLASET, CLATMR,
+-     $                   CLATMS, CSGT01, SLABAD, SLAFTS, SLASUM, XERBLA
++     $                   CLATMS, CSGT01, SLABAD, SLAFTS, SLASUM, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, MAX, MIN, REAL, SQRT
+@@ -436,6 +437,8 @@
       $                   0, 0, 6*4 /
  *     ..
  *     .. Executable Statements ..
@@ -267,20 +686,44 @@ index 3b7156b42..57642acc8 100644
  *
  *     1)      Check for errors
  *
-diff --git a/TESTING/EIG/cdrvst2stg.f b/TESTING/EIG/cdrvst2stg.f
-index 095bd7885..a9ce386f8 100644
---- a/TESTING/EIG/cdrvst2stg.f
-+++ b/TESTING/EIG/cdrvst2stg.f
-@@ -394,7 +394,7 @@
-       EXTERNAL           SLAMCH, SLARND, SSXT1
+diff --git a/TESTING/EIG/cdrvsg2stg.f b/TESTING/EIG/cdrvsg2stg.f
+index 3b7156b42..7d5d3f4c8 100644
+--- a/TESTING/EIG/cdrvsg2stg.f
++++ b/TESTING/EIG/cdrvsg2stg.f
+@@ -429,7 +429,8 @@
+       EXTERNAL           LSAME, SLAMCH, SLARND
  *     ..
  *     .. External Subroutines ..
--      EXTERNAL           ALASVM, SLABAD, SLAFTS, XERBLA, CHBEV, CHBEVD,
-+      EXTERNAL           ALASVM, SLABAD, SLAFTS, XERBLA, MKL_INIT_XERBLA, CHBEV, CHBEVD,
-      $                   CHBEVX, CHEEV, CHEEVD, CHEEVR, CHEEVX, CHET21,
-      $                   CHET22, CHPEV, CHPEVD, CHPEVX, CLACPY, CLASET,
-      $                   CHEEVD_2STAGE, CHEEVR_2STAGE, CHEEVX_2STAGE,
-@@ -412,6 +412,8 @@
+-      EXTERNAL           SLABAD, SLAFTS, SLASUM, XERBLA, CHBGV, CHBGVD,
++      EXTERNAL           SLABAD, SLAFTS, SLASUM, XERBLA,
++     $          MKL_INIT_XERBLA, CHBGV, CHBGVD,
+      $                   CHBGVX, CHEGV, CHEGVD, CHEGVX, CHPGV, CHPGVD,
+      $                   CHPGVX, CLACPY, CLASET, CLATMR, CLATMS, CSGT01,
+      $                   CHEGV_2STAGE
+@@ -445,6 +446,8 @@
+      $                   0, 0, 6*4 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     1)      Check for errors
+ *
+diff --git a/TESTING/EIG/cdrvst.f b/TESTING/EIG/cdrvst.f
+index dbf1e011a..142c43a85 100644
+--- a/TESTING/EIG/cdrvst.f
++++ b/TESTING/EIG/cdrvst.f
+@@ -397,7 +397,8 @@
+       EXTERNAL           ALASVM, CHBEV, CHBEVD, CHBEVX, CHEEV, CHEEVD,
+      $                   CHEEVR, CHEEVX, CHET21, CHET22, CHPEV, CHPEVD,
+      $                   CHPEVX, CLACPY, CLASET, CLATMR, CLATMS, SLABAD,
+-     $                   SLAFTS, XERBLA
++     $                   SLAFTS, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, INT, LOG, MAX, MIN, REAL, SQRT
+@@ -410,6 +411,8 @@
       $                   0, 0, 4, 4, 4 /
  *     ..
  *     .. Executable Statements ..
@@ -289,20 +732,90 @@ index 095bd7885..a9ce386f8 100644
  *
  *     1)      Check for errors
  *
+diff --git a/TESTING/EIG/cdrvst2stg.f b/TESTING/EIG/cdrvst2stg.f
+index 095bd7885..beb9dd349 100644
+--- a/TESTING/EIG/cdrvst2stg.f
++++ b/TESTING/EIG/cdrvst2stg.f
+@@ -394,7 +394,8 @@
+       EXTERNAL           SLAMCH, SLARND, SSXT1
+ *     ..
+ *     .. External Subroutines ..
+-      EXTERNAL           ALASVM, SLABAD, SLAFTS, XERBLA, CHBEV, CHBEVD,
++      EXTERNAL           ALASVM, SLABAD, SLAFTS, XERBLA,
++     $          MKL_INIT_XERBLA, CHBEV, CHBEVD,
+      $                   CHBEVX, CHEEV, CHEEVD, CHEEVR, CHEEVX, CHET21,
+      $                   CHET22, CHPEV, CHPEVD, CHPEVX, CLACPY, CLASET,
+      $                   CHEEVD_2STAGE, CHEEVR_2STAGE, CHEEVX_2STAGE,
+@@ -412,6 +413,8 @@
+      $                   0, 0, 4, 4, 4 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     1)      Check for errors
+ *
+diff --git a/TESTING/EIG/cdrvsx.f b/TESTING/EIG/cdrvsx.f
+index 9def66306..c9a9b6fdc 100644
+--- a/TESTING/EIG/cdrvsx.f
++++ b/TESTING/EIG/cdrvsx.f
+@@ -496,7 +496,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           CGET24, CLATME, CLATMR, CLATMS, CLASET, SLABAD,
+-     $                   SLASUM, XERBLA
++     $                   SLASUM, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, MAX, MIN, SQRT
+@@ -510,6 +511,8 @@
+       DATA               KCONDS / 3*0, 5*0, 4*1, 6*2, 3*0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+       PATH( 1: 1 ) = 'Complex precision'
+       PATH( 2: 3 ) = 'SX'
+diff --git a/TESTING/EIG/cdrvvx.f b/TESTING/EIG/cdrvvx.f
+index 37a29ec4e..c15f29609 100644
+--- a/TESTING/EIG/cdrvvx.f
++++ b/TESTING/EIG/cdrvvx.f
+@@ -552,7 +552,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           CGET23, CLATME, CLATMR, CLATMS, CLASET, SLABAD,
+-     $                   SLASUM, XERBLA
++     $                   SLASUM, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, CMPLX, MAX, MIN, SQRT
+@@ -567,6 +568,8 @@
+       DATA               BAL / 'N', 'P', 'S', 'B' /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+       PATH( 1: 1 ) = 'Complex precision'
+       PATH( 2: 3 ) = 'VX'
 diff --git a/TESTING/EIG/cget23.f b/TESTING/EIG/cget23.f
-index 1a2d4fb48..31e702779 100644
+index 1a2d4fb48..55e35890e 100644
 --- a/TESTING/EIG/cget23.f
 +++ b/TESTING/EIG/cget23.f
-@@ -420,7 +420,7 @@
+@@ -420,7 +420,8 @@
        EXTERNAL           LSAME, SCNRM2, SLAMCH
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           CGEEVX, CGET22, CLACPY, XERBLA
-+      EXTERNAL           CGEEVX, CGET22, CLACPY, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           CGEEVX, CGET22, CLACPY, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, AIMAG, MAX, MIN, REAL
-@@ -429,6 +429,8 @@
+@@ -429,6 +430,8 @@
        DATA               SENS / 'N', 'V' /
  *     ..
  *     .. Executable Statements ..
@@ -312,19 +825,20 @@ index 1a2d4fb48..31e702779 100644
  *     Check for errors
  *
 diff --git a/TESTING/EIG/cget24.f b/TESTING/EIG/cget24.f
-index e97003a2f..2f21afed7 100644
+index e97003a2f..0be70b3a6 100644
 --- a/TESTING/EIG/cget24.f
 +++ b/TESTING/EIG/cget24.f
-@@ -384,7 +384,7 @@
+@@ -384,7 +384,8 @@
        EXTERNAL           CSLECT, CLANGE, SLAMCH
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           CCOPY, CGEESX, CGEMM, CLACPY, CUNT01, XERBLA
-+      EXTERNAL           CCOPY, CGEESX, CGEMM, CLACPY, CUNT01, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           CCOPY, CGEESX, CGEMM, CLACPY, CUNT01, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, AIMAG, MAX, MIN, REAL
-@@ -400,6 +400,8 @@
+@@ -400,6 +401,8 @@
        COMMON             / SSLCT / SELOPT, SELDIM, SELVAL, SELWR, SELWI
  *     ..
  *     .. Executable Statements ..
@@ -333,16 +847,38 @@ index e97003a2f..2f21afed7 100644
  *
  *     Check for errors
  *
+diff --git a/TESTING/EIG/clarhs.f b/TESTING/EIG/clarhs.f
+index 1143be85d..748203d5b 100644
+--- a/TESTING/EIG/clarhs.f
++++ b/TESTING/EIG/clarhs.f
+@@ -244,12 +244,15 @@
+ *     .. External Subroutines ..
+       EXTERNAL           CGBMV, CGEMM, CHBMV, CHEMM, CHPMV, CLACPY,
+      $                   CLARNV, CSBMV, CSPMV, CSYMM, CTBMV, CTPMV,
+-     $                   CTRMM, XERBLA
++     $                   CTRMM, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          MAX
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Test the input parameters.
+ *
 diff --git a/TESTING/EIG/csbmv.f b/TESTING/EIG/csbmv.f
-index dc1b2330d..4d1926058 100644
+index dc1b2330d..b2db67964 100644
 --- a/TESTING/EIG/csbmv.f
 +++ b/TESTING/EIG/csbmv.f
-@@ -183,12 +183,14 @@
+@@ -183,12 +183,15 @@
        EXTERNAL           LSAME
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          MAX, MIN
@@ -354,15 +890,16 @@ index dc1b2330d..4d1926058 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/EIG/cunt03.f b/TESTING/EIG/cunt03.f
-index 8e1fd207f..6ef83ae6c 100644
+index 8e1fd207f..7701bb6e2 100644
 --- a/TESTING/EIG/cunt03.f
 +++ b/TESTING/EIG/cunt03.f
-@@ -199,9 +199,11 @@
+@@ -199,9 +199,12 @@
        INTRINSIC          ABS, CMPLX, MAX, MIN, REAL
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           CUNT01, XERBLA
-+      EXTERNAL           CUNT01, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           CUNT01, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Executable Statements ..
 +*
@@ -370,16 +907,314 @@ index 8e1fd207f..6ef83ae6c 100644
  *
  *     Check inputs
  *
+diff --git a/TESTING/EIG/dchkbb.f b/TESTING/EIG/dchkbb.f
+index 51a29585b..c10c4c644 100644
+--- a/TESTING/EIG/dchkbb.f
++++ b/TESTING/EIG/dchkbb.f
+@@ -400,7 +400,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           DBDT01, DBDT02, DGBBRD, DLACPY, DLAHD2, DLASET,
+-     $                   DLASUM, DLATMR, DLATMS, DORT01, XERBLA
++     $                   DLASUM, DLATMR, DLATMS, DORT01, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, DBLE, MAX, MIN, SQRT
+@@ -412,6 +413,8 @@
+      $                   0, 0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/dchkbd.f b/TESTING/EIG/dchkbd.f
+index 0557574d3..b588a92d3 100644
+--- a/TESTING/EIG/dchkbd.f
++++ b/TESTING/EIG/dchkbd.f
+@@ -548,7 +548,8 @@
+       EXTERNAL           ALASUM, DBDSDC, DBDSQR, DBDSVDX, DBDT01,
+      $                   DBDT02, DBDT03, DBDT04, DCOPY, DGEBRD,
+      $                   DGEMM, DLABAD, DLACPY, DLAHD2, DLASET,
+-     $                   DLATMR, DLATMS, DORGBR, DORT01, XERBLA
++     $                   DLATMR, DLATMS, DORGBR, DORT01, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, EXP, INT, LOG, MAX, MIN, SQRT
+@@ -569,6 +570,8 @@
+      $                0, 0, 0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/dchkgg.f b/TESTING/EIG/dchkgg.f
+index 912ca4ae0..49255b6e0 100644
+--- a/TESTING/EIG/dchkgg.f
++++ b/TESTING/EIG/dchkgg.f
+@@ -566,7 +566,8 @@
+ *     .. External Subroutines ..
+       EXTERNAL           DGEQR2, DGET51, DGET52, DGGHRD, DHGEQZ, DLABAD,
+      $                   DLACPY, DLARFG, DLASET, DLASUM, DLATM4, DORM2R,
+-     $                   DTGEVC, XERBLA
++     $                   DTGEVC, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, DBLE, MAX, MIN, SIGN
+@@ -594,6 +595,8 @@
+       DATA               IBSIGN / 7*0, 2, 2*0, 2*2, 2*0, 2, 0, 2, 9*0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/dchkhs.f b/TESTING/EIG/dchkhs.f
+index 375a70e9a..d21dbf649 100644
+--- a/TESTING/EIG/dchkhs.f
++++ b/TESTING/EIG/dchkhs.f
+@@ -464,7 +464,8 @@
+       EXTERNAL           DCOPY, DGEHRD, DGEMM, DGET10, DGET22, DHSEIN,
+      $                   DHSEQR, DHST01, DLABAD, DLACPY, DLAFTS, DLASET,
+      $                   DLASUM, DLATME, DLATMR, DLATMS, DORGHR, DORMHR,
+-     $                   DTREVC, XERBLA
++     $                   DTREVC, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, DBLE, MAX, MIN, SQRT
+@@ -478,6 +479,8 @@
+       DATA               KCONDS / 3*0, 5*0, 4*1, 6*2, 3*0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/dchksb.f b/TESTING/EIG/dchksb.f
+index b95e595de..b5bc02ec1 100644
+--- a/TESTING/EIG/dchksb.f
++++ b/TESTING/EIG/dchksb.f
+@@ -339,7 +339,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           DLACPY, DLASET, DLASUM, DLATMR, DLATMS, DSBT21,
+-     $                   DSBTRD, XERBLA
++     $                   DSBTRD, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, DBLE, MAX, MIN, SQRT
+@@ -352,6 +353,8 @@
+      $                   0, 0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/dchksb2stg.f b/TESTING/EIG/dchksb2stg.f
+index ee66f7ebb..44eade65e 100644
+--- a/TESTING/EIG/dchksb2stg.f
++++ b/TESTING/EIG/dchksb2stg.f
+@@ -363,7 +363,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           DLACPY, DLASET, DLASUM, DLATMR, DLATMS, DSBT21,
+-     $                   DSBTRD, XERBLA, DSYTRD_SB2ST, DSTEQR
++     $                   DSBTRD, XERBLA,
++     $          MKL_INIT_XERBLA, DSYTRD_SB2ST, DSTEQR
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, DBLE, MAX, MIN, SQRT
+@@ -376,6 +377,8 @@
+      $                   0, 0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/dchkst.f b/TESTING/EIG/dchkst.f
+index 1b4d85f79..6de7ae18a 100644
+--- a/TESTING/EIG/dchkst.f
++++ b/TESTING/EIG/dchkst.f
+@@ -651,7 +651,8 @@
+       EXTERNAL           DCOPY, DLABAD, DLACPY, DLASET, DLASUM, DLATMR,
+      $                   DLATMS, DOPGTR, DORGTR, DPTEQR, DSPT21, DSPTRD,
+      $                   DSTEBZ, DSTECH, DSTEDC, DSTEMR, DSTEIN, DSTEQR,
+-     $                   DSTERF, DSTT21, DSTT22, DSYT21, DSYTRD, XERBLA
++     $                   DSTERF, DSTT21, DSTT22, DSYT21, DSYTRD, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, DBLE, INT, LOG, MAX, MIN, SQRT
+@@ -665,6 +666,8 @@
+      $                   0, 0, 4, 3, 1, 4, 4, 3 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Keep ftnchek happy
+       IDUMMA( 1 ) = 1
+diff --git a/TESTING/EIG/dchkst2stg.f b/TESTING/EIG/dchkst2stg.f
+index ca31c9d1f..95778224f 100644
+--- a/TESTING/EIG/dchkst2stg.f
++++ b/TESTING/EIG/dchkst2stg.f
+@@ -673,6 +673,7 @@
+      $                   DLATMS, DOPGTR, DORGTR, DPTEQR, DSPT21, DSPTRD,
+      $                   DSTEBZ, DSTECH, DSTEDC, DSTEMR, DSTEIN, DSTEQR,
+      $                   DSTERF, DSTT21, DSTT22, DSYT21, DSYTRD, XERBLA,
++     $          MKL_INIT_XERBLA,
+      $                   DSYTRD_2STAGE
+ *     ..
+ *     .. Intrinsic Functions ..
+@@ -687,6 +688,8 @@
+      $                   0, 0, 4, 3, 1, 4, 4, 3 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Keep ftnchek happy
+       IDUMMA( 1 ) = 1
+diff --git a/TESTING/EIG/ddrges.f b/TESTING/EIG/ddrges.f
+index 035ba04d0..1f10390f7 100644
+--- a/TESTING/EIG/ddrges.f
++++ b/TESTING/EIG/ddrges.f
+@@ -455,7 +455,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           ALASVM, DGET51, DGET53, DGET54, DGGES, DLABAD,
+-     $                   DLACPY, DLARFG, DLASET, DLATM4, DORM2R, XERBLA
++     $                   DLACPY, DLARFG, DLASET, DLATM4, DORM2R, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, DBLE, MAX, MIN, SIGN
+@@ -483,6 +484,8 @@
+       DATA               IBSIGN / 7*0, 2, 2*0, 2*2, 2*0, 2, 0, 2, 9*0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/ddrges3.f b/TESTING/EIG/ddrges3.f
+index 3b23deebe..c3b4ed930 100644
+--- a/TESTING/EIG/ddrges3.f
++++ b/TESTING/EIG/ddrges3.f
+@@ -455,7 +455,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           ALASVM, DGET51, DGET53, DGET54, DGGES3, DLABAD,
+-     $                   DLACPY, DLARFG, DLASET, DLATM4, DORM2R, XERBLA
++     $                   DLACPY, DLARFG, DLASET, DLATM4, DORM2R, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, DBLE, MAX, MIN, SIGN
+@@ -483,6 +484,8 @@
+       DATA               IBSIGN / 7*0, 2, 2*0, 2*2, 2*0, 2, 0, 2, 9*0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/ddrgev.f b/TESTING/EIG/ddrgev.f
+index c587e66ab..217dbbfc5 100644
+--- a/TESTING/EIG/ddrgev.f
++++ b/TESTING/EIG/ddrgev.f
+@@ -459,7 +459,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           ALASVM, DGET52, DGGEV, DLABAD, DLACPY, DLARFG,
+-     $                   DLASET, DLATM4, DORM2R, XERBLA
++     $                   DLASET, DLATM4, DORM2R, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, DBLE, MAX, MIN, SIGN
+@@ -487,6 +488,8 @@
+       DATA               IBSIGN / 7*0, 2, 2*0, 2*2, 2*0, 2, 0, 2, 9*0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/ddrgev3.f b/TESTING/EIG/ddrgev3.f
+index 1c60e4434..a81bb591c 100644
+--- a/TESTING/EIG/ddrgev3.f
++++ b/TESTING/EIG/ddrgev3.f
+@@ -459,7 +459,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           ALASVM, DGET52, DGGEV3, DLABAD, DLACPY, DLARFG,
+-     $                   DLASET, DLATM4, DORM2R, XERBLA
++     $                   DLASET, DLATM4, DORM2R, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, DBLE, MAX, MIN, SIGN
+@@ -487,6 +488,8 @@
+       DATA               IBSIGN / 7*0, 2, 2*0, 2*2, 2*0, 2, 0, 2, 9*0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/ddrgsx.f b/TESTING/EIG/ddrgsx.f
+index 7fe9dfc14..2126f3e43 100644
+--- a/TESTING/EIG/ddrgsx.f
++++ b/TESTING/EIG/ddrgsx.f
+@@ -404,7 +404,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           ALASVM, DGESVD, DGET51, DGET53, DGGESX, DLABAD,
+-     $                   DLACPY, DLAKF2, DLASET, DLATM5, XERBLA
++     $                   DLACPY, DLAKF2, DLASET, DLATM5, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, MAX, SQRT
+@@ -417,6 +418,8 @@
+       COMMON             / MN / M, N, MPLUSN, K, FS
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
 diff --git a/TESTING/EIG/ddrgvx.f b/TESTING/EIG/ddrgvx.f
-index 32d08b5d7..cffb8e03f 100644
+index 32d08b5d7..d2ba64753 100644
 --- a/TESTING/EIG/ddrgvx.f
 +++ b/TESTING/EIG/ddrgvx.f
-@@ -342,12 +342,14 @@
+@@ -342,12 +342,15 @@
        EXTERNAL           ILAENV, DLAMCH, DLANGE
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           ALASVM, DGET52, DGGEVX, DLACPY, DLATM6, XERBLA
-+      EXTERNAL           ALASVM, DGET52, DGGEVX, DLACPY, DLATM6, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           ALASVM, DGET52, DGGEVX, DLACPY, DLATM6, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, MAX, SQRT
@@ -390,20 +1225,226 @@ index 32d08b5d7..cffb8e03f 100644
  *
  *     Check for errors
  *
+diff --git a/TESTING/EIG/ddrvbd.f b/TESTING/EIG/ddrvbd.f
+index bd4ae60da..31ac9b225 100644
+--- a/TESTING/EIG/ddrvbd.f
++++ b/TESTING/EIG/ddrvbd.f
+@@ -424,7 +424,8 @@
+ *     .. External Subroutines ..
+       EXTERNAL           ALASVM, DBDT01, DGEJSV, DGESDD, DGESVD,
+      $                   DGESVDQ, DGESVDX, DGESVJ, DLABAD, DLACPY,
+-     $                   DLASET, DLATMS, DORT01, DORT03, XERBLA
++     $                   DLASET, DLATMS, DORT01, DORT03, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, DBLE, INT, MAX, MIN
+@@ -444,6 +445,8 @@
+       DATA               CJOBV / 'N', 'V' /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/ddrves.f b/TESTING/EIG/ddrves.f
+index 2904b633a..deb4205bc 100644
+--- a/TESTING/EIG/ddrves.f
++++ b/TESTING/EIG/ddrves.f
+@@ -448,7 +448,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           DGEES, DHST01, DLABAD, DLACPY, DLASET, DLASUM,
+-     $                   DLATME, DLATMR, DLATMS, XERBLA
++     $                   DLATME, DLATMR, DLATMS, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, MAX, SIGN, SQRT
+@@ -462,6 +463,8 @@
+       DATA               KCONDS / 3*0, 5*0, 4*1, 6*2, 3*0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+       PATH( 1: 1 ) = 'Double precision'
+       PATH( 2: 3 ) = 'ES'
+diff --git a/TESTING/EIG/ddrvev.f b/TESTING/EIG/ddrvev.f
+index a3e6a2023..ee3b06cdb 100644
+--- a/TESTING/EIG/ddrvev.f
++++ b/TESTING/EIG/ddrvev.f
+@@ -456,7 +456,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           DGEEV, DGET22, DLABAD, DLACPY, DLASET, DLASUM,
+-     $                   DLATME, DLATMR, DLATMS, XERBLA
++     $                   DLATME, DLATMR, DLATMS, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, MAX, MIN, SQRT
+@@ -470,6 +471,8 @@
+       DATA               KCONDS / 3*0, 5*0, 4*1, 6*2, 3*0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+       PATH( 1: 1 ) = 'Double precision'
+       PATH( 2: 3 ) = 'EV'
+diff --git a/TESTING/EIG/ddrvsg.f b/TESTING/EIG/ddrvsg.f
+index de094fcd8..271156267 100644
+--- a/TESTING/EIG/ddrvsg.f
++++ b/TESTING/EIG/ddrvsg.f
+@@ -404,7 +404,8 @@
+ *     .. External Subroutines ..
+       EXTERNAL           DLABAD, DLACPY, DLAFTS, DLASET, DLASUM, DLATMR,
+      $                   DLATMS, DSBGV, DSBGVD, DSBGVX, DSGT01, DSPGV,
+-     $                   DSPGVD, DSPGVX, DSYGV, DSYGVD, DSYGVX, XERBLA
++     $                   DSPGVD, DSPGVX, DSYGV, DSYGVD, DSYGVX, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, DBLE, MAX, MIN, SQRT
+@@ -417,6 +418,8 @@
+      $                   0, 0, 6*4 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     1)      Check for errors
+ *
+diff --git a/TESTING/EIG/ddrvsg2stg.f b/TESTING/EIG/ddrvsg2stg.f
+index 700e4f74d..9156e600d 100644
+--- a/TESTING/EIG/ddrvsg2stg.f
++++ b/TESTING/EIG/ddrvsg2stg.f
+@@ -414,6 +414,7 @@
+       EXTERNAL           DLABAD, DLACPY, DLAFTS, DLASET, DLASUM, DLATMR,
+      $                   DLATMS, DSBGV, DSBGVD, DSBGVX, DSGT01, DSPGV,
+      $                   DSPGVD, DSPGVX, DSYGV, DSYGVD, DSYGVX, XERBLA,
++     $          MKL_INIT_XERBLA,
+      $                   DSYGV_2STAGE
+ *     ..
+ *     .. Intrinsic Functions ..
+@@ -427,6 +428,8 @@
+      $                   0, 0, 6*4 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     1)      Check for errors
+ *
+diff --git a/TESTING/EIG/ddrvst.f b/TESTING/EIG/ddrvst.f
+index efa75406f..f1c475199 100644
+--- a/TESTING/EIG/ddrvst.f
++++ b/TESTING/EIG/ddrvst.f
+@@ -509,7 +509,8 @@
+      $                   DLATMS, DSBEV, DSBEVD, DSBEVX, DSPEV, DSPEVD,
+      $                   DSPEVX, DSTEV, DSTEVD, DSTEVR, DSTEVX, DSTT21,
+      $                   DSTT22, DSYEV, DSYEVD, DSYEVR, DSYEVX, DSYT21,
+-     $                   DSYT22, XERBLA
++     $                   DSYT22, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Scalars in Common ..
+       CHARACTER*32       SRNAMT
+@@ -528,6 +529,8 @@
+      $                   0, 0, 4, 4, 4 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Keep ftrnchek happy
+ *
+diff --git a/TESTING/EIG/ddrvst2stg.f b/TESTING/EIG/ddrvst2stg.f
+index 489c385a1..0c53f61da 100644
+--- a/TESTING/EIG/ddrvst2stg.f
++++ b/TESTING/EIG/ddrvst2stg.f
+@@ -512,7 +512,8 @@
+      $                   DSYEVD_2STAGE, DSYEVR_2STAGE, DSYEVX_2STAGE,
+      $                   DSYEV_2STAGE, DSBEV_2STAGE, DSBEVD_2STAGE,
+      $                   DSBEVX_2STAGE, DSYTRD_2STAGE, DSYTRD_SY2SB, 
+-     $                   DSYTRD_SB2ST, DSYT22, XERBLA
++     $                   DSYTRD_SB2ST, DSYT22, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Scalars in Common ..
+       CHARACTER*32       SRNAMT
+@@ -531,6 +532,8 @@
+      $                   0, 0, 4, 4, 4 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Keep ftrnchek happy
+ *
+diff --git a/TESTING/EIG/ddrvsx.f b/TESTING/EIG/ddrvsx.f
+index 9006f1a92..2f45410ab 100644
+--- a/TESTING/EIG/ddrvsx.f
++++ b/TESTING/EIG/ddrvsx.f
+@@ -512,7 +512,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           DGET24, DLABAD, DLASET, DLASUM, DLATME, DLATMR,
+-     $                   DLATMS, XERBLA
++     $                   DLATMS, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, MAX, MIN, SQRT
+@@ -526,6 +527,8 @@
+       DATA               KCONDS / 3*0, 5*0, 4*1, 6*2, 3*0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+       PATH( 1: 1 ) = 'Double precision'
+       PATH( 2: 3 ) = 'SX'
+diff --git a/TESTING/EIG/ddrvvx.f b/TESTING/EIG/ddrvvx.f
+index b088f6cc3..8b5c66083 100644
+--- a/TESTING/EIG/ddrvvx.f
++++ b/TESTING/EIG/ddrvvx.f
+@@ -572,7 +572,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           DGET23, DLABAD, DLASET, DLASUM, DLATME, DLATMR,
+-     $                   DLATMS, XERBLA
++     $                   DLATMS, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, MAX, MIN, SQRT
+@@ -587,6 +588,8 @@
+       DATA               BAL / 'N', 'P', 'S', 'B' /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+       PATH( 1: 1 ) = 'Double precision'
+       PATH( 2: 3 ) = 'VX'
 diff --git a/TESTING/EIG/dget23.f b/TESTING/EIG/dget23.f
-index 8c801aeee..326b4e64f 100644
+index 8c801aeee..0dfcd7833 100644
 --- a/TESTING/EIG/dget23.f
 +++ b/TESTING/EIG/dget23.f
-@@ -428,7 +428,7 @@
+@@ -428,7 +428,8 @@
        EXTERNAL           LSAME, DLAMCH, DLAPY2, DNRM2
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DGEEVX, DGET22, DLACPY, XERBLA
-+      EXTERNAL           DGEEVX, DGET22, DLACPY, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           DGEEVX, DGET22, DLACPY, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, DBLE, MAX, MIN
-@@ -437,6 +437,8 @@
+@@ -437,6 +438,8 @@
        DATA               SENS / 'N', 'V' /
  *     ..
  *     .. Executable Statements ..
@@ -413,15 +1454,16 @@ index 8c801aeee..326b4e64f 100644
  *     Check for errors
  *
 diff --git a/TESTING/EIG/dget24.f b/TESTING/EIG/dget24.f
-index a3c01756c..800ebf48b 100644
+index a3c01756c..a3da8f7f4 100644
 --- a/TESTING/EIG/dget24.f
 +++ b/TESTING/EIG/dget24.f
-@@ -397,12 +397,14 @@
+@@ -397,12 +397,15 @@
        EXTERNAL           DSLECT, DLAMCH, DLANGE
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DCOPY, DGEESX, DGEMM, DLACPY, DORT01, XERBLA
-+      EXTERNAL           DCOPY, DGEESX, DGEMM, DLACPY, DORT01, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           DCOPY, DGEESX, DGEMM, DLACPY, DORT01, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, DBLE, MAX, MIN, SIGN, SQRT
@@ -432,16 +1474,38 @@ index a3c01756c..800ebf48b 100644
  *
  *     Check for errors
  *
+diff --git a/TESTING/EIG/dlarhs.f b/TESTING/EIG/dlarhs.f
+index 74b22792a..3abcd9ff6 100644
+--- a/TESTING/EIG/dlarhs.f
++++ b/TESTING/EIG/dlarhs.f
+@@ -237,12 +237,15 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           DGBMV, DGEMM, DLACPY, DLARNV, DSBMV, DSPMV,
+-     $                   DSYMM, DTBMV, DTPMV, DTRMM, XERBLA
++     $                   DSYMM, DTBMV, DTPMV, DTRMM, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          MAX
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Test the input parameters.
+ *
 diff --git a/TESTING/EIG/dort03.f b/TESTING/EIG/dort03.f
-index 46f34574f..9388beb32 100644
+index 46f34574f..8e9779712 100644
 --- a/TESTING/EIG/dort03.f
 +++ b/TESTING/EIG/dort03.f
-@@ -190,9 +190,11 @@
+@@ -190,9 +190,12 @@
        INTRINSIC          ABS, DBLE, MAX, MIN, SIGN
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DORT01, XERBLA
-+      EXTERNAL           DORT01, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           DORT01, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Executable Statements ..
 +*
@@ -449,16 +1513,314 @@ index 46f34574f..9388beb32 100644
  *
  *     Check inputs
  *
+diff --git a/TESTING/EIG/schkbb.f b/TESTING/EIG/schkbb.f
+index 55f18c0af..7cd28f207 100644
+--- a/TESTING/EIG/schkbb.f
++++ b/TESTING/EIG/schkbb.f
+@@ -400,7 +400,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           SBDT01, SBDT02, SGBBRD, SLACPY, SLAHD2, SLASET,
+-     $                   SLASUM, SLATMR, SLATMS, SORT01, XERBLA
++     $                   SLASUM, SLATMR, SLATMS, SORT01, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, MAX, MIN, REAL, SQRT
+@@ -412,6 +413,8 @@
+      $                   0, 0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/schkbd.f b/TESTING/EIG/schkbd.f
+index 4da7798fb..2ad9198ac 100644
+--- a/TESTING/EIG/schkbd.f
++++ b/TESTING/EIG/schkbd.f
+@@ -548,7 +548,8 @@
+       EXTERNAL           ALASUM, SBDSDC, SBDSQR, SBDSVDX, SBDT01,
+      $                   SBDT02, SBDT03, SBDT04, SCOPY, SGEBRD,
+      $                   SGEMM, SLABAD, SLACPY, SLAHD2, SLASET,
+-     $                   SLATMR, SLATMS, SORGBR, SORT01, XERBLA
++     $                   SLATMR, SLATMS, SORGBR, SORT01, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, EXP, INT, LOG, MAX, MIN, SQRT
+@@ -569,6 +570,8 @@
+      $                   0, 0, 0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/schkgg.f b/TESTING/EIG/schkgg.f
+index 6b18a68ba..e59318a4d 100644
+--- a/TESTING/EIG/schkgg.f
++++ b/TESTING/EIG/schkgg.f
+@@ -566,7 +566,8 @@
+ *     .. External Subroutines ..
+       EXTERNAL           SGEQR2, SGET51, SGET52, SGGHRD, SHGEQZ, SLABAD,
+      $                   SLACPY, SLARFG, SLASET, SLASUM, SLATM4, SORM2R,
+-     $                   STGEVC, XERBLA
++     $                   STGEVC, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, MAX, MIN, REAL, SIGN
+@@ -594,6 +595,8 @@
+       DATA               IBSIGN / 7*0, 2, 2*0, 2*2, 2*0, 2, 0, 2, 9*0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/schkhs.f b/TESTING/EIG/schkhs.f
+index fab38c2be..f7939f512 100644
+--- a/TESTING/EIG/schkhs.f
++++ b/TESTING/EIG/schkhs.f
+@@ -464,7 +464,8 @@
+       EXTERNAL           SCOPY, SGEHRD, SGEMM, SGET10, SGET22, SHSEIN,
+      $                   SHSEQR, SHST01, SLABAD, SLACPY, SLAFTS, SLASET,
+      $                   SLASUM, SLATME, SLATMR, SLATMS, SORGHR, SORMHR,
+-     $                   STREVC, XERBLA
++     $                   STREVC, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, MAX, MIN, REAL, SQRT
+@@ -478,6 +479,8 @@
+       DATA               KCONDS / 3*0, 5*0, 4*1, 6*2, 3*0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/schksb.f b/TESTING/EIG/schksb.f
+index e68a95cb5..e08a35c19 100644
+--- a/TESTING/EIG/schksb.f
++++ b/TESTING/EIG/schksb.f
+@@ -339,7 +339,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           SLACPY, SLASUM, SLATMR, SLATMS, SLASET, SSBT21,
+-     $                   SSBTRD, XERBLA
++     $                   SSBTRD, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, MAX, MIN, REAL, SQRT
+@@ -352,6 +353,8 @@
+      $                   0, 0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/schksb2stg.f b/TESTING/EIG/schksb2stg.f
+index 07b6fa95c..fc61fae35 100644
+--- a/TESTING/EIG/schksb2stg.f
++++ b/TESTING/EIG/schksb2stg.f
+@@ -363,7 +363,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           SLACPY, SLASET, SLASUM, SLATMR, SLATMS, SSBT21,
+-     $                   SSBTRD, XERBLA, SSYTRD_SB2ST, SSTEQR
++     $                   SSBTRD, XERBLA,
++     $          MKL_INIT_XERBLA, SSYTRD_SB2ST, SSTEQR
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, REAL, MAX, MIN, SQRT
+@@ -376,6 +377,8 @@
+      $                   0, 0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/schkst.f b/TESTING/EIG/schkst.f
+index a851bbbbf..9ae58db0c 100644
+--- a/TESTING/EIG/schkst.f
++++ b/TESTING/EIG/schkst.f
+@@ -651,7 +651,8 @@
+       EXTERNAL           SCOPY, SLABAD, SLACPY, SLASET, SLASUM, SLATMR,
+      $                   SLATMS, SOPGTR, SORGTR, SPTEQR, SSPT21, SSPTRD,
+      $                   SSTEBZ, SSTECH, SSTEDC, SSTEMR, SSTEIN, SSTEQR,
+-     $                   SSTERF, SSTT21, SSTT22, SSYT21, SSYTRD, XERBLA
++     $                   SSTERF, SSTT21, SSTT22, SSYT21, SSYTRD, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, INT, LOG, MAX, MIN, REAL, SQRT
+@@ -665,6 +666,8 @@
+      $                   0, 0, 4, 3, 1, 4, 4, 3 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Keep ftnchek happy
+       IDUMMA( 1 ) = 1
+diff --git a/TESTING/EIG/schkst2stg.f b/TESTING/EIG/schkst2stg.f
+index f386ab43c..e709359f0 100644
+--- a/TESTING/EIG/schkst2stg.f
++++ b/TESTING/EIG/schkst2stg.f
+@@ -673,6 +673,7 @@
+      $                   SLATMS, SOPGTR, SORGTR, SPTEQR, SSPT21, SSPTRD,
+      $                   SSTEBZ, SSTECH, SSTEDC, SSTEMR, SSTEIN, SSTEQR,
+      $                   SSTERF, SSTT21, SSTT22, SSYT21, SSYTRD, XERBLA,
++     $          MKL_INIT_XERBLA,
+      $                   SSYTRD_2STAGE
+ *     ..
+ *     .. Intrinsic Functions ..
+@@ -687,6 +688,8 @@
+      $                   0, 0, 4, 3, 1, 4, 4, 3 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Keep ftnchek happy
+       IDUMMA( 1 ) = 1
+diff --git a/TESTING/EIG/sdrges.f b/TESTING/EIG/sdrges.f
+index 4e98bfff0..fe56201c4 100644
+--- a/TESTING/EIG/sdrges.f
++++ b/TESTING/EIG/sdrges.f
+@@ -455,7 +455,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           ALASVM, SGET51, SGET53, SGET54, SGGES, SLABAD,
+-     $                   SLACPY, SLARFG, SLASET, SLATM4, SORM2R, XERBLA
++     $                   SLACPY, SLARFG, SLASET, SLATM4, SORM2R, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, MAX, MIN, REAL, SIGN
+@@ -483,6 +484,8 @@
+       DATA               IBSIGN / 7*0, 2, 2*0, 2*2, 2*0, 2, 0, 2, 9*0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/sdrges3.f b/TESTING/EIG/sdrges3.f
+index 90351f6df..f502ccea3 100644
+--- a/TESTING/EIG/sdrges3.f
++++ b/TESTING/EIG/sdrges3.f
+@@ -455,7 +455,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           ALASVM, SGET51, SGET53, SGET54, SGGES3, SLABAD,
+-     $                   SLACPY, SLARFG, SLASET, SLATM4, SORM2R, XERBLA
++     $                   SLACPY, SLARFG, SLASET, SLATM4, SORM2R, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, MAX, MIN, REAL, SIGN
+@@ -483,6 +484,8 @@
+       DATA               IBSIGN / 7*0, 2, 2*0, 2*2, 2*0, 2, 0, 2, 9*0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/sdrgev.f b/TESTING/EIG/sdrgev.f
+index d3f8a06ac..9baaae7c5 100644
+--- a/TESTING/EIG/sdrgev.f
++++ b/TESTING/EIG/sdrgev.f
+@@ -459,7 +459,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           ALASVM, SGET52, SGGEV, SLABAD, SLACPY, SLARFG,
+-     $                   SLASET, SLATM4, SORM2R, XERBLA
++     $                   SLASET, SLATM4, SORM2R, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, MAX, MIN, REAL, SIGN
+@@ -487,6 +488,8 @@
+       DATA               IBSIGN / 7*0, 2, 2*0, 2*2, 2*0, 2, 0, 2, 9*0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/sdrgev3.f b/TESTING/EIG/sdrgev3.f
+index 9492d43bf..1f2c7f06e 100644
+--- a/TESTING/EIG/sdrgev3.f
++++ b/TESTING/EIG/sdrgev3.f
+@@ -459,7 +459,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           ALASVM, SGET52, SGGEV3, SLABAD, SLACPY, SLARFG,
+-     $                   SLASET, SLATM4, SORM2R, XERBLA
++     $                   SLASET, SLATM4, SORM2R, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, MAX, MIN, REAL, SIGN
+@@ -487,6 +488,8 @@
+       DATA               IBSIGN / 7*0, 2, 2*0, 2*2, 2*0, 2, 0, 2, 9*0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/sdrgsx.f b/TESTING/EIG/sdrgsx.f
+index 58e63e793..96ab86392 100644
+--- a/TESTING/EIG/sdrgsx.f
++++ b/TESTING/EIG/sdrgsx.f
+@@ -404,7 +404,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           ALASVM, SGESVD, SGET51, SGET53, SGGESX, SLABAD,
+-     $                   SLACPY, SLAKF2, SLASET, SLATM5, XERBLA
++     $                   SLACPY, SLAKF2, SLASET, SLATM5, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, MAX, SQRT
+@@ -417,6 +418,8 @@
+       COMMON             / MN / M, N, MPLUSN, K, FS
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
 diff --git a/TESTING/EIG/sdrgvx.f b/TESTING/EIG/sdrgvx.f
-index b6cc91dc4..c9b1cf0dc 100644
+index b6cc91dc4..88b5ce004 100644
 --- a/TESTING/EIG/sdrgvx.f
 +++ b/TESTING/EIG/sdrgvx.f
-@@ -344,12 +344,14 @@
+@@ -344,12 +344,15 @@
        EXTERNAL           ILAENV, SLAMCH, SLANGE
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           ALASVM, SGET52, SGGEVX, SLACPY, SLATM6, XERBLA
-+      EXTERNAL           ALASVM, SGET52, SGGEVX, SLACPY, SLATM6, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           ALASVM, SGET52, SGGEVX, SLACPY, SLATM6, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, MAX, SQRT
@@ -469,20 +1831,226 @@ index b6cc91dc4..c9b1cf0dc 100644
  *
  *     Check for errors
  *
+diff --git a/TESTING/EIG/sdrvbd.f b/TESTING/EIG/sdrvbd.f
+index 101c8ba09..cdc040c31 100644
+--- a/TESTING/EIG/sdrvbd.f
++++ b/TESTING/EIG/sdrvbd.f
+@@ -424,7 +424,8 @@
+ *     .. External Subroutines ..
+       EXTERNAL           ALASVM, SBDT01, SGEJSV, SGESDD, SGESVD,
+      $                   SGESVDQ, SGESVDX, SGESVJ, SLABAD, SLACPY,
+-     $                   SLASET, SLATMS, SORT01, SORT03, XERBLA
++     $                   SLASET, SLATMS, SORT01, SORT03, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, REAL, INT, MAX, MIN
+@@ -444,6 +445,8 @@
+       DATA               CJOBV / 'N', 'V' /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Check for errors
+ *
+diff --git a/TESTING/EIG/sdrves.f b/TESTING/EIG/sdrves.f
+index 64cd86118..dcf3a0af1 100644
+--- a/TESTING/EIG/sdrves.f
++++ b/TESTING/EIG/sdrves.f
+@@ -448,7 +448,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           SGEES, SHST01, SLABAD, SLACPY, SLASUM, SLATME,
+-     $                   SLATMR, SLATMS, SLASET, XERBLA
++     $                   SLATMR, SLATMS, SLASET, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, MAX, SIGN, SQRT
+@@ -462,6 +463,8 @@
+       DATA               KCONDS / 3*0, 5*0, 4*1, 6*2, 3*0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+       PATH( 1: 1 ) = 'Single precision'
+       PATH( 2: 3 ) = 'ES'
+diff --git a/TESTING/EIG/sdrvev.f b/TESTING/EIG/sdrvev.f
+index 4888bc8bf..8d900894d 100644
+--- a/TESTING/EIG/sdrvev.f
++++ b/TESTING/EIG/sdrvev.f
+@@ -456,7 +456,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           SGEEV, SGET22, SLABAD, SLACPY, SLASUM, SLATME,
+-     $                   SLATMR, SLATMS, SLASET, XERBLA
++     $                   SLATMR, SLATMS, SLASET, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, MAX, MIN, SQRT
+@@ -470,6 +471,8 @@
+       DATA               KCONDS / 3*0, 5*0, 4*1, 6*2, 3*0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+       PATH( 1: 1 ) = 'Single precision'
+       PATH( 2: 3 ) = 'EV'
+diff --git a/TESTING/EIG/sdrvsg.f b/TESTING/EIG/sdrvsg.f
+index c6eeec6d9..c3eb637e8 100644
+--- a/TESTING/EIG/sdrvsg.f
++++ b/TESTING/EIG/sdrvsg.f
+@@ -404,7 +404,8 @@
+ *     .. External Subroutines ..
+       EXTERNAL           SLABAD, SLACPY, SLAFTS, SLASET, SLASUM, SLATMR,
+      $                   SLATMS, SSBGV, SSBGVD, SSBGVX, SSGT01, SSPGV,
+-     $                   SSPGVD, SSPGVX, SSYGV, SSYGVD, SSYGVX, XERBLA
++     $                   SSPGVD, SSPGVX, SSYGV, SSYGVD, SSYGVX, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, MAX, MIN, REAL, SQRT
+@@ -417,6 +418,8 @@
+      $                   0, 0, 6*4 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     1)      Check for errors
+ *
+diff --git a/TESTING/EIG/sdrvsg2stg.f b/TESTING/EIG/sdrvsg2stg.f
+index 66ba8c4dd..7412a99c8 100644
+--- a/TESTING/EIG/sdrvsg2stg.f
++++ b/TESTING/EIG/sdrvsg2stg.f
+@@ -414,6 +414,7 @@
+       EXTERNAL           SLABAD, SLACPY, SLAFTS, SLASET, SLASUM, SLATMR,
+      $                   SLATMS, SSBGV, SSBGVD, SSBGVX, SSGT01, SSPGV,
+      $                   SSPGVD, SSPGVX, SSYGV, SSYGVD, SSYGVX, XERBLA,
++     $          MKL_INIT_XERBLA,
+      $                   SSYGV_2STAGE
+ *     ..
+ *     .. Intrinsic Functions ..
+@@ -427,6 +428,8 @@
+      $                   0, 0, 6*4 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     1)      Check for errors
+ *
+diff --git a/TESTING/EIG/sdrvst.f b/TESTING/EIG/sdrvst.f
+index 00e14f396..faaf3ed20 100644
+--- a/TESTING/EIG/sdrvst.f
++++ b/TESTING/EIG/sdrvst.f
+@@ -509,7 +509,8 @@
+      $                   SLATMS, SSBEV, SSBEVD, SSBEVX, SSPEV, SSPEVD,
+      $                   SSPEVX, SSTEV, SSTEVD, SSTEVR, SSTEVX, SSTT21,
+      $                   SSTT22, SSYEV, SSYEVD, SSYEVR, SSYEVX, SSYT21,
+-     $                   SSYT22, XERBLA
++     $                   SSYT22, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Scalars in Common ..
+       CHARACTER*32       SRNAMT
+@@ -528,6 +529,8 @@
+      $                   0, 0, 4, 4, 4 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Keep ftrnchek happy
+ *
+diff --git a/TESTING/EIG/sdrvst2stg.f b/TESTING/EIG/sdrvst2stg.f
+index 32a3de05f..4ddae1078 100644
+--- a/TESTING/EIG/sdrvst2stg.f
++++ b/TESTING/EIG/sdrvst2stg.f
+@@ -512,7 +512,8 @@
+      $                   SSYEVD_2STAGE, SSYEVR_2STAGE, SSYEVX_2STAGE,
+      $                   SSYEV_2STAGE, SSBEV_2STAGE, SSBEVD_2STAGE,
+      $                   SSBEVX_2STAGE, SSYTRD_2STAGE, SSYTRD_SY2SB, 
+-     $                   SSYTRD_SB2ST, SSYT22, XERBLA
++     $                   SSYTRD_SB2ST, SSYT22, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Scalars in Common ..
+       CHARACTER*32       SRNAMT
+@@ -531,6 +532,8 @@
+      $                   0, 0, 4, 4, 4 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Keep ftrnchek happy
+ *
+diff --git a/TESTING/EIG/sdrvsx.f b/TESTING/EIG/sdrvsx.f
+index 25ca8b1c5..2838b3e6c 100644
+--- a/TESTING/EIG/sdrvsx.f
++++ b/TESTING/EIG/sdrvsx.f
+@@ -512,7 +512,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           SGET24, SLABAD, SLASUM, SLATME, SLATMR, SLATMS,
+-     $                   SLASET, XERBLA
++     $                   SLASET, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, MAX, MIN, SQRT
+@@ -526,6 +527,8 @@
+       DATA               KCONDS / 3*0, 5*0, 4*1, 6*2, 3*0 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+       PATH( 1: 1 ) = 'Single precision'
+       PATH( 2: 3 ) = 'SX'
+diff --git a/TESTING/EIG/sdrvvx.f b/TESTING/EIG/sdrvvx.f
+index 1c574e736..001c715b9 100644
+--- a/TESTING/EIG/sdrvvx.f
++++ b/TESTING/EIG/sdrvvx.f
+@@ -571,7 +571,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           SGET23, SLABAD, SLASUM, SLATME, SLATMR, SLATMS,
+-     $                   SLASET, XERBLA
++     $                   SLASET, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, MAX, MIN, SQRT
+@@ -586,6 +587,8 @@
+       DATA               BAL / 'N', 'P', 'S', 'B' /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+       PATH( 1: 1 ) = 'Single precision'
+       PATH( 2: 3 ) = 'VX'
 diff --git a/TESTING/EIG/sget23.f b/TESTING/EIG/sget23.f
-index ac936bc89..60d1cc752 100644
+index ac936bc89..d7a856df9 100644
 --- a/TESTING/EIG/sget23.f
 +++ b/TESTING/EIG/sget23.f
-@@ -428,7 +428,7 @@
+@@ -428,7 +428,8 @@
        EXTERNAL           LSAME, SLAMCH, SLAPY2, SNRM2
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           SGEEVX, SGET22, SLACPY, XERBLA
-+      EXTERNAL           SGEEVX, SGET22, SLACPY, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           SGEEVX, SGET22, SLACPY, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, MAX, MIN, REAL
-@@ -437,6 +437,8 @@
+@@ -437,6 +438,8 @@
        DATA               SENS / 'N', 'V' /
  *     ..
  *     .. Executable Statements ..
@@ -492,15 +2060,16 @@ index ac936bc89..60d1cc752 100644
  *     Check for errors
  *
 diff --git a/TESTING/EIG/sget24.f b/TESTING/EIG/sget24.f
-index e0b75ff0f..7b5951acd 100644
+index e0b75ff0f..53bd16801 100644
 --- a/TESTING/EIG/sget24.f
 +++ b/TESTING/EIG/sget24.f
-@@ -397,12 +397,14 @@
+@@ -397,12 +397,15 @@
        EXTERNAL           SSLECT, SLAMCH, SLANGE
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           SCOPY, SGEESX, SGEMM, SLACPY, SORT01, XERBLA
-+      EXTERNAL           SCOPY, SGEESX, SGEMM, SLACPY, SORT01, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           SCOPY, SGEESX, SGEMM, SLACPY, SORT01, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, MAX, MIN, REAL, SIGN, SQRT
@@ -511,16 +2080,38 @@ index e0b75ff0f..7b5951acd 100644
  *
  *     Check for errors
  *
+diff --git a/TESTING/EIG/slarhs.f b/TESTING/EIG/slarhs.f
+index 1e73842e3..4b2edb633 100644
+--- a/TESTING/EIG/slarhs.f
++++ b/TESTING/EIG/slarhs.f
+@@ -237,12 +237,15 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           SGBMV, SGEMM, SLACPY, SLARNV, SSBMV, SSPMV,
+-     $                   SSYMM, STBMV, STPMV, STRMM, XERBLA
++     $                   SSYMM, STBMV, STPMV, STRMM, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          MAX
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Test the input parameters.
+ *
 diff --git a/TESTING/EIG/sort03.f b/TESTING/EIG/sort03.f
-index 09a941487..31d6f3a58 100644
+index 09a941487..23f7874ae 100644
 --- a/TESTING/EIG/sort03.f
 +++ b/TESTING/EIG/sort03.f
-@@ -190,9 +190,11 @@
+@@ -190,9 +190,12 @@
        INTRINSIC          ABS, MAX, MIN, REAL, SIGN
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           SORT01, XERBLA
-+      EXTERNAL           SORT01, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           SORT01, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Executable Statements ..
 +*
@@ -529,19 +2120,20 @@ index 09a941487..31d6f3a58 100644
  *     Check inputs
  *
 diff --git a/TESTING/EIG/zchkbb.f b/TESTING/EIG/zchkbb.f
-index 877caffa5..adb409999 100644
+index 877caffa5..caac426c6 100644
 --- a/TESTING/EIG/zchkbb.f
 +++ b/TESTING/EIG/zchkbb.f
-@@ -409,7 +409,7 @@
+@@ -409,7 +409,8 @@
        EXTERNAL           DLAMCH
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DLAHD2, DLASUM, XERBLA, ZBDT01, ZBDT02, ZGBBRD,
-+      EXTERNAL           DLAHD2, DLASUM, XERBLA, MKL_INIT_XERBLA, ZBDT01, ZBDT02, ZGBBRD,
++      EXTERNAL           DLAHD2, DLASUM, XERBLA,
++     $          MKL_INIT_XERBLA, ZBDT01, ZBDT02, ZGBBRD,
       $                   ZLACPY, ZLASET, ZLATMR, ZLATMS, ZUNT01
  *     ..
  *     .. Intrinsic Functions ..
-@@ -422,6 +422,8 @@
+@@ -422,6 +423,8 @@
       $                   0, 0 /
  *     ..
  *     .. Executable Statements ..
@@ -551,19 +2143,18 @@ index 877caffa5..adb409999 100644
  *     Check for errors
  *
 diff --git a/TESTING/EIG/zchkbd.f b/TESTING/EIG/zchkbd.f
-index b3d560554..805c9d136 100644
+index b3d560554..c3d3a84a4 100644
 --- a/TESTING/EIG/zchkbd.f
 +++ b/TESTING/EIG/zchkbd.f
-@@ -466,7 +466,7 @@
-       EXTERNAL           DLAMCH, DLARND
+@@ -467,6 +467,7 @@
  *     ..
  *     .. External Subroutines ..
--      EXTERNAL           ALASUM, DCOPY, DLABAD, DLAHD2, DSVDCH, XERBLA,
-+      EXTERNAL           ALASUM, DCOPY, DLABAD, DLAHD2, DSVDCH, XERBLA, MKL_INIT_XERBLA,
+       EXTERNAL           ALASUM, DCOPY, DLABAD, DLAHD2, DSVDCH, XERBLA,
++     $          MKL_INIT_XERBLA,
       $                   ZBDSQR, ZBDT01, ZBDT02, ZBDT03, ZGEBRD, ZGEMM,
       $                   ZLACPY, ZLASET, ZLATMR, ZLATMS, ZUNGBR, ZUNT01
  *     ..
-@@ -489,6 +489,8 @@
+@@ -489,6 +490,8 @@
       $                   0, 0, 0 /
  *     ..
  *     .. Executable Statements ..
@@ -573,19 +2164,20 @@ index b3d560554..805c9d136 100644
  *     Check for errors
  *
 diff --git a/TESTING/EIG/zchkgg.f b/TESTING/EIG/zchkgg.f
-index 2f99d76f3..c769a7ecd 100644
+index 2f99d76f3..159b36cc6 100644
 --- a/TESTING/EIG/zchkgg.f
 +++ b/TESTING/EIG/zchkgg.f
-@@ -562,7 +562,7 @@
+@@ -562,7 +562,8 @@
        EXTERNAL           DLAMCH, ZLANGE, ZLARND
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DLABAD, DLASUM, XERBLA, ZGEQR2, ZGET51, ZGET52,
-+      EXTERNAL           DLABAD, DLASUM, XERBLA, MKL_INIT_XERBLA, ZGEQR2, ZGET51, ZGET52,
++      EXTERNAL           DLABAD, DLASUM, XERBLA,
++     $          MKL_INIT_XERBLA, ZGEQR2, ZGET51, ZGET52,
       $                   ZGGHRD, ZHGEQZ, ZLACPY, ZLARFG, ZLASET, ZLATM4,
       $                   ZTGEVC, ZUNM2R
  *     ..
-@@ -595,6 +595,8 @@
+@@ -595,6 +596,8 @@
       $                   9*.FALSE. /
  *     ..
  *     .. Executable Statements ..
@@ -595,19 +2187,20 @@ index 2f99d76f3..c769a7ecd 100644
  *     Check for errors
  *
 diff --git a/TESTING/EIG/zchkhb.f b/TESTING/EIG/zchkhb.f
-index a4c658ff3..5bfe90038 100644
+index a4c658ff3..f28e16f94 100644
 --- a/TESTING/EIG/zchkhb.f
 +++ b/TESTING/EIG/zchkhb.f
-@@ -346,7 +346,7 @@
+@@ -346,7 +346,8 @@
        EXTERNAL           DLAMCH
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DLASUM, XERBLA, ZHBT21, ZHBTRD, ZLACPY, ZLASET,
-+      EXTERNAL           DLASUM, XERBLA, MKL_INIT_XERBLA, ZHBT21, ZHBTRD, ZLACPY, ZLASET,
++      EXTERNAL           DLASUM, XERBLA,
++     $          MKL_INIT_XERBLA, ZHBT21, ZHBTRD, ZLACPY, ZLASET,
       $                   ZLATMR, ZLATMS
  *     ..
  *     .. Intrinsic Functions ..
-@@ -360,6 +360,8 @@
+@@ -360,6 +361,8 @@
       $                   0, 0 /
  *     ..
  *     .. Executable Statements ..
@@ -617,19 +2210,20 @@ index a4c658ff3..5bfe90038 100644
  *     Check for errors
  *
 diff --git a/TESTING/EIG/zchkhb2stg.f b/TESTING/EIG/zchkhb2stg.f
-index dbbb84348..e71a59a13 100644
+index dbbb84348..db4b47f92 100644
 --- a/TESTING/EIG/zchkhb2stg.f
 +++ b/TESTING/EIG/zchkhb2stg.f
-@@ -372,7 +372,7 @@
+@@ -372,7 +372,8 @@
        EXTERNAL           DLAMCH
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DLASUM, XERBLA, ZHBT21, ZHBTRD, ZLACPY, ZLASET,
-+      EXTERNAL           DLASUM, XERBLA, MKL_INIT_XERBLA, ZHBT21, ZHBTRD, ZLACPY, ZLASET,
++      EXTERNAL           DLASUM, XERBLA,
++     $          MKL_INIT_XERBLA, ZHBT21, ZHBTRD, ZLACPY, ZLASET,
       $                   ZLATMR, ZLATMS, ZHETRD_HB2ST, ZSTEQR
  *     ..
  *     .. Intrinsic Functions ..
-@@ -386,6 +386,8 @@
+@@ -386,6 +387,8 @@
       $                   0, 0 /
  *     ..
  *     .. Executable Statements ..
@@ -639,19 +2233,20 @@ index dbbb84348..e71a59a13 100644
  *     Check for errors
  *
 diff --git a/TESTING/EIG/zchkhs.f b/TESTING/EIG/zchkhs.f
-index ec89b44f9..1b822245a 100644
+index ec89b44f9..c7b0e36f1 100644
 --- a/TESTING/EIG/zchkhs.f
 +++ b/TESTING/EIG/zchkhs.f
-@@ -464,7 +464,7 @@
+@@ -464,7 +464,8 @@
        EXTERNAL           DLAMCH
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DLABAD, DLAFTS, DLASUM, XERBLA, ZCOPY, ZGEHRD,
-+      EXTERNAL           DLABAD, DLAFTS, DLASUM, XERBLA, MKL_INIT_XERBLA, ZCOPY, ZGEHRD,
++      EXTERNAL           DLABAD, DLAFTS, DLASUM, XERBLA,
++     $          MKL_INIT_XERBLA, ZCOPY, ZGEHRD,
       $                   ZGEMM, ZGET10, ZGET22, ZHSEIN, ZHSEQR, ZHST01,
       $                   ZLACPY, ZLASET, ZLATME, ZLATMR, ZLATMS, ZTREVC,
       $                   ZUNGHR, ZUNMHR
-@@ -481,6 +481,8 @@
+@@ -481,6 +482,8 @@
        DATA               KCONDS / 3*0, 5*0, 4*1, 6*2, 3*0 /
  *     ..
  *     .. Executable Statements ..
@@ -660,20 +2255,67 @@ index ec89b44f9..1b822245a 100644
  *
  *     Check for errors
  *
+diff --git a/TESTING/EIG/zchkst.f b/TESTING/EIG/zchkst.f
+index cd45e98e1..8cc1a6a76 100644
+--- a/TESTING/EIG/zchkst.f
++++ b/TESTING/EIG/zchkst.f
+@@ -666,7 +666,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           DCOPY, DLABAD, DLASUM, DSTEBZ, DSTECH, DSTERF,
+-     $                   XERBLA, ZCOPY, ZHET21, ZHETRD, ZHPT21, ZHPTRD,
++     $                   XERBLA,
++     $          MKL_INIT_XERBLA, ZCOPY, ZHET21, ZHETRD, ZHPT21, ZHPTRD,
+      $                   ZLACPY, ZLASET, ZLATMR, ZLATMS, ZPTEQR, ZSTEDC,
+      $                   ZSTEMR, ZSTEIN, ZSTEQR, ZSTT21, ZSTT22, ZUNGTR,
+      $                   ZUPGTR
+@@ -683,6 +684,8 @@
+      $                   0, 0, 4, 3, 1, 4, 4, 3 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Keep ftnchek happy
+       IDUMMA( 1 ) = 1
+diff --git a/TESTING/EIG/zchkst2stg.f b/TESTING/EIG/zchkst2stg.f
+index 167e5f359..1316d130c 100644
+--- a/TESTING/EIG/zchkst2stg.f
++++ b/TESTING/EIG/zchkst2stg.f
+@@ -687,7 +687,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           DCOPY, DLABAD, DLASUM, DSTEBZ, DSTECH, DSTERF,
+-     $                   XERBLA, ZCOPY, ZHET21, ZHETRD, ZHPT21, ZHPTRD,
++     $                   XERBLA,
++     $          MKL_INIT_XERBLA, ZCOPY, ZHET21, ZHETRD, ZHPT21, ZHPTRD,
+      $                   ZLACPY, ZLASET, ZLATMR, ZLATMS, ZPTEQR, ZSTEDC,
+      $                   ZSTEMR, ZSTEIN, ZSTEQR, ZSTT21, ZSTT22, ZUNGTR,
+      $                   ZUPGTR, ZHETRD_2STAGE
+@@ -704,6 +705,8 @@
+      $                   0, 0, 4, 3, 1, 4, 4, 3 /
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Keep ftnchek happy
+       IDUMMA( 1 ) = 1
 diff --git a/TESTING/EIG/zdrges.f b/TESTING/EIG/zdrges.f
-index c09984e09..9b11fef82 100644
+index c09984e09..b753fa263 100644
 --- a/TESTING/EIG/zdrges.f
 +++ b/TESTING/EIG/zdrges.f
-@@ -437,7 +437,7 @@
+@@ -437,7 +437,8 @@
        EXTERNAL           ZLCTES, ILAENV, DLAMCH, ZLARND
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           ALASVM, DLABAD, XERBLA, ZGET51, ZGET54, ZGGES,
-+      EXTERNAL           ALASVM, DLABAD, XERBLA, MKL_INIT_XERBLA, ZGET51, ZGET54, ZGGES,
++      EXTERNAL           ALASVM, DLABAD, XERBLA,
++     $          MKL_INIT_XERBLA, ZGET51, ZGET54, ZGGES,
       $                   ZLACPY, ZLARFG, ZLASET, ZLATM4, ZUNM2R
  *     ..
  *     .. Intrinsic Functions ..
-@@ -475,6 +475,8 @@
+@@ -475,6 +476,8 @@
       $                   9*.FALSE. /
  *     ..
  *     .. Executable Statements ..
@@ -683,19 +2325,20 @@ index c09984e09..9b11fef82 100644
  *     Check for errors
  *
 diff --git a/TESTING/EIG/zdrges3.f b/TESTING/EIG/zdrges3.f
-index 2b3be003c..f360e3177 100644
+index 2b3be003c..17aa3ee7d 100644
 --- a/TESTING/EIG/zdrges3.f
 +++ b/TESTING/EIG/zdrges3.f
-@@ -438,7 +438,7 @@
+@@ -438,7 +438,8 @@
        EXTERNAL           ZLCTES, ILAENV, DLAMCH, ZLARND
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           ALASVM, DLABAD, XERBLA, ZGET51, ZGET54, ZGGES3,
-+      EXTERNAL           ALASVM, DLABAD, XERBLA, MKL_INIT_XERBLA, ZGET51, ZGET54, ZGGES3,
++      EXTERNAL           ALASVM, DLABAD, XERBLA,
++     $          MKL_INIT_XERBLA, ZGET51, ZGET54, ZGGES3,
       $                   ZLACPY, ZLARFG, ZLASET, ZLATM4, ZUNM2R
  *     ..
  *     .. Intrinsic Functions ..
-@@ -476,6 +476,8 @@
+@@ -476,6 +477,8 @@
       $                   9*.FALSE. /
  *     ..
  *     .. Executable Statements ..
@@ -705,19 +2348,20 @@ index 2b3be003c..f360e3177 100644
  *     Check for errors
  *
 diff --git a/TESTING/EIG/zdrgev.f b/TESTING/EIG/zdrgev.f
-index 2588816a5..136310f6a 100644
+index 2588816a5..4cbfce37a 100644
 --- a/TESTING/EIG/zdrgev.f
 +++ b/TESTING/EIG/zdrgev.f
-@@ -454,7 +454,7 @@
+@@ -454,7 +454,8 @@
        EXTERNAL           ILAENV, DLAMCH, ZLARND
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           ALASVM, DLABAD, XERBLA, ZGET52, ZGGEV, ZLACPY,
-+      EXTERNAL           ALASVM, DLABAD, XERBLA, MKL_INIT_XERBLA, ZGET52, ZGGEV, ZLACPY,
++      EXTERNAL           ALASVM, DLABAD, XERBLA,
++     $          MKL_INIT_XERBLA, ZGET52, ZGGEV, ZLACPY,
       $                   ZLARFG, ZLASET, ZLATM4, ZUNM2R
  *     ..
  *     .. Intrinsic Functions ..
-@@ -486,6 +486,8 @@
+@@ -486,6 +487,8 @@
       $                   9*.FALSE. /
  *     ..
  *     .. Executable Statements ..
@@ -727,19 +2371,20 @@ index 2588816a5..136310f6a 100644
  *     Check for errors
  *
 diff --git a/TESTING/EIG/zdrgev3.f b/TESTING/EIG/zdrgev3.f
-index 11e8562d7..237ee5f2d 100644
+index 11e8562d7..554182e1d 100644
 --- a/TESTING/EIG/zdrgev3.f
 +++ b/TESTING/EIG/zdrgev3.f
-@@ -454,7 +454,7 @@
+@@ -454,7 +454,8 @@
        EXTERNAL           ILAENV, DLAMCH, ZLARND
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           ALASVM, DLABAD, XERBLA, ZGET52, ZGGEV3, ZLACPY,
-+      EXTERNAL           ALASVM, DLABAD, XERBLA, MKL_INIT_XERBLA, ZGET52, ZGGEV3, ZLACPY,
++      EXTERNAL           ALASVM, DLABAD, XERBLA,
++     $          MKL_INIT_XERBLA, ZGET52, ZGGEV3, ZLACPY,
       $                   ZLARFG, ZLASET, ZLATM4, ZUNM2R
  *     ..
  *     .. Intrinsic Functions ..
-@@ -486,6 +486,8 @@
+@@ -486,6 +487,8 @@
       $                   9*.FALSE. /
  *     ..
  *     .. Executable Statements ..
@@ -749,19 +2394,20 @@ index 11e8562d7..237ee5f2d 100644
  *     Check for errors
  *
 diff --git a/TESTING/EIG/zdrgsx.f b/TESTING/EIG/zdrgsx.f
-index f5821e520..fd706edcc 100644
+index f5821e520..2d7e0b9ec 100644
 --- a/TESTING/EIG/zdrgsx.f
 +++ b/TESTING/EIG/zdrgsx.f
-@@ -397,7 +397,7 @@
+@@ -397,7 +397,8 @@
        EXTERNAL           ZLCTSX, ILAENV, DLAMCH, ZLANGE
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           ALASVM, DLABAD, XERBLA, ZGESVD, ZGET51, ZGGESX,
-+      EXTERNAL           ALASVM, DLABAD, XERBLA, MKL_INIT_XERBLA, ZGESVD, ZGET51, ZGGESX,
++      EXTERNAL           ALASVM, DLABAD, XERBLA,
++     $          MKL_INIT_XERBLA, ZGESVD, ZGET51, ZGGESX,
       $                   ZLACPY, ZLAKF2, ZLASET, ZLATM5
  *     ..
  *     .. Scalars in Common ..
-@@ -417,6 +417,8 @@
+@@ -417,6 +418,8 @@
        ABS1( X ) = ABS( DBLE( X ) ) + ABS( DIMAG( X ) )
  *     ..
  *     .. Executable Statements ..
@@ -771,15 +2417,16 @@ index f5821e520..fd706edcc 100644
  *     Check for errors
  *
 diff --git a/TESTING/EIG/zdrgvx.f b/TESTING/EIG/zdrgvx.f
-index 4a6956451..2153e9c99 100644
+index 4a6956451..cf1ec649b 100644
 --- a/TESTING/EIG/zdrgvx.f
 +++ b/TESTING/EIG/zdrgvx.f
-@@ -339,12 +339,14 @@
+@@ -339,12 +339,15 @@
        EXTERNAL           ILAENV, DLAMCH, ZLANGE
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           ALASVM, XERBLA, ZGET52, ZGGEVX, ZLACPY, ZLATM6
-+      EXTERNAL           ALASVM, XERBLA, MKL_INIT_XERBLA, ZGET52, ZGGEVX, ZLACPY, ZLATM6
++      EXTERNAL           ALASVM, XERBLA,
++     $          MKL_INIT_XERBLA, ZGET52, ZGGEVX, ZLACPY, ZLATM6
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, DCMPLX, MAX, SQRT
@@ -791,19 +2438,20 @@ index 4a6956451..2153e9c99 100644
  *     Check for errors
  *
 diff --git a/TESTING/EIG/zdrvbd.f b/TESTING/EIG/zdrvbd.f
-index 105e9dff7..0086d07b5 100644
+index 105e9dff7..4467ffe8f 100644
 --- a/TESTING/EIG/zdrvbd.f
 +++ b/TESTING/EIG/zdrvbd.f
-@@ -458,7 +458,7 @@
+@@ -458,7 +458,8 @@
        EXTERNAL           DLAMCH, DLARND
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           ALASVM, XERBLA, ZBDT01, ZBDT05, ZGESDD,
-+      EXTERNAL           ALASVM, XERBLA, MKL_INIT_XERBLA, ZBDT01, ZBDT05, ZGESDD,
++      EXTERNAL           ALASVM, XERBLA,
++     $          MKL_INIT_XERBLA, ZBDT01, ZBDT05, ZGESDD,
       $                   ZGESVD, ZGESVDQ, ZGESVJ, ZGEJSV, ZGESVDX,
       $                   ZLACPY, ZLASET, ZLATMS, ZUNT01, ZUNT03
  *     ..
-@@ -477,6 +477,8 @@
+@@ -477,6 +478,8 @@
        DATA               CJOBV / 'N', 'V' /
  *     ..
  *     .. Executable Statements ..
@@ -813,19 +2461,20 @@ index 105e9dff7..0086d07b5 100644
  *     Check for errors
  *
 diff --git a/TESTING/EIG/zdrves.f b/TESTING/EIG/zdrves.f
-index 7a625e1b7..b90bb2f57 100644
+index 7a625e1b7..5b42d0461 100644
 --- a/TESTING/EIG/zdrves.f
 +++ b/TESTING/EIG/zdrves.f
-@@ -440,7 +440,7 @@
+@@ -440,7 +440,8 @@
        EXTERNAL           ZSLECT, DLAMCH
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DLABAD, DLASUM, XERBLA, ZGEES, ZHST01, ZLACPY,
-+      EXTERNAL           DLABAD, DLASUM, XERBLA, MKL_INIT_XERBLA, ZGEES, ZHST01, ZLACPY,
++      EXTERNAL           DLABAD, DLASUM, XERBLA,
++     $          MKL_INIT_XERBLA, ZGEES, ZHST01, ZLACPY,
       $                   ZLASET, ZLATME, ZLATMR, ZLATMS
  *     ..
  *     .. Intrinsic Functions ..
-@@ -455,6 +455,8 @@
+@@ -455,6 +456,8 @@
        DATA               KCONDS / 3*0, 5*0, 4*1, 6*2, 3*0 /
  *     ..
  *     .. Executable Statements ..
@@ -835,19 +2484,20 @@ index 7a625e1b7..b90bb2f57 100644
        PATH( 1: 1 ) = 'Zomplex precision'
        PATH( 2: 3 ) = 'ES'
 diff --git a/TESTING/EIG/zdrvev.f b/TESTING/EIG/zdrvev.f
-index e818f7ea6..6a90f68ca 100644
+index e818f7ea6..a3269d2d1 100644
 --- a/TESTING/EIG/zdrvev.f
 +++ b/TESTING/EIG/zdrvev.f
-@@ -445,7 +445,7 @@
+@@ -445,7 +445,8 @@
        EXTERNAL           DLAMCH, DZNRM2
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DLABAD, DLASUM, XERBLA, ZGEEV, ZGET22, ZLACPY,
-+      EXTERNAL           DLABAD, DLASUM, XERBLA, MKL_INIT_XERBLA, ZGEEV, ZGET22, ZLACPY,
++      EXTERNAL           DLABAD, DLASUM, XERBLA,
++     $          MKL_INIT_XERBLA, ZGEEV, ZGET22, ZLACPY,
       $                   ZLASET, ZLATME, ZLATMR, ZLATMS
  *     ..
  *     .. Intrinsic Functions ..
-@@ -460,6 +460,8 @@
+@@ -460,6 +461,8 @@
        DATA               KCONDS / 3*0, 5*0, 4*1, 6*2, 3*0 /
  *     ..
  *     .. Executable Statements ..
@@ -857,19 +2507,20 @@ index e818f7ea6..6a90f68ca 100644
        PATH( 1: 1 ) = 'Zomplex precision'
        PATH( 2: 3 ) = 'EV'
 diff --git a/TESTING/EIG/zdrvsg.f b/TESTING/EIG/zdrvsg.f
-index 8238dceef..d1b62ef22 100644
+index 8238dceef..4d88bdd88 100644
 --- a/TESTING/EIG/zdrvsg.f
 +++ b/TESTING/EIG/zdrvsg.f
-@@ -421,7 +421,7 @@
+@@ -421,7 +421,8 @@
        EXTERNAL           LSAME, DLAMCH, DLARND
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DLABAD, DLAFTS, DLASUM, XERBLA, ZHBGV, ZHBGVD,
-+      EXTERNAL           DLABAD, DLAFTS, DLASUM, XERBLA, MKL_INIT_XERBLA, ZHBGV, ZHBGVD,
++      EXTERNAL           DLABAD, DLAFTS, DLASUM, XERBLA,
++     $          MKL_INIT_XERBLA, ZHBGV, ZHBGVD,
       $                   ZHBGVX, ZHEGV, ZHEGVD, ZHEGVX, ZHPGV, ZHPGVD,
       $                   ZHPGVX, ZLACPY, ZLASET, ZLATMR, ZLATMS, ZSGT01
  *     ..
-@@ -436,6 +436,8 @@
+@@ -436,6 +437,8 @@
       $                   0, 0, 6*4 /
  *     ..
  *     .. Executable Statements ..
@@ -879,19 +2530,20 @@ index 8238dceef..d1b62ef22 100644
  *     1)      Check for errors
  *
 diff --git a/TESTING/EIG/zdrvsg2stg.f b/TESTING/EIG/zdrvsg2stg.f
-index 8929b33c4..4a5306ec5 100644
+index 8929b33c4..213b0658c 100644
 --- a/TESTING/EIG/zdrvsg2stg.f
 +++ b/TESTING/EIG/zdrvsg2stg.f
-@@ -429,7 +429,7 @@
+@@ -429,7 +429,8 @@
        EXTERNAL           LSAME, DLAMCH, DLARND
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DLABAD, DLAFTS, DLASUM, XERBLA, ZHBGV, ZHBGVD,
-+      EXTERNAL           DLABAD, DLAFTS, DLASUM, XERBLA, MKL_INIT_XERBLA, ZHBGV, ZHBGVD,
++      EXTERNAL           DLABAD, DLAFTS, DLASUM, XERBLA,
++     $          MKL_INIT_XERBLA, ZHBGV, ZHBGVD,
       $                   ZHBGVX, ZHEGV, ZHEGVD, ZHEGVX, ZHPGV, ZHPGVD,
       $                   ZHPGVX, ZLACPY, ZLASET, ZLATMR, ZLATMS, ZSGT01,
       $                   ZHEGV_2STAGE
-@@ -445,6 +445,8 @@
+@@ -445,6 +446,8 @@
       $                   0, 0, 6*4 /
  *     ..
  *     .. Executable Statements ..
@@ -901,19 +2553,20 @@ index 8929b33c4..4a5306ec5 100644
  *     1)      Check for errors
  *
 diff --git a/TESTING/EIG/zdrvst.f b/TESTING/EIG/zdrvst.f
-index cf2dc03ed..d1d79a05e 100644
+index cf2dc03ed..592b3e224 100644
 --- a/TESTING/EIG/zdrvst.f
 +++ b/TESTING/EIG/zdrvst.f
-@@ -394,7 +394,7 @@
+@@ -394,7 +394,8 @@
        EXTERNAL           DLAMCH, DLARND, DSXT1
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           ALASVM, DLABAD, DLAFTS, XERBLA, ZHBEV, ZHBEVD,
-+      EXTERNAL           ALASVM, DLABAD, DLAFTS, XERBLA, MKL_INIT_XERBLA, ZHBEV, ZHBEVD,
++      EXTERNAL           ALASVM, DLABAD, DLAFTS, XERBLA,
++     $          MKL_INIT_XERBLA, ZHBEV, ZHBEVD,
       $                   ZHBEVX, ZHEEV, ZHEEVD, ZHEEVR, ZHEEVX, ZHET21,
       $                   ZHET22, ZHPEV, ZHPEVD, ZHPEVX, ZLACPY, ZLASET,
       $                   ZLATMR, ZLATMS
-@@ -410,6 +410,8 @@
+@@ -410,6 +411,8 @@
       $                   0, 0, 4, 4, 4 /
  *     ..
  *     .. Executable Statements ..
@@ -923,19 +2576,20 @@ index cf2dc03ed..d1d79a05e 100644
  *     1)      Check for errors
  *
 diff --git a/TESTING/EIG/zdrvst2stg.f b/TESTING/EIG/zdrvst2stg.f
-index de072c9a3..8503f4240 100644
+index de072c9a3..86cac8bbc 100644
 --- a/TESTING/EIG/zdrvst2stg.f
 +++ b/TESTING/EIG/zdrvst2stg.f
-@@ -394,7 +394,7 @@
+@@ -394,7 +394,8 @@
        EXTERNAL           DLAMCH, DLARND, DSXT1
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           ALASVM, DLABAD, DLAFTS, XERBLA, ZHBEV, ZHBEVD,
-+      EXTERNAL           ALASVM, DLABAD, DLAFTS, XERBLA, MKL_INIT_XERBLA, ZHBEV, ZHBEVD,
++      EXTERNAL           ALASVM, DLABAD, DLAFTS, XERBLA,
++     $          MKL_INIT_XERBLA, ZHBEV, ZHBEVD,
       $                   ZHBEVX, ZHEEV, ZHEEVD, ZHEEVR, ZHEEVX, ZHET21,
       $                   ZHET22, ZHPEV, ZHPEVD, ZHPEVX, ZLACPY, ZLASET,
       $                   ZHEEVD_2STAGE, ZHEEVR_2STAGE, ZHEEVX_2STAGE,
-@@ -412,6 +412,8 @@
+@@ -412,6 +413,8 @@
       $                   0, 0, 4, 4, 4 /
  *     ..
  *     .. Executable Statements ..
@@ -945,19 +2599,20 @@ index de072c9a3..8503f4240 100644
  *     1)      Check for errors
  *
 diff --git a/TESTING/EIG/zdrvsx.f b/TESTING/EIG/zdrvsx.f
-index ba3ffab6c..256330661 100644
+index ba3ffab6c..22be203b1 100644
 --- a/TESTING/EIG/zdrvsx.f
 +++ b/TESTING/EIG/zdrvsx.f
-@@ -495,7 +495,7 @@
+@@ -495,7 +495,8 @@
        EXTERNAL           DLAMCH
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DLABAD, DLASUM, XERBLA, ZGET24, ZLASET, ZLATME,
-+      EXTERNAL           DLABAD, DLASUM, XERBLA, MKL_INIT_XERBLA, ZGET24, ZLASET, ZLATME,
++      EXTERNAL           DLABAD, DLASUM, XERBLA,
++     $          MKL_INIT_XERBLA, ZGET24, ZLASET, ZLATME,
       $                   ZLATMR, ZLATMS
  *     ..
  *     .. Intrinsic Functions ..
-@@ -510,6 +510,8 @@
+@@ -510,6 +511,8 @@
        DATA               KCONDS / 3*0, 5*0, 4*1, 6*2, 3*0 /
  *     ..
  *     .. Executable Statements ..
@@ -967,19 +2622,20 @@ index ba3ffab6c..256330661 100644
        PATH( 1: 1 ) = 'Zomplex precision'
        PATH( 2: 3 ) = 'SX'
 diff --git a/TESTING/EIG/zdrvvx.f b/TESTING/EIG/zdrvvx.f
-index 9492e0623..e9f59e008 100644
+index 9492e0623..9217fdbd0 100644
 --- a/TESTING/EIG/zdrvvx.f
 +++ b/TESTING/EIG/zdrvvx.f
-@@ -551,7 +551,7 @@
+@@ -551,7 +551,8 @@
        EXTERNAL           DLAMCH
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DLABAD, DLASUM, XERBLA, ZGET23, ZLASET, ZLATME,
-+      EXTERNAL           DLABAD, DLASUM, XERBLA, MKL_INIT_XERBLA, ZGET23, ZLASET, ZLATME,
++      EXTERNAL           DLABAD, DLASUM, XERBLA,
++     $          MKL_INIT_XERBLA, ZGET23, ZLASET, ZLATME,
       $                   ZLATMR, ZLATMS
  *     ..
  *     .. Intrinsic Functions ..
-@@ -567,6 +567,8 @@
+@@ -567,6 +568,8 @@
        DATA               BAL / 'N', 'P', 'S', 'B' /
  *     ..
  *     .. Executable Statements ..
@@ -989,19 +2645,20 @@ index 9492e0623..e9f59e008 100644
        PATH( 1: 1 ) = 'Zomplex precision'
        PATH( 2: 3 ) = 'VX'
 diff --git a/TESTING/EIG/zget23.f b/TESTING/EIG/zget23.f
-index 39fe15299..a0ce79d3a 100644
+index 39fe15299..4e90daf12 100644
 --- a/TESTING/EIG/zget23.f
 +++ b/TESTING/EIG/zget23.f
-@@ -420,7 +420,7 @@
+@@ -420,7 +420,8 @@
        EXTERNAL           LSAME, DLAMCH, DZNRM2
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA, ZGEEVX, ZGET22, ZLACPY
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA, ZGEEVX, ZGET22, ZLACPY
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA, ZGEEVX, ZGET22, ZLACPY
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, DBLE, DIMAG, MAX, MIN
-@@ -429,6 +429,8 @@
+@@ -429,6 +430,8 @@
        DATA               SENS / 'N', 'V' /
  *     ..
  *     .. Executable Statements ..
@@ -1011,19 +2668,20 @@ index 39fe15299..a0ce79d3a 100644
  *     Check for errors
  *
 diff --git a/TESTING/EIG/zget24.f b/TESTING/EIG/zget24.f
-index 1641a018c..fd0b9bdbd 100644
+index 1641a018c..6fcf063e6 100644
 --- a/TESTING/EIG/zget24.f
 +++ b/TESTING/EIG/zget24.f
-@@ -384,7 +384,7 @@
+@@ -384,7 +384,8 @@
        EXTERNAL           ZSLECT, DLAMCH, ZLANGE
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA, ZCOPY, ZGEESX, ZGEMM, ZLACPY, ZUNT01
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA, ZCOPY, ZGEESX, ZGEMM, ZLACPY, ZUNT01
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA, ZCOPY, ZGEESX, ZGEMM, ZLACPY, ZUNT01
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, DBLE, DIMAG, MAX, MIN
-@@ -400,6 +400,8 @@
+@@ -400,6 +401,8 @@
        COMMON             / SSLCT / SELOPT, SELDIM, SELVAL, SELWR, SELWI
  *     ..
  *     .. Executable Statements ..
@@ -1033,19 +2691,20 @@ index 1641a018c..fd0b9bdbd 100644
  *     Check for errors
  *
 diff --git a/TESTING/EIG/zlarhs.f b/TESTING/EIG/zlarhs.f
-index f2fe47e9b..4d13db5f9 100644
+index f2fe47e9b..7b172fb9b 100644
 --- a/TESTING/EIG/zlarhs.f
 +++ b/TESTING/EIG/zlarhs.f
-@@ -242,7 +242,7 @@
+@@ -242,7 +242,8 @@
        EXTERNAL           LSAME, LSAMEN
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA, ZGBMV, ZGEMM, ZHBMV, ZHEMM, ZHPMV,
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA, ZGBMV, ZGEMM, ZHBMV, ZHEMM, ZHPMV,
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA, ZGBMV, ZGEMM, ZHBMV, ZHEMM, ZHPMV,
       $                   ZLACPY, ZLARNV, ZSBMV, ZSPMV, ZSYMM, ZTBMV,
       $                   ZTPMV, ZTRMM
  *     ..
-@@ -250,6 +250,8 @@
+@@ -250,6 +251,8 @@
        INTRINSIC          MAX
  *     ..
  *     .. Executable Statements ..
@@ -1055,15 +2714,16 @@ index f2fe47e9b..4d13db5f9 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/EIG/zsbmv.f b/TESTING/EIG/zsbmv.f
-index 643882550..b88228f85 100644
+index 643882550..9f3b8e80a 100644
 --- a/TESTING/EIG/zsbmv.f
 +++ b/TESTING/EIG/zsbmv.f
-@@ -183,12 +183,14 @@
+@@ -183,12 +183,15 @@
        EXTERNAL           LSAME
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          MAX, MIN
@@ -1075,15 +2735,16 @@ index 643882550..b88228f85 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/EIG/zunt03.f b/TESTING/EIG/zunt03.f
-index 4560410a3..cf1883c0a 100644
+index 4560410a3..01980f734 100644
 --- a/TESTING/EIG/zunt03.f
 +++ b/TESTING/EIG/zunt03.f
-@@ -199,9 +199,11 @@
+@@ -199,9 +199,12 @@
        INTRINSIC          ABS, DBLE, DCMPLX, MAX, MIN
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA, ZUNT01
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA, ZUNT01
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA, ZUNT01
  *     ..
  *     .. Executable Statements ..
 +*
@@ -1092,15 +2753,16 @@ index 4560410a3..cf1883c0a 100644
  *     Check inputs
  *
 diff --git a/TESTING/LIN/cgelqs.f b/TESTING/LIN/cgelqs.f
-index ee08c9b62..de1ca3a5c 100644
+index ee08c9b62..fbce4b425 100644
 --- a/TESTING/LIN/cgelqs.f
 +++ b/TESTING/LIN/cgelqs.f
-@@ -142,12 +142,14 @@
+@@ -142,12 +142,15 @@
       $                   CONE = ( 1.0E+0, 0.0E+0 ) )
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           CLASET, CTRSM, CUNMLQ, XERBLA
-+      EXTERNAL           CLASET, CTRSM, CUNMLQ, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           CLASET, CTRSM, CUNMLQ, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          MAX
@@ -1112,15 +2774,16 @@ index ee08c9b62..de1ca3a5c 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/LIN/cgeqls.f b/TESTING/LIN/cgeqls.f
-index b1d36107c..7fcf01e70 100644
+index b1d36107c..ecc8ccf56 100644
 --- a/TESTING/LIN/cgeqls.f
 +++ b/TESTING/LIN/cgeqls.f
-@@ -142,12 +142,14 @@
+@@ -142,12 +142,15 @@
        PARAMETER          ( ONE = ( 1.0E+0, 0.0E+0 ) )
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           CTRSM, CUNMQL, XERBLA
-+      EXTERNAL           CTRSM, CUNMQL, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           CTRSM, CUNMQL, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          MAX
@@ -1132,15 +2795,16 @@ index b1d36107c..7fcf01e70 100644
  *     Test the input arguments.
  *
 diff --git a/TESTING/LIN/cgeqrs.f b/TESTING/LIN/cgeqrs.f
-index 76982924c..eba74dd24 100644
+index 76982924c..76c66e586 100644
 --- a/TESTING/LIN/cgeqrs.f
 +++ b/TESTING/LIN/cgeqrs.f
-@@ -141,12 +141,14 @@
+@@ -141,12 +141,15 @@
        PARAMETER          ( ONE = ( 1.0E+0, 0.0E+0 ) )
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           CTRSM, CUNMQR, XERBLA
-+      EXTERNAL           CTRSM, CUNMQR, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           CTRSM, CUNMQR, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          MAX
@@ -1152,15 +2816,37 @@ index 76982924c..eba74dd24 100644
  *     Test the input arguments.
  *
 diff --git a/TESTING/LIN/cgerqs.f b/TESTING/LIN/cgerqs.f
-index 5603ed478..302111ffd 100644
+index 5603ed478..5253a5449 100644
 --- a/TESTING/LIN/cgerqs.f
 +++ b/TESTING/LIN/cgerqs.f
-@@ -143,12 +143,14 @@
+@@ -143,12 +143,15 @@
       $                   CONE = ( 1.0E+0, 0.0E+0 ) )
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           CLASET, CTRSM, CUNMRQ, XERBLA
-+      EXTERNAL           CLASET, CTRSM, CUNMRQ, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           CLASET, CTRSM, CUNMRQ, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          MAX
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Test the input parameters.
+ *
+diff --git a/TESTING/LIN/clarhs.f b/TESTING/LIN/clarhs.f
+index 8b2b31bf8..ca4d1573a 100644
+--- a/TESTING/LIN/clarhs.f
++++ b/TESTING/LIN/clarhs.f
+@@ -244,12 +244,15 @@
+ *     .. External Subroutines ..
+       EXTERNAL           CGBMV, CGEMM, CHBMV, CHEMM, CHPMV, CLACPY,
+      $                   CLARNV, CSBMV, CSPMV, CSYMM, CTBMV, CTPMV,
+-     $                   CTRMM, XERBLA
++     $                   CTRMM, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          MAX
@@ -1172,15 +2858,16 @@ index 5603ed478..302111ffd 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/LIN/clavhe.f b/TESTING/LIN/clavhe.f
-index 0a5016778..971d4fe7e 100644
+index 0a5016778..6010d0e0f 100644
 --- a/TESTING/LIN/clavhe.f
 +++ b/TESTING/LIN/clavhe.f
-@@ -183,12 +183,14 @@
+@@ -183,12 +183,15 @@
        EXTERNAL           LSAME
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           CGEMV, CGERU, CLACGV, CSCAL, CSWAP, XERBLA
-+      EXTERNAL           CGEMV, CGERU, CLACGV, CSCAL, CSWAP, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           CGEMV, CGERU, CLACGV, CSCAL, CSWAP, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, CONJG, MAX
@@ -1192,15 +2879,16 @@ index 0a5016778..971d4fe7e 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/LIN/clavhe_rook.f b/TESTING/LIN/clavhe_rook.f
-index 6fca41618..3b0cf2458 100644
+index 6fca41618..1c133fe4c 100644
 --- a/TESTING/LIN/clavhe_rook.f
 +++ b/TESTING/LIN/clavhe_rook.f
-@@ -186,12 +186,14 @@
+@@ -186,12 +186,15 @@
        EXTERNAL           LSAME
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           CGEMV, CGERU, CLACGV, CSCAL, CSWAP, XERBLA
-+      EXTERNAL           CGEMV, CGERU, CLACGV, CSCAL, CSWAP, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           CGEMV, CGERU, CLACGV, CSCAL, CSWAP, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, CONJG, MAX
@@ -1212,15 +2900,16 @@ index 6fca41618..3b0cf2458 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/LIN/clavhp.f b/TESTING/LIN/clavhp.f
-index 1d0176cbc..a297457de 100644
+index 1d0176cbc..27f7a73c7 100644
 --- a/TESTING/LIN/clavhp.f
 +++ b/TESTING/LIN/clavhp.f
-@@ -161,12 +161,14 @@
+@@ -161,12 +161,15 @@
        EXTERNAL           LSAME
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           CGEMV, CGERU, CLACGV, CSCAL, CSWAP, XERBLA
-+      EXTERNAL           CGEMV, CGERU, CLACGV, CSCAL, CSWAP, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           CGEMV, CGERU, CLACGV, CSCAL, CSWAP, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, CONJG, MAX
@@ -1232,15 +2921,16 @@ index 1d0176cbc..a297457de 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/LIN/clavsp.f b/TESTING/LIN/clavsp.f
-index 311f0b4e1..0003a29f0 100644
+index 311f0b4e1..de5874fa0 100644
 --- a/TESTING/LIN/clavsp.f
 +++ b/TESTING/LIN/clavsp.f
-@@ -161,12 +161,14 @@
+@@ -161,12 +161,15 @@
        EXTERNAL           LSAME
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           CGEMV, CGERU, CSCAL, CSWAP, XERBLA
-+      EXTERNAL           CGEMV, CGERU, CSCAL, CSWAP, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           CGEMV, CGERU, CSCAL, CSWAP, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, MAX
@@ -1252,15 +2942,16 @@ index 311f0b4e1..0003a29f0 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/LIN/clavsy.f b/TESTING/LIN/clavsy.f
-index c4d885cc0..2426232bb 100644
+index c4d885cc0..f25eb0ed3 100644
 --- a/TESTING/LIN/clavsy.f
 +++ b/TESTING/LIN/clavsy.f
-@@ -183,12 +183,14 @@
+@@ -183,12 +183,15 @@
        EXTERNAL           LSAME
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           CGEMV, CGERU, CSCAL, CSWAP, XERBLA
-+      EXTERNAL           CGEMV, CGERU, CSCAL, CSWAP, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           CGEMV, CGERU, CSCAL, CSWAP, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, MAX
@@ -1272,15 +2963,16 @@ index c4d885cc0..2426232bb 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/LIN/clavsy_rook.f b/TESTING/LIN/clavsy_rook.f
-index 73f6e9acc..791d86f68 100644
+index 73f6e9acc..1e25f5ba6 100644
 --- a/TESTING/LIN/clavsy_rook.f
 +++ b/TESTING/LIN/clavsy_rook.f
-@@ -185,12 +185,14 @@
+@@ -185,12 +185,15 @@
        EXTERNAL           LSAME
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           CGEMV, CGERU, CSCAL, CSWAP, XERBLA
-+      EXTERNAL           CGEMV, CGERU, CSCAL, CSWAP, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           CGEMV, CGERU, CSCAL, CSWAP, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, MAX
@@ -1292,15 +2984,16 @@ index 73f6e9acc..791d86f68 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/LIN/cqpt01.f b/TESTING/LIN/cqpt01.f
-index aa9ff4d91..99e336b09 100644
+index aa9ff4d91..c35a91e2d 100644
 --- a/TESTING/LIN/cqpt01.f
 +++ b/TESTING/LIN/cqpt01.f
-@@ -152,12 +152,14 @@
+@@ -152,12 +152,15 @@
        EXTERNAL           CLANGE, SLAMCH
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           CAXPY, CCOPY, CUNMQR, XERBLA
-+      EXTERNAL           CAXPY, CCOPY, CUNMQR, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           CAXPY, CCOPY, CUNMQR, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          CMPLX, MAX, MIN, REAL
@@ -1312,19 +3005,20 @@ index aa9ff4d91..99e336b09 100644
        CQPT01 = ZERO
  *
 diff --git a/TESTING/LIN/cqrt11.f b/TESTING/LIN/cqrt11.f
-index 7445059a4..4c9ee553f 100644
+index 7445059a4..7237366da 100644
 --- a/TESTING/LIN/cqrt11.f
 +++ b/TESTING/LIN/cqrt11.f
-@@ -124,7 +124,7 @@
+@@ -124,7 +124,8 @@
        EXTERNAL           CLANGE, SLAMCH
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           CLASET, CUNM2R, XERBLA
-+      EXTERNAL           CLASET, CUNM2R, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           CLASET, CUNM2R, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          CMPLX, REAL
-@@ -133,6 +133,8 @@
+@@ -133,6 +134,8 @@
        REAL               RDUMMY( 1 )
  *     ..
  *     .. Executable Statements ..
@@ -1333,16 +3027,38 @@ index 7445059a4..4c9ee553f 100644
  *
        CQRT11 = ZERO
  *
+diff --git a/TESTING/LIN/cqrt12.f b/TESTING/LIN/cqrt12.f
+index 5659d2b36..006e3abc5 100644
+--- a/TESTING/LIN/cqrt12.f
++++ b/TESTING/LIN/cqrt12.f
+@@ -129,12 +129,15 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           CGEBD2, CLASCL, CLASET, SAXPY, SBDSQR, SLABAD,
+-     $                   SLASCL, XERBLA
++     $                   SLASCL, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          CMPLX, MAX, MIN, REAL
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+       CQRT12 = ZERO
+ *
 diff --git a/TESTING/LIN/cqrt14.f b/TESTING/LIN/cqrt14.f
-index b2a31e99d..f1cf351b5 100644
+index b2a31e99d..3a972cf82 100644
 --- a/TESTING/LIN/cqrt14.f
 +++ b/TESTING/LIN/cqrt14.f
-@@ -149,12 +149,14 @@
+@@ -149,12 +149,15 @@
        EXTERNAL           LSAME, CLANGE, SLAMCH
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           CGELQ2, CGEQR2, CLACPY, CLASCL, XERBLA
-+      EXTERNAL           CGELQ2, CGEQR2, CLACPY, CLASCL, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           CGELQ2, CGEQR2, CLACPY, CLASCL, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, CONJG, MAX, MIN, REAL
@@ -1353,16 +3069,38 @@ index b2a31e99d..f1cf351b5 100644
  *
        CQRT14 = ZERO
        IF( LSAME( TRANS, 'N' ) ) THEN
+diff --git a/TESTING/LIN/cqrt15.f b/TESTING/LIN/cqrt15.f
+index d01f3a7ca..ff150427b 100644
+--- a/TESTING/LIN/cqrt15.f
++++ b/TESTING/LIN/cqrt15.f
+@@ -187,12 +187,15 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           CGEMM, CLARF, CLARNV, CLAROR, CLASCL, CLASET,
+-     $                   CSSCAL, SLABAD, SLAORD, SLASCL, XERBLA
++     $                   CSSCAL, SLABAD, SLAORD, SLASCL, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, CMPLX, MAX, MIN
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+       MN = MIN( M, N )
+       IF( LWORK.LT.MAX( M+MN, MN*NRHS, 2*N+M ) ) THEN
 diff --git a/TESTING/LIN/cqrt17.f b/TESTING/LIN/cqrt17.f
-index 1fe28d6fe..b52a4778d 100644
+index 1fe28d6fe..563a60db5 100644
 --- a/TESTING/LIN/cqrt17.f
 +++ b/TESTING/LIN/cqrt17.f
-@@ -183,12 +183,14 @@
+@@ -183,12 +183,15 @@
        EXTERNAL           LSAME, CLANGE, SLAMCH
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           CGEMM, CLACPY, CLASCL, XERBLA
-+      EXTERNAL           CGEMM, CLACPY, CLASCL, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           CGEMM, CLACPY, CLASCL, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          CMPLX, MAX, REAL
@@ -1374,15 +3112,16 @@ index 1fe28d6fe..b52a4778d 100644
        CQRT17 = ZERO
  *
 diff --git a/TESTING/LIN/crzt01.f b/TESTING/LIN/crzt01.f
-index 73141982a..32dc05222 100644
+index 73141982a..c611dd7a0 100644
 --- a/TESTING/LIN/crzt01.f
 +++ b/TESTING/LIN/crzt01.f
-@@ -129,12 +129,14 @@
+@@ -129,12 +129,15 @@
        EXTERNAL           CLANGE, SLAMCH
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           CAXPY, CLASET, CUNMRZ, XERBLA
-+      EXTERNAL           CAXPY, CLASET, CUNMRZ, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           CAXPY, CLASET, CUNMRZ, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          CMPLX, MAX, REAL
@@ -1394,15 +3133,16 @@ index 73141982a..32dc05222 100644
        CRZT01 = ZERO
  *
 diff --git a/TESTING/LIN/crzt02.f b/TESTING/LIN/crzt02.f
-index 53a69457c..d8d27dace 100644
+index 53a69457c..87de56a13 100644
 --- a/TESTING/LIN/crzt02.f
 +++ b/TESTING/LIN/crzt02.f
-@@ -120,12 +120,14 @@
+@@ -120,12 +120,15 @@
        EXTERNAL           CLANGE, SLAMCH
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           CLASET, CUNMRZ, XERBLA
-+      EXTERNAL           CLASET, CUNMRZ, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           CLASET, CUNMRZ, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          CMPLX, MAX, REAL
@@ -1414,15 +3154,16 @@ index 53a69457c..d8d27dace 100644
        CRZT02 = ZERO
  *
 diff --git a/TESTING/LIN/csbmv.f b/TESTING/LIN/csbmv.f
-index 776de784a..c2d428350 100644
+index 776de784a..b3af3c4f5 100644
 --- a/TESTING/LIN/csbmv.f
 +++ b/TESTING/LIN/csbmv.f
-@@ -183,12 +183,14 @@
+@@ -183,12 +183,15 @@
        EXTERNAL           LSAME
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          MAX, MIN
@@ -1434,15 +3175,16 @@ index 776de784a..c2d428350 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/LIN/dgelqs.f b/TESTING/LIN/dgelqs.f
-index 46683ef12..f397a4f05 100644
+index 46683ef12..d255143f9 100644
 --- a/TESTING/LIN/dgelqs.f
 +++ b/TESTING/LIN/dgelqs.f
-@@ -141,12 +141,14 @@
+@@ -141,12 +141,15 @@
        PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0 )
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DLASET, DORMLQ, DTRSM, XERBLA
-+      EXTERNAL           DLASET, DORMLQ, DTRSM, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           DLASET, DORMLQ, DTRSM, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          MAX
@@ -1454,15 +3196,16 @@ index 46683ef12..f397a4f05 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/LIN/dgeqls.f b/TESTING/LIN/dgeqls.f
-index 1ca418f1b..265fd2911 100644
+index 1ca418f1b..6421809ad 100644
 --- a/TESTING/LIN/dgeqls.f
 +++ b/TESTING/LIN/dgeqls.f
-@@ -142,12 +142,14 @@
+@@ -142,12 +142,15 @@
        PARAMETER          ( ONE = 1.0D+0 )
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DORMQL, DTRSM, XERBLA
-+      EXTERNAL           DORMQL, DTRSM, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           DORMQL, DTRSM, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          MAX
@@ -1474,15 +3217,16 @@ index 1ca418f1b..265fd2911 100644
  *     Test the input arguments.
  *
 diff --git a/TESTING/LIN/dgeqrs.f b/TESTING/LIN/dgeqrs.f
-index 83fddf4e1..786741f3c 100644
+index 83fddf4e1..26f484079 100644
 --- a/TESTING/LIN/dgeqrs.f
 +++ b/TESTING/LIN/dgeqrs.f
-@@ -141,12 +141,14 @@
+@@ -141,12 +141,15 @@
        PARAMETER          ( ONE = 1.0D+0 )
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DORMQR, DTRSM, XERBLA
-+      EXTERNAL           DORMQR, DTRSM, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           DORMQR, DTRSM, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          MAX
@@ -1494,15 +3238,37 @@ index 83fddf4e1..786741f3c 100644
  *     Test the input arguments.
  *
 diff --git a/TESTING/LIN/dgerqs.f b/TESTING/LIN/dgerqs.f
-index d3ea086fa..690964f06 100644
+index d3ea086fa..e6e013c8f 100644
 --- a/TESTING/LIN/dgerqs.f
 +++ b/TESTING/LIN/dgerqs.f
-@@ -142,12 +142,14 @@
+@@ -142,12 +142,15 @@
        PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0 )
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DLASET, DORMRQ, DTRSM, XERBLA
-+      EXTERNAL           DLASET, DORMRQ, DTRSM, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           DLASET, DORMRQ, DTRSM, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          MAX
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Test the input parameters.
+ *
+diff --git a/TESTING/LIN/dlarhs.f b/TESTING/LIN/dlarhs.f
+index f175cf893..605bc825e 100644
+--- a/TESTING/LIN/dlarhs.f
++++ b/TESTING/LIN/dlarhs.f
+@@ -237,12 +237,15 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           DGBMV, DGEMM, DLACPY, DLARNV, DSBMV, DSPMV,
+-     $                   DSYMM, DTBMV, DTPMV, DTRMM, XERBLA
++     $                   DSYMM, DTBMV, DTPMV, DTRMM, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          MAX
@@ -1514,15 +3280,16 @@ index d3ea086fa..690964f06 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/LIN/dlavsp.f b/TESTING/LIN/dlavsp.f
-index 758c415fb..e0d1caf3c 100644
+index 758c415fb..8ab5c82cd 100644
 --- a/TESTING/LIN/dlavsp.f
 +++ b/TESTING/LIN/dlavsp.f
-@@ -160,12 +160,14 @@
+@@ -160,12 +160,15 @@
        EXTERNAL           LSAME
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DGEMV, DGER, DSCAL, DSWAP, XERBLA
-+      EXTERNAL           DGEMV, DGER, DSCAL, DSWAP, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           DGEMV, DGER, DSCAL, DSWAP, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, MAX
@@ -1534,15 +3301,16 @@ index 758c415fb..e0d1caf3c 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/LIN/dlavsy.f b/TESTING/LIN/dlavsy.f
-index b512ff0ff..22c5de42c 100644
+index b512ff0ff..d533cf053 100644
 --- a/TESTING/LIN/dlavsy.f
 +++ b/TESTING/LIN/dlavsy.f
-@@ -185,12 +185,14 @@
+@@ -185,12 +185,15 @@
        EXTERNAL           LSAME
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DGEMV, DGER, DSCAL, DSWAP, XERBLA
-+      EXTERNAL           DGEMV, DGER, DSCAL, DSWAP, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           DGEMV, DGER, DSCAL, DSWAP, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, MAX
@@ -1554,15 +3322,16 @@ index b512ff0ff..22c5de42c 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/LIN/dlavsy_rook.f b/TESTING/LIN/dlavsy_rook.f
-index 7b0c2c152..1cc611e82 100644
+index 7b0c2c152..6f98d33ea 100644
 --- a/TESTING/LIN/dlavsy_rook.f
 +++ b/TESTING/LIN/dlavsy_rook.f
-@@ -187,12 +187,14 @@
+@@ -187,12 +187,15 @@
        EXTERNAL           LSAME
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DGEMV, DGER, DSCAL, DSWAP, XERBLA
-+      EXTERNAL           DGEMV, DGER, DSCAL, DSWAP, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           DGEMV, DGER, DSCAL, DSWAP, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, MAX
@@ -1574,15 +3343,16 @@ index 7b0c2c152..1cc611e82 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/LIN/dqpt01.f b/TESTING/LIN/dqpt01.f
-index b72eaaa77..ade0661d9 100644
+index b72eaaa77..f8aa71520 100644
 --- a/TESTING/LIN/dqpt01.f
 +++ b/TESTING/LIN/dqpt01.f
-@@ -152,12 +152,14 @@
+@@ -152,12 +152,15 @@
        EXTERNAL           DLAMCH, DLANGE
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DAXPY, DCOPY, DORMQR, XERBLA
-+      EXTERNAL           DAXPY, DCOPY, DORMQR, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           DAXPY, DCOPY, DORMQR, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          DBLE, MAX, MIN
@@ -1594,19 +3364,20 @@ index b72eaaa77..ade0661d9 100644
        DQPT01 = ZERO
  *
 diff --git a/TESTING/LIN/dqrt11.f b/TESTING/LIN/dqrt11.f
-index fe29ca589..fbf2f1b90 100644
+index fe29ca589..2cd6d004e 100644
 --- a/TESTING/LIN/dqrt11.f
 +++ b/TESTING/LIN/dqrt11.f
-@@ -124,7 +124,7 @@
+@@ -124,7 +124,8 @@
        EXTERNAL           DLAMCH, DLANGE
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DLASET, DORM2R, XERBLA
-+      EXTERNAL           DLASET, DORM2R, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           DLASET, DORM2R, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          DBLE
-@@ -133,6 +133,8 @@
+@@ -133,6 +134,8 @@
        DOUBLE PRECISION   RDUMMY( 1 )
  *     ..
  *     .. Executable Statements ..
@@ -1615,16 +3386,40 @@ index fe29ca589..fbf2f1b90 100644
  *
        DQRT11 = ZERO
  *
+diff --git a/TESTING/LIN/dqrt12.f b/TESTING/LIN/dqrt12.f
+index b8da5b623..55d35dbd5 100644
+--- a/TESTING/LIN/dqrt12.f
++++ b/TESTING/LIN/dqrt12.f
+@@ -117,7 +117,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           DAXPY, DBDSQR, DGEBD2, DLABAD, DLASCL, DLASET,
+-     $                   XERBLA
++     $                   XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          DBLE, MAX, MIN
+@@ -126,6 +127,8 @@
+       DOUBLE PRECISION   DUMMY( 1 )
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+       DQRT12 = ZERO
+ *
 diff --git a/TESTING/LIN/dqrt14.f b/TESTING/LIN/dqrt14.f
-index 9301e251f..aa6d2bb1e 100644
+index 9301e251f..2949dd20c 100644
 --- a/TESTING/LIN/dqrt14.f
 +++ b/TESTING/LIN/dqrt14.f
-@@ -149,12 +149,14 @@
+@@ -149,12 +149,15 @@
        EXTERNAL           LSAME, DLAMCH, DLANGE
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DGELQ2, DGEQR2, DLACPY, DLASCL, XERBLA
-+      EXTERNAL           DGELQ2, DGEQR2, DLACPY, DLASCL, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           DGELQ2, DGEQR2, DLACPY, DLASCL, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, DBLE, MAX, MIN
@@ -1635,16 +3430,38 @@ index 9301e251f..aa6d2bb1e 100644
  *
        DQRT14 = ZERO
        IF( LSAME( TRANS, 'N' ) ) THEN
+diff --git a/TESTING/LIN/dqrt15.f b/TESTING/LIN/dqrt15.f
+index 68cf0cc8c..3b9c7bf82 100644
+--- a/TESTING/LIN/dqrt15.f
++++ b/TESTING/LIN/dqrt15.f
+@@ -182,12 +182,15 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           DGEMM, DLAORD, DLARF, DLARNV, DLAROR, DLASCL,
+-     $                   DLASET, DSCAL, XERBLA
++     $                   DLASET, DSCAL, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, MAX, MIN
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+       MN = MIN( M, N )
+       IF( LWORK.LT.MAX( M+MN, MN*NRHS, 2*N+M ) ) THEN
 diff --git a/TESTING/LIN/dqrt17.f b/TESTING/LIN/dqrt17.f
-index 78580dca1..f62e67952 100644
+index 78580dca1..87b56d89b 100644
 --- a/TESTING/LIN/dqrt17.f
 +++ b/TESTING/LIN/dqrt17.f
-@@ -183,12 +183,14 @@
+@@ -183,12 +183,15 @@
        EXTERNAL           LSAME, DLAMCH, DLANGE
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DGEMM, DLACPY, DLASCL, XERBLA
-+      EXTERNAL           DGEMM, DLACPY, DLASCL, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           DGEMM, DLACPY, DLASCL, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          DBLE, MAX
@@ -1656,15 +3473,16 @@ index 78580dca1..f62e67952 100644
        DQRT17 = ZERO
  *
 diff --git a/TESTING/LIN/drzt01.f b/TESTING/LIN/drzt01.f
-index 2108cd1c9..5b001e132 100644
+index 2108cd1c9..82beee8fc 100644
 --- a/TESTING/LIN/drzt01.f
 +++ b/TESTING/LIN/drzt01.f
-@@ -129,12 +129,14 @@
+@@ -129,12 +129,15 @@
        EXTERNAL           DLAMCH, DLANGE
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DAXPY, DLASET, DORMRZ, XERBLA
-+      EXTERNAL           DAXPY, DLASET, DORMRZ, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           DAXPY, DLASET, DORMRZ, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          DBLE, MAX
@@ -1676,15 +3494,16 @@ index 2108cd1c9..5b001e132 100644
        DRZT01 = ZERO
  *
 diff --git a/TESTING/LIN/drzt02.f b/TESTING/LIN/drzt02.f
-index de3f26621..76b86ab4d 100644
+index de3f26621..b55e481d7 100644
 --- a/TESTING/LIN/drzt02.f
 +++ b/TESTING/LIN/drzt02.f
-@@ -120,12 +120,14 @@
+@@ -120,12 +120,15 @@
        EXTERNAL           DLAMCH, DLANGE
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DLASET, DORMRZ, XERBLA
-+      EXTERNAL           DLASET, DORMRZ, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           DLASET, DORMRZ, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          DBLE, MAX
@@ -1696,15 +3515,16 @@ index de3f26621..76b86ab4d 100644
        DRZT02 = ZERO
  *
 diff --git a/TESTING/LIN/dtplqt.f b/TESTING/LIN/dtplqt.f
-index 9fcecc984..1be638687 100644
+index 9fcecc984..d8307deb5 100644
 --- a/TESTING/LIN/dtplqt.f
 +++ b/TESTING/LIN/dtplqt.f
-@@ -208,9 +208,11 @@
+@@ -208,9 +208,12 @@
        INTEGER    I, IB, LB, NB, IINFO
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL   DTPLQT2, DTPRFB, XERBLA
-+      EXTERNAL   DTPLQT2, DTPRFB, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL   DTPLQT2, DTPRFB, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Executable Statements ..
 +*
@@ -1713,15 +3533,16 @@ index 9fcecc984..1be638687 100644
  *     Test the input arguments
  *
 diff --git a/TESTING/LIN/sgelqs.f b/TESTING/LIN/sgelqs.f
-index cdffebdc8..f652af627 100644
+index cdffebdc8..6dcc29ff4 100644
 --- a/TESTING/LIN/sgelqs.f
 +++ b/TESTING/LIN/sgelqs.f
-@@ -141,12 +141,14 @@
+@@ -141,12 +141,15 @@
        PARAMETER          ( ZERO = 0.0E+0, ONE = 1.0E+0 )
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           SLASET, SORMLQ, STRSM, XERBLA
-+      EXTERNAL           SLASET, SORMLQ, STRSM, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           SLASET, SORMLQ, STRSM, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          MAX
@@ -1733,15 +3554,16 @@ index cdffebdc8..f652af627 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/LIN/sgeqls.f b/TESTING/LIN/sgeqls.f
-index 19ae7c592..722b68727 100644
+index 19ae7c592..be13a38c8 100644
 --- a/TESTING/LIN/sgeqls.f
 +++ b/TESTING/LIN/sgeqls.f
-@@ -142,12 +142,14 @@
+@@ -142,12 +142,15 @@
        PARAMETER          ( ONE = 1.0E+0 )
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           SORMQL, STRSM, XERBLA
-+      EXTERNAL           SORMQL, STRSM, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           SORMQL, STRSM, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          MAX
@@ -1753,15 +3575,16 @@ index 19ae7c592..722b68727 100644
  *     Test the input arguments.
  *
 diff --git a/TESTING/LIN/sgeqrs.f b/TESTING/LIN/sgeqrs.f
-index 9ec64073d..04d54b38e 100644
+index 9ec64073d..6a8909eef 100644
 --- a/TESTING/LIN/sgeqrs.f
 +++ b/TESTING/LIN/sgeqrs.f
-@@ -141,12 +141,14 @@
+@@ -141,12 +141,15 @@
        PARAMETER          ( ONE = 1.0E+0 )
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           SORMQR, STRSM, XERBLA
-+      EXTERNAL           SORMQR, STRSM, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           SORMQR, STRSM, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          MAX
@@ -1773,15 +3596,37 @@ index 9ec64073d..04d54b38e 100644
  *     Test the input arguments.
  *
 diff --git a/TESTING/LIN/sgerqs.f b/TESTING/LIN/sgerqs.f
-index 5b04c5ae2..88de76c97 100644
+index 5b04c5ae2..1686bc741 100644
 --- a/TESTING/LIN/sgerqs.f
 +++ b/TESTING/LIN/sgerqs.f
-@@ -142,12 +142,14 @@
+@@ -142,12 +142,15 @@
        PARAMETER          ( ZERO = 0.0E+0, ONE = 1.0E+0 )
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           SLASET, SORMRQ, STRSM, XERBLA
-+      EXTERNAL           SLASET, SORMRQ, STRSM, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           SLASET, SORMRQ, STRSM, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          MAX
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Test the input parameters.
+ *
+diff --git a/TESTING/LIN/slarhs.f b/TESTING/LIN/slarhs.f
+index 4d84cc67e..e8ba9cead 100644
+--- a/TESTING/LIN/slarhs.f
++++ b/TESTING/LIN/slarhs.f
+@@ -237,12 +237,15 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           SGBMV, SGEMM, SLACPY, SLARNV, SSBMV, SSPMV,
+-     $                   SSYMM, STBMV, STPMV, STRMM, XERBLA
++     $                   SSYMM, STBMV, STPMV, STRMM, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          MAX
@@ -1793,15 +3638,16 @@ index 5b04c5ae2..88de76c97 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/LIN/slavsp.f b/TESTING/LIN/slavsp.f
-index 208a86c9f..7bf81faef 100644
+index 208a86c9f..cad5e12aa 100644
 --- a/TESTING/LIN/slavsp.f
 +++ b/TESTING/LIN/slavsp.f
-@@ -160,12 +160,14 @@
+@@ -160,12 +160,15 @@
        EXTERNAL           LSAME
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           SGEMV, SGER, SSCAL, SSWAP, XERBLA
-+      EXTERNAL           SGEMV, SGER, SSCAL, SSWAP, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           SGEMV, SGER, SSCAL, SSWAP, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, MAX
@@ -1813,15 +3659,16 @@ index 208a86c9f..7bf81faef 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/LIN/slavsy.f b/TESTING/LIN/slavsy.f
-index 3c575e2d7..0518c96f4 100644
+index 3c575e2d7..a34561c36 100644
 --- a/TESTING/LIN/slavsy.f
 +++ b/TESTING/LIN/slavsy.f
-@@ -185,12 +185,14 @@
+@@ -185,12 +185,15 @@
        EXTERNAL           LSAME
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           SGEMV, SGER, SSCAL, SSWAP, XERBLA
-+      EXTERNAL           SGEMV, SGER, SSCAL, SSWAP, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           SGEMV, SGER, SSCAL, SSWAP, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, MAX
@@ -1833,15 +3680,16 @@ index 3c575e2d7..0518c96f4 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/LIN/slavsy_rook.f b/TESTING/LIN/slavsy_rook.f
-index 55477bd96..e6665d1d1 100644
+index 55477bd96..c30d4cc0a 100644
 --- a/TESTING/LIN/slavsy_rook.f
 +++ b/TESTING/LIN/slavsy_rook.f
-@@ -187,12 +187,14 @@
+@@ -187,12 +187,15 @@
        EXTERNAL           LSAME
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           SGEMV, SGER, SSCAL, SSWAP, XERBLA
-+      EXTERNAL           SGEMV, SGER, SSCAL, SSWAP, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           SGEMV, SGER, SSCAL, SSWAP, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, MAX
@@ -1853,15 +3701,16 @@ index 55477bd96..e6665d1d1 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/LIN/sqpt01.f b/TESTING/LIN/sqpt01.f
-index e33d841fc..a0ea9b5a1 100644
+index e33d841fc..e05f0c26c 100644
 --- a/TESTING/LIN/sqpt01.f
 +++ b/TESTING/LIN/sqpt01.f
-@@ -152,12 +152,14 @@
+@@ -152,12 +152,15 @@
        EXTERNAL           SLAMCH, SLANGE
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           SAXPY, SCOPY, SORMQR, XERBLA
-+      EXTERNAL           SAXPY, SCOPY, SORMQR, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           SAXPY, SCOPY, SORMQR, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          MAX, MIN, REAL
@@ -1873,19 +3722,20 @@ index e33d841fc..a0ea9b5a1 100644
        SQPT01 = ZERO
  *
 diff --git a/TESTING/LIN/sqrt11.f b/TESTING/LIN/sqrt11.f
-index eaffacbf0..a4305d8a0 100644
+index eaffacbf0..25242d0ba 100644
 --- a/TESTING/LIN/sqrt11.f
 +++ b/TESTING/LIN/sqrt11.f
-@@ -124,7 +124,7 @@
+@@ -124,7 +124,8 @@
        EXTERNAL           SLAMCH, SLANGE
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           SLASET, SORM2R, XERBLA
-+      EXTERNAL           SLASET, SORM2R, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           SLASET, SORM2R, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          REAL
-@@ -133,6 +133,8 @@
+@@ -133,6 +134,8 @@
        REAL               RDUMMY( 1 )
  *     ..
  *     .. Executable Statements ..
@@ -1894,16 +3744,40 @@ index eaffacbf0..a4305d8a0 100644
  *
        SQRT11 = ZERO
  *
+diff --git a/TESTING/LIN/sqrt12.f b/TESTING/LIN/sqrt12.f
+index c7c367011..ca8846887 100644
+--- a/TESTING/LIN/sqrt12.f
++++ b/TESTING/LIN/sqrt12.f
+@@ -117,7 +117,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           SAXPY, SBDSQR, SGEBD2, SLABAD, SLASCL, SLASET,
+-     $                   XERBLA
++     $                   XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          MAX, MIN, REAL
+@@ -126,6 +127,8 @@
+       REAL               DUMMY( 1 )
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+       SQRT12 = ZERO
+ *
 diff --git a/TESTING/LIN/sqrt14.f b/TESTING/LIN/sqrt14.f
-index 6e8ac2f3e..db4f2e976 100644
+index 6e8ac2f3e..911f14bb0 100644
 --- a/TESTING/LIN/sqrt14.f
 +++ b/TESTING/LIN/sqrt14.f
-@@ -149,12 +149,14 @@
+@@ -149,12 +149,15 @@
        EXTERNAL           LSAME, SLAMCH, SLANGE
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           SGELQ2, SGEQR2, SLACPY, SLASCL, XERBLA
-+      EXTERNAL           SGELQ2, SGEQR2, SLACPY, SLASCL, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           SGELQ2, SGEQR2, SLACPY, SLASCL, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, MAX, MIN, REAL
@@ -1914,16 +3788,38 @@ index 6e8ac2f3e..db4f2e976 100644
  *
        SQRT14 = ZERO
        IF( LSAME( TRANS, 'N' ) ) THEN
+diff --git a/TESTING/LIN/sqrt15.f b/TESTING/LIN/sqrt15.f
+index 2ead9fed3..ee623731e 100644
+--- a/TESTING/LIN/sqrt15.f
++++ b/TESTING/LIN/sqrt15.f
+@@ -182,12 +182,15 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           SGEMM, SLAORD, SLARF, SLARNV, SLAROR, SLASCL,
+-     $                   SLASET, SSCAL, XERBLA
++     $                   SLASET, SSCAL, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, MAX, MIN
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+       MN = MIN( M, N )
+       IF( LWORK.LT.MAX( M+MN, MN*NRHS, 2*N+M ) ) THEN
 diff --git a/TESTING/LIN/sqrt17.f b/TESTING/LIN/sqrt17.f
-index c7b543cb6..342a68716 100644
+index c7b543cb6..ad95cee41 100644
 --- a/TESTING/LIN/sqrt17.f
 +++ b/TESTING/LIN/sqrt17.f
-@@ -183,12 +183,14 @@
+@@ -183,12 +183,15 @@
        EXTERNAL           LSAME, SLAMCH, SLANGE
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           SGEMM, SLACPY, SLASCL, XERBLA
-+      EXTERNAL           SGEMM, SLACPY, SLASCL, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           SGEMM, SLACPY, SLASCL, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          MAX, REAL
@@ -1935,15 +3831,16 @@ index c7b543cb6..342a68716 100644
        SQRT17 = ZERO
  *
 diff --git a/TESTING/LIN/srzt01.f b/TESTING/LIN/srzt01.f
-index 549bca2e0..1ead43330 100644
+index 549bca2e0..ed530ea8b 100644
 --- a/TESTING/LIN/srzt01.f
 +++ b/TESTING/LIN/srzt01.f
-@@ -129,12 +129,14 @@
+@@ -129,12 +129,15 @@
        EXTERNAL           SLAMCH, SLANGE
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           SAXPY, SLASET, SORMRZ, XERBLA
-+      EXTERNAL           SAXPY, SLASET, SORMRZ, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           SAXPY, SLASET, SORMRZ, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          MAX, REAL
@@ -1955,15 +3852,16 @@ index 549bca2e0..1ead43330 100644
        SRZT01 = ZERO
  *
 diff --git a/TESTING/LIN/srzt02.f b/TESTING/LIN/srzt02.f
-index 12f4018ff..347c096ee 100644
+index 12f4018ff..2d7c76b9e 100644
 --- a/TESTING/LIN/srzt02.f
 +++ b/TESTING/LIN/srzt02.f
-@@ -120,12 +120,14 @@
+@@ -120,12 +120,15 @@
        EXTERNAL           SLAMCH, SLANGE
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           SLASET, SORMRZ, XERBLA
-+      EXTERNAL           SLASET, SORMRZ, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           SLASET, SORMRZ, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          MAX, REAL
@@ -1975,15 +3873,16 @@ index 12f4018ff..347c096ee 100644
        SRZT02 = ZERO
  *
 diff --git a/TESTING/LIN/stplqt.f b/TESTING/LIN/stplqt.f
-index 30f827998..6c8f874b4 100644
+index 30f827998..9e2a8ab30 100644
 --- a/TESTING/LIN/stplqt.f
 +++ b/TESTING/LIN/stplqt.f
-@@ -191,9 +191,11 @@
+@@ -191,9 +191,12 @@
        INTEGER    I, IB, LB, NB, IINFO
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL   STPLQT2, STPRFB, XERBLA
-+      EXTERNAL   STPLQT2, STPRFB, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL   STPLQT2, STPRFB, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Executable Statements ..
 +*
@@ -1992,15 +3891,16 @@ index 30f827998..6c8f874b4 100644
  *     Test the input arguments
  *
 diff --git a/TESTING/LIN/zgelqs.f b/TESTING/LIN/zgelqs.f
-index 7545d015e..2cf74cfc4 100644
+index 7545d015e..f04b625ff 100644
 --- a/TESTING/LIN/zgelqs.f
 +++ b/TESTING/LIN/zgelqs.f
-@@ -142,12 +142,14 @@
+@@ -142,12 +142,15 @@
       $                   CONE = ( 1.0D+0, 0.0D+0 ) )
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA, ZLASET, ZTRSM, ZUNMLQ
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA, ZLASET, ZTRSM, ZUNMLQ
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA, ZLASET, ZTRSM, ZUNMLQ
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          MAX
@@ -2012,15 +3912,16 @@ index 7545d015e..2cf74cfc4 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/LIN/zgeqls.f b/TESTING/LIN/zgeqls.f
-index b668fac5d..b95ae8260 100644
+index b668fac5d..0faf8e336 100644
 --- a/TESTING/LIN/zgeqls.f
 +++ b/TESTING/LIN/zgeqls.f
-@@ -142,12 +142,14 @@
+@@ -142,12 +142,15 @@
        PARAMETER          ( ONE = ( 1.0D+0, 0.0D+0 ) )
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA, ZTRSM, ZUNMQL
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA, ZTRSM, ZUNMQL
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA, ZTRSM, ZUNMQL
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          MAX
@@ -2032,15 +3933,16 @@ index b668fac5d..b95ae8260 100644
  *     Test the input arguments.
  *
 diff --git a/TESTING/LIN/zgeqrs.f b/TESTING/LIN/zgeqrs.f
-index f0d020817..9ae808c82 100644
+index f0d020817..97860f258 100644
 --- a/TESTING/LIN/zgeqrs.f
 +++ b/TESTING/LIN/zgeqrs.f
-@@ -141,12 +141,14 @@
+@@ -141,12 +141,15 @@
        PARAMETER          ( ONE = ( 1.0D+0, 0.0D+0 ) )
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA, ZTRSM, ZUNMQR
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA, ZTRSM, ZUNMQR
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA, ZTRSM, ZUNMQR
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          MAX
@@ -2052,15 +3954,16 @@ index f0d020817..9ae808c82 100644
  *     Test the input arguments.
  *
 diff --git a/TESTING/LIN/zgerqs.f b/TESTING/LIN/zgerqs.f
-index d94a7a3dc..a38f2dc99 100644
+index d94a7a3dc..6690eeaa3 100644
 --- a/TESTING/LIN/zgerqs.f
 +++ b/TESTING/LIN/zgerqs.f
-@@ -143,12 +143,14 @@
+@@ -143,12 +143,15 @@
       $                   CONE = ( 1.0D+0, 0.0D+0 ) )
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA, ZLASET, ZTRSM, ZUNMRQ
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA, ZLASET, ZTRSM, ZUNMRQ
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA, ZLASET, ZTRSM, ZUNMRQ
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          MAX
@@ -2072,19 +3975,20 @@ index d94a7a3dc..a38f2dc99 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/LIN/zlarhs.f b/TESTING/LIN/zlarhs.f
-index 9d1452840..9096add33 100644
+index 9d1452840..bfb6a0edd 100644
 --- a/TESTING/LIN/zlarhs.f
 +++ b/TESTING/LIN/zlarhs.f
-@@ -242,7 +242,7 @@
+@@ -242,7 +242,8 @@
        EXTERNAL           LSAME, LSAMEN
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA, ZGBMV, ZGEMM, ZHBMV, ZHEMM, ZHPMV,
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA, ZGBMV, ZGEMM, ZHBMV, ZHEMM, ZHPMV,
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA, ZGBMV, ZGEMM, ZHBMV, ZHEMM, ZHPMV,
       $                   ZLACPY, ZLARNV, ZSBMV, ZSPMV, ZSYMM, ZTBMV,
       $                   ZTPMV, ZTRMM
  *     ..
-@@ -250,6 +250,8 @@
+@@ -250,6 +251,8 @@
        INTRINSIC          MAX
  *     ..
  *     .. Executable Statements ..
@@ -2094,15 +3998,16 @@ index 9d1452840..9096add33 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/LIN/zlavhe.f b/TESTING/LIN/zlavhe.f
-index bf58d7d74..a5472b306 100644
+index bf58d7d74..2990cd590 100644
 --- a/TESTING/LIN/zlavhe.f
 +++ b/TESTING/LIN/zlavhe.f
-@@ -183,12 +183,14 @@
+@@ -183,12 +183,15 @@
        EXTERNAL           LSAME
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA, ZGEMV, ZGERU, ZLACGV, ZSCAL, ZSWAP
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA, ZGEMV, ZGERU, ZLACGV, ZSCAL, ZSWAP
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA, ZGEMV, ZGERU, ZLACGV, ZSCAL, ZSWAP
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, DCONJG, MAX
@@ -2114,15 +4019,16 @@ index bf58d7d74..a5472b306 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/LIN/zlavhe_rook.f b/TESTING/LIN/zlavhe_rook.f
-index b8e708f50..a60ba5ad7 100644
+index b8e708f50..1258495ce 100644
 --- a/TESTING/LIN/zlavhe_rook.f
 +++ b/TESTING/LIN/zlavhe_rook.f
-@@ -183,12 +183,14 @@
+@@ -183,12 +183,15 @@
        EXTERNAL           LSAME
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           ZGEMV, ZGERU, ZLACGV, ZSCAL, ZSWAP, XERBLA
-+      EXTERNAL           ZGEMV, ZGERU, ZLACGV, ZSCAL, ZSWAP, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           ZGEMV, ZGERU, ZLACGV, ZSCAL, ZSWAP, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, DCONJG, MAX
@@ -2134,15 +4040,16 @@ index b8e708f50..a60ba5ad7 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/LIN/zlavhp.f b/TESTING/LIN/zlavhp.f
-index 08c2b4759..3085ca3bc 100644
+index 08c2b4759..9b2d81fc7 100644
 --- a/TESTING/LIN/zlavhp.f
 +++ b/TESTING/LIN/zlavhp.f
-@@ -161,12 +161,14 @@
+@@ -161,12 +161,15 @@
        EXTERNAL           LSAME
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA, ZGEMV, ZGERU, ZLACGV, ZSCAL, ZSWAP
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA, ZGEMV, ZGERU, ZLACGV, ZSCAL, ZSWAP
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA, ZGEMV, ZGERU, ZLACGV, ZSCAL, ZSWAP
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, DCONJG, MAX
@@ -2154,15 +4061,16 @@ index 08c2b4759..3085ca3bc 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/LIN/zlavsp.f b/TESTING/LIN/zlavsp.f
-index a248d01d9..134d3ca95 100644
+index a248d01d9..7219e51e7 100644
 --- a/TESTING/LIN/zlavsp.f
 +++ b/TESTING/LIN/zlavsp.f
-@@ -161,12 +161,14 @@
+@@ -161,12 +161,15 @@
        EXTERNAL           LSAME
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA, ZGEMV, ZGERU, ZSCAL, ZSWAP
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA, ZGEMV, ZGERU, ZSCAL, ZSWAP
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA, ZGEMV, ZGERU, ZSCAL, ZSWAP
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, MAX
@@ -2174,15 +4082,16 @@ index a248d01d9..134d3ca95 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/LIN/zlavsy.f b/TESTING/LIN/zlavsy.f
-index 2f8ecd88f..9847f80d5 100644
+index 2f8ecd88f..c459da88b 100644
 --- a/TESTING/LIN/zlavsy.f
 +++ b/TESTING/LIN/zlavsy.f
-@@ -183,12 +183,14 @@
+@@ -183,12 +183,15 @@
        EXTERNAL           LSAME
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA, ZGEMV, ZGERU, ZSCAL, ZSWAP
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA, ZGEMV, ZGERU, ZSCAL, ZSWAP
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA, ZGEMV, ZGERU, ZSCAL, ZSWAP
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, MAX
@@ -2194,15 +4103,16 @@ index 2f8ecd88f..9847f80d5 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/LIN/zlavsy_rook.f b/TESTING/LIN/zlavsy_rook.f
-index ed62f8f17..2db782992 100644
+index ed62f8f17..21ddabfdc 100644
 --- a/TESTING/LIN/zlavsy_rook.f
 +++ b/TESTING/LIN/zlavsy_rook.f
-@@ -185,12 +185,14 @@
+@@ -185,12 +185,15 @@
        EXTERNAL           LSAME
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA, ZGEMV, ZGERU, ZSCAL, ZSWAP
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA, ZGEMV, ZGERU, ZSCAL, ZSWAP
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA, ZGEMV, ZGERU, ZSCAL, ZSWAP
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, MAX
@@ -2214,15 +4124,16 @@ index ed62f8f17..2db782992 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/LIN/zqpt01.f b/TESTING/LIN/zqpt01.f
-index eea178a2e..453943319 100644
+index eea178a2e..a922c2aec 100644
 --- a/TESTING/LIN/zqpt01.f
 +++ b/TESTING/LIN/zqpt01.f
-@@ -152,12 +152,14 @@
+@@ -152,12 +152,15 @@
        EXTERNAL           DLAMCH, ZLANGE
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA, ZAXPY, ZCOPY, ZUNMQR
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA, ZAXPY, ZCOPY, ZUNMQR
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA, ZAXPY, ZCOPY, ZUNMQR
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          DBLE, DCMPLX, MAX, MIN
@@ -2234,19 +4145,20 @@ index eea178a2e..453943319 100644
        ZQPT01 = ZERO
  *
 diff --git a/TESTING/LIN/zqrt11.f b/TESTING/LIN/zqrt11.f
-index c633df2f6..c77375bee 100644
+index c633df2f6..e5e21eacb 100644
 --- a/TESTING/LIN/zqrt11.f
 +++ b/TESTING/LIN/zqrt11.f
-@@ -124,7 +124,7 @@
+@@ -124,7 +124,8 @@
        EXTERNAL           DLAMCH, ZLANGE
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA, ZLASET, ZUNM2R
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA, ZLASET, ZUNM2R
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA, ZLASET, ZUNM2R
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          DBLE, DCMPLX
-@@ -133,6 +133,8 @@
+@@ -133,6 +134,8 @@
        DOUBLE PRECISION   RDUMMY( 1 )
  *     ..
  *     .. Executable Statements ..
@@ -2256,15 +4168,16 @@ index c633df2f6..c77375bee 100644
        ZQRT11 = ZERO
  *
 diff --git a/TESTING/LIN/zqrt12.f b/TESTING/LIN/zqrt12.f
-index 5428adbf3..e8403db84 100644
+index 5428adbf3..5db5225a9 100644
 --- a/TESTING/LIN/zqrt12.f
 +++ b/TESTING/LIN/zqrt12.f
-@@ -128,13 +128,15 @@
+@@ -128,13 +128,16 @@
        EXTERNAL           DASUM, DLAMCH, DNRM2, ZLANGE
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DAXPY, DBDSQR, DLABAD, DLASCL, XERBLA, ZGEBD2,
-+      EXTERNAL           DAXPY, DBDSQR, DLABAD, DLASCL, XERBLA, MKL_INIT_XERBLA, ZGEBD2,
++      EXTERNAL           DAXPY, DBDSQR, DLABAD, DLASCL, XERBLA,
++     $          MKL_INIT_XERBLA, ZGEBD2,
       $                   ZLASCL, ZLASET
  *     ..
  *     .. Intrinsic Functions ..
@@ -2277,15 +4190,16 @@ index 5428adbf3..e8403db84 100644
        ZQRT12 = ZERO
  *
 diff --git a/TESTING/LIN/zqrt14.f b/TESTING/LIN/zqrt14.f
-index 369efc07d..bcd7f03b4 100644
+index 369efc07d..b16dcfead 100644
 --- a/TESTING/LIN/zqrt14.f
 +++ b/TESTING/LIN/zqrt14.f
-@@ -149,12 +149,14 @@
+@@ -149,12 +149,15 @@
        EXTERNAL           LSAME, DLAMCH, ZLANGE
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA, ZGELQ2, ZGEQR2, ZLACPY, ZLASCL
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA, ZGELQ2, ZGEQR2, ZLACPY, ZLASCL
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA, ZGELQ2, ZGEQR2, ZLACPY, ZLASCL
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, DBLE, DCONJG, MAX, MIN
@@ -2297,15 +4211,16 @@ index 369efc07d..bcd7f03b4 100644
        ZQRT14 = ZERO
        IF( LSAME( TRANS, 'N' ) ) THEN
 diff --git a/TESTING/LIN/zqrt15.f b/TESTING/LIN/zqrt15.f
-index 0d17313e8..139847108 100644
+index 0d17313e8..c937e8d68 100644
 --- a/TESTING/LIN/zqrt15.f
 +++ b/TESTING/LIN/zqrt15.f
-@@ -186,13 +186,15 @@
+@@ -186,13 +186,16 @@
        EXTERNAL           DASUM, DLAMCH, DLARND, DZNRM2, ZLANGE
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DLABAD, DLAORD, DLASCL, XERBLA, ZDSCAL, ZGEMM,
-+      EXTERNAL           DLABAD, DLAORD, DLASCL, XERBLA, MKL_INIT_XERBLA, ZDSCAL, ZGEMM,
++      EXTERNAL           DLABAD, DLAORD, DLASCL, XERBLA,
++     $          MKL_INIT_XERBLA, ZDSCAL, ZGEMM,
       $                   ZLARF, ZLARNV, ZLAROR, ZLASCL, ZLASET
  *     ..
  *     .. Intrinsic Functions ..
@@ -2318,15 +4233,16 @@ index 0d17313e8..139847108 100644
        MN = MIN( M, N )
        IF( LWORK.LT.MAX( M+MN, MN*NRHS, 2*N+M ) ) THEN
 diff --git a/TESTING/LIN/zqrt17.f b/TESTING/LIN/zqrt17.f
-index ff694c7a1..c58fb5d02 100644
+index ff694c7a1..5c80d958f 100644
 --- a/TESTING/LIN/zqrt17.f
 +++ b/TESTING/LIN/zqrt17.f
-@@ -183,12 +183,14 @@
+@@ -183,12 +183,15 @@
        EXTERNAL           LSAME, DLAMCH, ZLANGE
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA, ZGEMM, ZLACPY, ZLASCL
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA, ZGEMM, ZLACPY, ZLASCL
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA, ZGEMM, ZLACPY, ZLASCL
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          DBLE, DCMPLX, MAX
@@ -2338,15 +4254,16 @@ index ff694c7a1..c58fb5d02 100644
        ZQRT17 = ZERO
  *
 diff --git a/TESTING/LIN/zrzt01.f b/TESTING/LIN/zrzt01.f
-index 876384069..6e7ca9470 100644
+index 876384069..0f98a84fd 100644
 --- a/TESTING/LIN/zrzt01.f
 +++ b/TESTING/LIN/zrzt01.f
-@@ -129,12 +129,14 @@
+@@ -129,12 +129,15 @@
        EXTERNAL           DLAMCH, ZLANGE
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA, ZAXPY, ZLASET, ZUNMRZ
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA, ZAXPY, ZLASET, ZUNMRZ
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA, ZAXPY, ZLASET, ZUNMRZ
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          DBLE, DCMPLX, MAX
@@ -2358,15 +4275,16 @@ index 876384069..6e7ca9470 100644
        ZRZT01 = ZERO
  *
 diff --git a/TESTING/LIN/zrzt02.f b/TESTING/LIN/zrzt02.f
-index 373ced982..cbf65db2f 100644
+index 373ced982..6e87250bc 100644
 --- a/TESTING/LIN/zrzt02.f
 +++ b/TESTING/LIN/zrzt02.f
-@@ -120,12 +120,14 @@
+@@ -120,12 +120,15 @@
        EXTERNAL           DLAMCH, ZLANGE
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA, ZLASET, ZUNMRZ
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA, ZLASET, ZUNMRZ
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA, ZLASET, ZUNMRZ
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          DBLE, DCMPLX, MAX
@@ -2378,15 +4296,16 @@ index 373ced982..cbf65db2f 100644
        ZRZT02 = ZERO
  *
 diff --git a/TESTING/LIN/zsbmv.f b/TESTING/LIN/zsbmv.f
-index 005e288e0..96c01301a 100644
+index 005e288e0..ca2eec9b5 100644
 --- a/TESTING/LIN/zsbmv.f
 +++ b/TESTING/LIN/zsbmv.f
-@@ -183,12 +183,14 @@
+@@ -183,12 +183,15 @@
        EXTERNAL           LSAME
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          MAX, MIN
@@ -2398,19 +4317,20 @@ index 005e288e0..96c01301a 100644
  *     Test the input parameters.
  *
 diff --git a/TESTING/MATGEN/clagge.f b/TESTING/MATGEN/clagge.f
-index f0d86fb50..70c853412 100644
+index f0d86fb50..72f7af06d 100644
 --- a/TESTING/MATGEN/clagge.f
 +++ b/TESTING/MATGEN/clagge.f
-@@ -141,7 +141,7 @@
+@@ -141,7 +141,8 @@
        COMPLEX            TAU, WA, WB
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           CGEMV, CGERC, CLACGV, CLARNV, CSCAL, XERBLA
-+      EXTERNAL           CGEMV, CGERC, CLACGV, CLARNV, CSCAL, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           CGEMV, CGERC, CLACGV, CLARNV, CSCAL, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, MAX, MIN, REAL
-@@ -151,6 +151,8 @@
+@@ -151,6 +152,8 @@
        EXTERNAL           SCNRM2
  *     ..
  *     .. Executable Statements ..
@@ -2419,42 +4339,90 @@ index f0d86fb50..70c853412 100644
  *
  *     Test the input arguments
  *
-diff --git a/TESTING/MATGEN/clahilb.f b/TESTING/MATGEN/clahilb.f
-index f4481fc78..da482d267 100644
---- a/TESTING/MATGEN/clahilb.f
-+++ b/TESTING/MATGEN/clahilb.f
-@@ -175,7 +175,7 @@
-      $     (-.5,.5),(.5,.5),(.5,-.5)/
+diff --git a/TESTING/MATGEN/claghe.f b/TESTING/MATGEN/claghe.f
+index 70a162024..9b218fa21 100644
+--- a/TESTING/MATGEN/claghe.f
++++ b/TESTING/MATGEN/claghe.f
+@@ -131,7 +131,8 @@
  *     ..
  *     .. External Subroutines ..
--      EXTERNAL XERBLA
-+      EXTERNAL XERBLA, MKL_INIT_XERBLA
+       EXTERNAL           CAXPY, CGEMV, CGERC, CHEMV, CHER2, CLARNV,
+-     $                   CSCAL, XERBLA
++     $                   CSCAL, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
- *     .. External Functions
-       EXTERNAL CLASET, LSAMEN
-@@ -183,6 +183,8 @@
-       LOGICAL LSAMEN
+ *     .. External Functions ..
+       REAL               SCNRM2
+@@ -142,6 +143,8 @@
+       INTRINSIC          ABS, CONJG, MAX, REAL
  *     ..
  *     .. Executable Statements ..
 +*
 +      CALL MKL_INIT_XERBLA()
+ *
+ *     Test the input arguments
+ *
+diff --git a/TESTING/MATGEN/clagsy.f b/TESTING/MATGEN/clagsy.f
+index 8c3885464..705a77a58 100644
+--- a/TESTING/MATGEN/clagsy.f
++++ b/TESTING/MATGEN/clagsy.f
+@@ -131,7 +131,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           CAXPY, CGEMV, CGERC, CLACGV, CLARNV, CSCAL,
+-     $                   CSYMV, XERBLA
++     $                   CSYMV, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. External Functions ..
+       REAL               SCNRM2
+@@ -142,6 +143,8 @@
+       INTRINSIC          ABS, MAX, REAL
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Test the input arguments
+ *
+diff --git a/TESTING/MATGEN/clahilb.f b/TESTING/MATGEN/clahilb.f
+index f4481fc78..f5f361306 100644
+--- a/TESTING/MATGEN/clahilb.f
++++ b/TESTING/MATGEN/clahilb.f
+@@ -175,7 +175,8 @@
+      $     (-.5,.5),(.5,.5),(.5,-.5)/
+ *     ..
+ *     .. External Subroutines ..
+-      EXTERNAL XERBLA
++      EXTERNAL XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. External Functions
+       EXTERNAL CLASET, LSAMEN
+@@ -183,6 +184,8 @@
+       LOGICAL LSAMEN
+ *     ..
+ *     .. Executable Statements ..
++      CALL MKL_INIT_XERBLA()
++*
        C2 = PATH( 2: 3 )
  *
  *     Test the input arguments
 diff --git a/TESTING/MATGEN/clarge.f b/TESTING/MATGEN/clarge.f
-index 4c1d47137..982519b49 100644
+index 4c1d47137..76f6af631 100644
 --- a/TESTING/MATGEN/clarge.f
 +++ b/TESTING/MATGEN/clarge.f
-@@ -113,7 +113,7 @@
+@@ -113,7 +113,8 @@
        COMPLEX            TAU, WA, WB
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           CGEMV, CGERC, CLARNV, CSCAL, XERBLA
-+      EXTERNAL           CGEMV, CGERC, CLARNV, CSCAL, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           CGEMV, CGERC, CLARNV, CSCAL, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, MAX, REAL
-@@ -123,6 +123,8 @@
+@@ -123,6 +124,8 @@
        EXTERNAL           SCNRM2
  *     ..
  *     .. Executable Statements ..
@@ -2464,15 +4432,16 @@ index 4c1d47137..982519b49 100644
  *     Test the input arguments
  *
 diff --git a/TESTING/MATGEN/claror.f b/TESTING/MATGEN/claror.f
-index 6870c321a..95c95c2ca 100644
+index 6870c321a..1574e270a 100644
 --- a/TESTING/MATGEN/claror.f
 +++ b/TESTING/MATGEN/claror.f
-@@ -194,12 +194,14 @@
+@@ -194,12 +194,15 @@
        EXTERNAL           LSAME, SCNRM2, CLARND
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           CGEMV, CGERC, CLACGV, CLASET, CSCAL, XERBLA
-+      EXTERNAL           CGEMV, CGERC, CLACGV, CLASET, CSCAL, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           CGEMV, CGERC, CLACGV, CLASET, CSCAL, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, CMPLX, CONJG
@@ -2484,15 +4453,16 @@ index 6870c321a..95c95c2ca 100644
        INFO = 0
        IF( N.EQ.0 .OR. M.EQ.0 )
 diff --git a/TESTING/MATGEN/clarot.f b/TESTING/MATGEN/clarot.f
-index b899c8274..104d68432 100644
+index b899c8274..be9a0a872 100644
 --- a/TESTING/MATGEN/clarot.f
 +++ b/TESTING/MATGEN/clarot.f
-@@ -253,12 +253,14 @@
+@@ -253,12 +253,15 @@
        COMPLEX            XT( 2 ), YT( 2 )
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          CONJG
@@ -2504,15 +4474,16 @@ index b899c8274..104d68432 100644
  *     Set up indices, arrays for ends
  *
 diff --git a/TESTING/MATGEN/clatm1.f b/TESTING/MATGEN/clatm1.f
-index 48d49897b..1b084ce57 100644
+index 48d49897b..744e180d6 100644
 --- a/TESTING/MATGEN/clatm1.f
 +++ b/TESTING/MATGEN/clatm1.f
-@@ -168,12 +168,14 @@
+@@ -168,12 +168,15 @@
        EXTERNAL           SLARAN, CLARND
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           CLARNV, XERBLA
-+      EXTERNAL           CLARNV, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           CLARNV, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, EXP, LOG, REAL
@@ -2523,16 +4494,38 @@ index 48d49897b..1b084ce57 100644
  *
  *     Decode and Test the input parameters. Initialize flags & seed.
  *
+diff --git a/TESTING/MATGEN/clatme.f b/TESTING/MATGEN/clatme.f
+index a06f9bfbd..a7229a244 100644
+--- a/TESTING/MATGEN/clatme.f
++++ b/TESTING/MATGEN/clatme.f
+@@ -349,12 +349,15 @@
+ *     .. External Subroutines ..
+       EXTERNAL           CCOPY, CGEMV, CGERC, CLACGV, CLARFG, CLARGE,
+      $                   CLARNV, CLATM1, CLASET, CSCAL, CSSCAL, SLATM1,
+-     $                   XERBLA
++     $                   XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, CONJG, MAX, MOD
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     1)      Decode and Test the input parameters.
+ *             Initialize flags & seed.
 diff --git a/TESTING/MATGEN/clatmr.f b/TESTING/MATGEN/clatmr.f
-index e80c4a514..53f825c67 100644
+index e80c4a514..8d1fec78d 100644
 --- a/TESTING/MATGEN/clatmr.f
 +++ b/TESTING/MATGEN/clatmr.f
-@@ -537,12 +537,14 @@
+@@ -537,12 +537,15 @@
       $                   CLATM2, CLATM3
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           CLATM1, CSSCAL, XERBLA
-+      EXTERNAL           CLATM1, CSSCAL, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           CLATM1, CSSCAL, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, CONJG, MAX, MIN, MOD, REAL
@@ -2543,20 +4536,65 @@ index e80c4a514..53f825c67 100644
  *
  *     1)      Decode and Test the input parameters.
  *             Initialize flags & seed.
+diff --git a/TESTING/MATGEN/clatms.f b/TESTING/MATGEN/clatms.f
+index 9516f227f..260431d29 100644
+--- a/TESTING/MATGEN/clatms.f
++++ b/TESTING/MATGEN/clatms.f
+@@ -378,13 +378,16 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           CLAGGE, CLAGHE, CLAGSY, CLAROT, CLARTG, CLASET,
+-     $                   SLATM1, SSCAL, XERBLA
++     $                   SLATM1, SSCAL, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, CMPLX, CONJG, COS, MAX, MIN, MOD, REAL,
+      $                   SIN
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     1)      Decode and Test the input parameters.
+ *             Initialize flags & seed.
+diff --git a/TESTING/MATGEN/clatmt.f b/TESTING/MATGEN/clatmt.f
+index bdad1b7ba..01a618bce 100644
+--- a/TESTING/MATGEN/clatmt.f
++++ b/TESTING/MATGEN/clatmt.f
+@@ -386,13 +386,16 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           CLAGGE, CLAGHE, CLAGSY, CLAROT, CLARTG, CLASET,
+-     $                   SLATM7, SSCAL, XERBLA
++     $                   SLATM7, SSCAL, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, CMPLX, CONJG, COS, MAX, MIN, MOD, REAL,
+      $                   SIN
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     1)      Decode and Test the input parameters.
+ *             Initialize flags & seed.
 diff --git a/TESTING/MATGEN/dlagge.f b/TESTING/MATGEN/dlagge.f
-index 44b1c25b4..e5b47b8b6 100644
+index 44b1c25b4..fb006f8d3 100644
 --- a/TESTING/MATGEN/dlagge.f
 +++ b/TESTING/MATGEN/dlagge.f
-@@ -137,7 +137,7 @@
+@@ -137,7 +137,8 @@
        DOUBLE PRECISION   TAU, WA, WB, WN
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DGEMV, DGER, DLARNV, DSCAL, XERBLA
-+      EXTERNAL           DGEMV, DGER, DLARNV, DSCAL, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           DGEMV, DGER, DLARNV, DSCAL, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          MAX, MIN, SIGN
-@@ -147,6 +147,8 @@
+@@ -147,6 +148,8 @@
        EXTERNAL           DNRM2
  *     ..
  *     .. Executable Statements ..
@@ -2565,16 +4603,40 @@ index 44b1c25b4..e5b47b8b6 100644
  *
  *     Test the input arguments
  *
+diff --git a/TESTING/MATGEN/dlagsy.f b/TESTING/MATGEN/dlagsy.f
+index 1c811e994..a6b68bb2a 100644
+--- a/TESTING/MATGEN/dlagsy.f
++++ b/TESTING/MATGEN/dlagsy.f
+@@ -126,7 +126,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           DAXPY, DGEMV, DGER, DLARNV, DSCAL, DSYMV,
+-     $                   DSYR2, XERBLA
++     $                   DSYR2, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. External Functions ..
+       DOUBLE PRECISION   DDOT, DNRM2
+@@ -136,6 +137,8 @@
+       INTRINSIC          MAX, SIGN
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Test the input arguments
+ *
 diff --git a/TESTING/MATGEN/dlahilb.f b/TESTING/MATGEN/dlahilb.f
-index 5d0351f46..0c7787140 100644
+index 5d0351f46..544e17b60 100644
 --- a/TESTING/MATGEN/dlahilb.f
 +++ b/TESTING/MATGEN/dlahilb.f
-@@ -150,13 +150,15 @@
+@@ -150,13 +150,16 @@
        PARAMETER (NMAX_EXACT = 6, NMAX_APPROX = 11)
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL XERBLA
-+      EXTERNAL XERBLA, MKL_INIT_XERBLA
++      EXTERNAL XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. External Functions
        EXTERNAL DLASET
@@ -2587,19 +4649,20 @@ index 5d0351f46..0c7787140 100644
  *     Test the input arguments
  *
 diff --git a/TESTING/MATGEN/dlarge.f b/TESTING/MATGEN/dlarge.f
-index fc8bcc4be..4608cb5f3 100644
+index fc8bcc4be..a8ff7c99b 100644
 --- a/TESTING/MATGEN/dlarge.f
 +++ b/TESTING/MATGEN/dlarge.f
-@@ -111,7 +111,7 @@
+@@ -111,7 +111,8 @@
        DOUBLE PRECISION   TAU, WA, WB, WN
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DGEMV, DGER, DLARNV, DSCAL, XERBLA
-+      EXTERNAL           DGEMV, DGER, DLARNV, DSCAL, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           DGEMV, DGER, DLARNV, DSCAL, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          MAX, SIGN
-@@ -121,6 +121,8 @@
+@@ -121,6 +122,8 @@
        EXTERNAL           DNRM2
  *     ..
  *     .. Executable Statements ..
@@ -2609,15 +4672,16 @@ index fc8bcc4be..4608cb5f3 100644
  *     Test the input arguments
  *
 diff --git a/TESTING/MATGEN/dlaror.f b/TESTING/MATGEN/dlaror.f
-index a48129d25..4729d2f0c 100644
+index a48129d25..73fd2904b 100644
 --- a/TESTING/MATGEN/dlaror.f
 +++ b/TESTING/MATGEN/dlaror.f
-@@ -177,12 +177,14 @@
+@@ -177,12 +177,15 @@
        EXTERNAL           LSAME, DLARND, DNRM2
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DGEMV, DGER, DLASET, DSCAL, XERBLA
-+      EXTERNAL           DGEMV, DGER, DLASET, DSCAL, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           DGEMV, DGER, DLASET, DSCAL, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, SIGN
@@ -2629,15 +4693,16 @@ index a48129d25..4729d2f0c 100644
        INFO = 0
        IF( N.EQ.0 .OR. M.EQ.0 )
 diff --git a/TESTING/MATGEN/dlarot.f b/TESTING/MATGEN/dlarot.f
-index 6655fa481..e7ebd7591 100644
+index 6655fa481..7588c317b 100644
 --- a/TESTING/MATGEN/dlarot.f
 +++ b/TESTING/MATGEN/dlarot.f
-@@ -249,9 +249,11 @@
+@@ -249,9 +249,12 @@
        DOUBLE PRECISION   XT( 2 ), YT( 2 )
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DROT, XERBLA
-+      EXTERNAL           DROT, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           DROT, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Executable Statements ..
 +*
@@ -2646,15 +4711,16 @@ index 6655fa481..e7ebd7591 100644
  *     Set up indices, arrays for ends
  *
 diff --git a/TESTING/MATGEN/dlatm1.f b/TESTING/MATGEN/dlatm1.f
-index cfb144b10..3c8f6f03b 100644
+index cfb144b10..086193df3 100644
 --- a/TESTING/MATGEN/dlatm1.f
 +++ b/TESTING/MATGEN/dlatm1.f
-@@ -166,12 +166,14 @@
+@@ -166,12 +166,15 @@
        EXTERNAL           DLARAN
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DLARNV, XERBLA
-+      EXTERNAL           DLARNV, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           DLARNV, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, DBLE, EXP, LOG
@@ -2666,15 +4732,16 @@ index cfb144b10..3c8f6f03b 100644
  *     Decode and Test the input parameters. Initialize flags & seed.
  *
 diff --git a/TESTING/MATGEN/dlatm7.f b/TESTING/MATGEN/dlatm7.f
-index 70c2f98ba..bb230b850 100644
+index 70c2f98ba..bc2116176 100644
 --- a/TESTING/MATGEN/dlatm7.f
 +++ b/TESTING/MATGEN/dlatm7.f
-@@ -155,12 +155,14 @@
+@@ -155,12 +155,15 @@
        EXTERNAL           DLARAN
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DLARNV, XERBLA
-+      EXTERNAL           DLARNV, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           DLARNV, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, DBLE, EXP, LOG
@@ -2685,16 +4752,38 @@ index 70c2f98ba..bb230b850 100644
  *
  *     Decode and Test the input parameters. Initialize flags & seed.
  *
+diff --git a/TESTING/MATGEN/dlatme.f b/TESTING/MATGEN/dlatme.f
+index 2d124ef1f..a0875d083 100644
+--- a/TESTING/MATGEN/dlatme.f
++++ b/TESTING/MATGEN/dlatme.f
+@@ -374,12 +374,15 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           DCOPY, DGEMV, DGER, DLARFG, DLARGE, DLARNV,
+-     $                   DLASET, DLATM1, DSCAL, XERBLA
++     $                   DLASET, DLATM1, DSCAL, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, MAX, MOD
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     1)      Decode and Test the input parameters.
+ *             Initialize flags & seed.
 diff --git a/TESTING/MATGEN/dlatmr.f b/TESTING/MATGEN/dlatmr.f
-index a914481f7..92d964567 100644
+index a914481f7..17744275d 100644
 --- a/TESTING/MATGEN/dlatmr.f
 +++ b/TESTING/MATGEN/dlatmr.f
-@@ -512,12 +512,14 @@
+@@ -512,12 +512,15 @@
       $                   DLATM2, DLATM3
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DLATM1, DSCAL, XERBLA
-+      EXTERNAL           DLATM1, DSCAL, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           DLATM1, DSCAL, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, MAX, MIN, MOD
@@ -2705,20 +4794,63 @@ index a914481f7..92d964567 100644
  *
  *     1)      Decode and Test the input parameters.
  *             Initialize flags & seed.
+diff --git a/TESTING/MATGEN/dlatms.f b/TESTING/MATGEN/dlatms.f
+index 11b9c0389..fe3a5cdba 100644
+--- a/TESTING/MATGEN/dlatms.f
++++ b/TESTING/MATGEN/dlatms.f
+@@ -362,12 +362,15 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           DCOPY, DLAGGE, DLAGSY, DLAROT, DLARTG, DLASET,
+-     $                   DLATM1, DSCAL, XERBLA
++     $                   DLATM1, DSCAL, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, COS, DBLE, MAX, MIN, MOD, SIN
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     1)      Decode and Test the input parameters.
+ *             Initialize flags & seed.
+diff --git a/TESTING/MATGEN/dlatmt.f b/TESTING/MATGEN/dlatmt.f
+index a5cf54e47..f2f014714 100644
+--- a/TESTING/MATGEN/dlatmt.f
++++ b/TESTING/MATGEN/dlatmt.f
+@@ -372,12 +372,15 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           DLATM7, DCOPY, DLAGGE, DLAGSY, DLAROT,
+-     $                   DLARTG, DLASET, DSCAL, XERBLA
++     $                   DLARTG, DLASET, DSCAL, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, COS, DBLE, MAX, MIN, MOD, SIN
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     1)      Decode and Test the input parameters.
+ *             Initialize flags & seed.
 diff --git a/TESTING/MATGEN/slagge.f b/TESTING/MATGEN/slagge.f
-index 626039aa0..087b8af3a 100644
+index 626039aa0..ae769f8a9 100644
 --- a/TESTING/MATGEN/slagge.f
 +++ b/TESTING/MATGEN/slagge.f
-@@ -137,7 +137,7 @@
+@@ -137,7 +137,8 @@
        REAL               TAU, WA, WB, WN
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           SGEMV, SGER, SLARNV, SSCAL, XERBLA
-+      EXTERNAL           SGEMV, SGER, SLARNV, SSCAL, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           SGEMV, SGER, SLARNV, SSCAL, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          MAX, MIN, SIGN
-@@ -147,6 +147,8 @@
+@@ -147,6 +148,8 @@
        EXTERNAL           SNRM2
  *     ..
  *     .. Executable Statements ..
@@ -2727,16 +4859,40 @@ index 626039aa0..087b8af3a 100644
  *
  *     Test the input arguments
  *
+diff --git a/TESTING/MATGEN/slagsy.f b/TESTING/MATGEN/slagsy.f
+index 5fa7484c4..0f219aa01 100644
+--- a/TESTING/MATGEN/slagsy.f
++++ b/TESTING/MATGEN/slagsy.f
+@@ -126,7 +126,8 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           SAXPY, SGEMV, SGER, SLARNV, SSCAL, SSYMV,
+-     $                   SSYR2, XERBLA
++     $                   SSYR2, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. External Functions ..
+       REAL               SDOT, SNRM2
+@@ -136,6 +137,8 @@
+       INTRINSIC          MAX, SIGN
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     Test the input arguments
+ *
 diff --git a/TESTING/MATGEN/slahilb.f b/TESTING/MATGEN/slahilb.f
-index cb92db6db..3bebe1831 100644
+index cb92db6db..8fb491ade 100644
 --- a/TESTING/MATGEN/slahilb.f
 +++ b/TESTING/MATGEN/slahilb.f
-@@ -150,13 +150,15 @@
+@@ -150,13 +150,16 @@
        PARAMETER (NMAX_EXACT = 6, NMAX_APPROX = 11)
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL XERBLA
-+      EXTERNAL XERBLA, MKL_INIT_XERBLA
++      EXTERNAL XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. External Functions
        EXTERNAL SLASET
@@ -2749,19 +4905,20 @@ index cb92db6db..3bebe1831 100644
  *     Test the input arguments
  *
 diff --git a/TESTING/MATGEN/slarge.f b/TESTING/MATGEN/slarge.f
-index 392948996..64e6fba5e 100644
+index 392948996..28d99983a 100644
 --- a/TESTING/MATGEN/slarge.f
 +++ b/TESTING/MATGEN/slarge.f
-@@ -111,7 +111,7 @@
+@@ -111,7 +111,8 @@
        REAL               TAU, WA, WB, WN
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           SGEMV, SGER, SLARNV, SSCAL, XERBLA
-+      EXTERNAL           SGEMV, SGER, SLARNV, SSCAL, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           SGEMV, SGER, SLARNV, SSCAL, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          MAX, SIGN
-@@ -121,6 +121,8 @@
+@@ -121,6 +122,8 @@
        EXTERNAL           SNRM2
  *     ..
  *     .. Executable Statements ..
@@ -2771,15 +4928,16 @@ index 392948996..64e6fba5e 100644
  *     Test the input arguments
  *
 diff --git a/TESTING/MATGEN/slaror.f b/TESTING/MATGEN/slaror.f
-index d58902110..0dd0ad083 100644
+index d58902110..4fed7ea82 100644
 --- a/TESTING/MATGEN/slaror.f
 +++ b/TESTING/MATGEN/slaror.f
-@@ -177,12 +177,14 @@
+@@ -177,12 +177,15 @@
        EXTERNAL           LSAME, SLARND, SNRM2
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           SGEMV, SGER, SLASET, SSCAL, XERBLA
-+      EXTERNAL           SGEMV, SGER, SLASET, SSCAL, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           SGEMV, SGER, SLASET, SSCAL, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, SIGN
@@ -2791,15 +4949,16 @@ index d58902110..0dd0ad083 100644
        INFO = 0
        IF( N.EQ.0 .OR. M.EQ.0 )
 diff --git a/TESTING/MATGEN/slarot.f b/TESTING/MATGEN/slarot.f
-index ed478cb21..ed1ff87eb 100644
+index ed478cb21..7a0f40aff 100644
 --- a/TESTING/MATGEN/slarot.f
 +++ b/TESTING/MATGEN/slarot.f
-@@ -249,9 +249,11 @@
+@@ -249,9 +249,12 @@
        REAL               XT( 2 ), YT( 2 )
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           SROT, XERBLA
-+      EXTERNAL           SROT, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           SROT, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Executable Statements ..
 +*
@@ -2808,15 +4967,16 @@ index ed478cb21..ed1ff87eb 100644
  *     Set up indices, arrays for ends
  *
 diff --git a/TESTING/MATGEN/slatm1.f b/TESTING/MATGEN/slatm1.f
-index 8f9e16431..9e38e2892 100644
+index 8f9e16431..c887ae31d 100644
 --- a/TESTING/MATGEN/slatm1.f
 +++ b/TESTING/MATGEN/slatm1.f
-@@ -166,12 +166,14 @@
+@@ -166,12 +166,15 @@
        EXTERNAL           SLARAN
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           SLARNV, XERBLA
-+      EXTERNAL           SLARNV, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           SLARNV, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, EXP, LOG, REAL
@@ -2828,15 +4988,16 @@ index 8f9e16431..9e38e2892 100644
  *     Decode and Test the input parameters. Initialize flags & seed.
  *
 diff --git a/TESTING/MATGEN/slatm7.f b/TESTING/MATGEN/slatm7.f
-index 098d1c2b7..b9ae5d954 100644
+index 098d1c2b7..584838746 100644
 --- a/TESTING/MATGEN/slatm7.f
 +++ b/TESTING/MATGEN/slatm7.f
-@@ -155,12 +155,14 @@
+@@ -155,12 +155,15 @@
        EXTERNAL           SLARAN
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           SLARNV, XERBLA
-+      EXTERNAL           SLARNV, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           SLARNV, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, EXP, LOG, REAL
@@ -2847,16 +5008,38 @@ index 098d1c2b7..b9ae5d954 100644
  *
  *     Decode and Test the input parameters. Initialize flags & seed.
  *
+diff --git a/TESTING/MATGEN/slatme.f b/TESTING/MATGEN/slatme.f
+index 8309bcd34..1631468db 100644
+--- a/TESTING/MATGEN/slatme.f
++++ b/TESTING/MATGEN/slatme.f
+@@ -374,12 +374,15 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           SCOPY, SGEMV, SGER, SLARFG, SLARGE, SLARNV,
+-     $                   SLATM1, SLASET, SSCAL, XERBLA
++     $                   SLATM1, SLASET, SSCAL, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, MAX, MOD
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     1)      Decode and Test the input parameters.
+ *             Initialize flags & seed.
 diff --git a/TESTING/MATGEN/slatmr.f b/TESTING/MATGEN/slatmr.f
-index c2cedd21c..3d018db48 100644
+index c2cedd21c..64c2f8ce0 100644
 --- a/TESTING/MATGEN/slatmr.f
 +++ b/TESTING/MATGEN/slatmr.f
-@@ -512,12 +512,14 @@
+@@ -512,12 +512,15 @@
       $                   SLATM2, SLATM3
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           SLATM1, SSCAL, XERBLA
-+      EXTERNAL           SLATM1, SSCAL, XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           SLATM1, SSCAL, XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, MAX, MIN, MOD
@@ -2867,20 +5050,63 @@ index c2cedd21c..3d018db48 100644
  *
  *     1)      Decode and Test the input parameters.
  *             Initialize flags & seed.
+diff --git a/TESTING/MATGEN/slatms.f b/TESTING/MATGEN/slatms.f
+index 349bfe2eb..0cb7e913c 100644
+--- a/TESTING/MATGEN/slatms.f
++++ b/TESTING/MATGEN/slatms.f
+@@ -362,12 +362,15 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           SCOPY, SLAGGE, SLAGSY, SLAROT, SLARTG, SLATM1,
+-     $                   SLASET, SSCAL, XERBLA
++     $                   SLASET, SSCAL, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, COS, MAX, MIN, MOD, REAL, SIN
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     1)      Decode and Test the input parameters.
+ *             Initialize flags & seed.
+diff --git a/TESTING/MATGEN/slatmt.f b/TESTING/MATGEN/slatmt.f
+index f69e1d6e5..814b60b9e 100644
+--- a/TESTING/MATGEN/slatmt.f
++++ b/TESTING/MATGEN/slatmt.f
+@@ -372,12 +372,15 @@
+ *     ..
+ *     .. External Subroutines ..
+       EXTERNAL           SLATM7, SCOPY, SLAGGE, SLAGSY, SLAROT,
+-     $                   SLARTG, SLASET, SSCAL, XERBLA
++     $                   SLARTG, SLASET, SSCAL, XERBLA,
++     $          MKL_INIT_XERBLA
+ *     ..
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, COS, MAX, MIN, MOD, REAL, SIN
+ *     ..
+ *     .. Executable Statements ..
++*
++      CALL MKL_INIT_XERBLA()
+ *
+ *     1)      Decode and Test the input parameters.
+ *             Initialize flags & seed.
 diff --git a/TESTING/MATGEN/zlagge.f b/TESTING/MATGEN/zlagge.f
-index c9d2bc240..0506acdf9 100644
+index c9d2bc240..4f695e0fa 100644
 --- a/TESTING/MATGEN/zlagge.f
 +++ b/TESTING/MATGEN/zlagge.f
-@@ -141,7 +141,7 @@
+@@ -141,7 +141,8 @@
        COMPLEX*16         TAU, WA, WB
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA, ZGEMV, ZGERC, ZLACGV, ZLARNV, ZSCAL
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA, ZGEMV, ZGERC, ZLACGV, ZLARNV, ZSCAL
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA, ZGEMV, ZGERC, ZLACGV, ZLARNV, ZSCAL
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, DBLE, MAX, MIN
-@@ -151,6 +151,8 @@
+@@ -151,6 +152,8 @@
        EXTERNAL           DZNRM2
  *     ..
  *     .. Executable Statements ..
@@ -2890,19 +5116,20 @@ index c9d2bc240..0506acdf9 100644
  *     Test the input arguments
  *
 diff --git a/TESTING/MATGEN/zlaghe.f b/TESTING/MATGEN/zlaghe.f
-index 506035061..d449e0827 100644
+index 506035061..9a5a93cbf 100644
 --- a/TESTING/MATGEN/zlaghe.f
 +++ b/TESTING/MATGEN/zlaghe.f
-@@ -130,7 +130,7 @@
+@@ -130,7 +130,8 @@
        COMPLEX*16         ALPHA, TAU, WA, WB
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA, ZAXPY, ZGEMV, ZGERC, ZHEMV, ZHER2,
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA, ZAXPY, ZGEMV, ZGERC, ZHEMV, ZHER2,
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA, ZAXPY, ZGEMV, ZGERC, ZHEMV, ZHER2,
       $                   ZLARNV, ZSCAL
  *     ..
  *     .. External Functions ..
-@@ -142,6 +142,8 @@
+@@ -142,6 +143,8 @@
        INTRINSIC          ABS, DBLE, DCONJG, MAX
  *     ..
  *     .. Executable Statements ..
@@ -2912,19 +5139,20 @@ index 506035061..d449e0827 100644
  *     Test the input arguments
  *
 diff --git a/TESTING/MATGEN/zlagsy.f b/TESTING/MATGEN/zlagsy.f
-index e030a5f18..4f705182a 100644
+index e030a5f18..9bfde506f 100644
 --- a/TESTING/MATGEN/zlagsy.f
 +++ b/TESTING/MATGEN/zlagsy.f
-@@ -130,7 +130,7 @@
+@@ -130,7 +130,8 @@
        COMPLEX*16         ALPHA, TAU, WA, WB
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA, ZAXPY, ZGEMV, ZGERC, ZLACGV, ZLARNV,
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA, ZAXPY, ZGEMV, ZGERC, ZLACGV, ZLARNV,
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA, ZAXPY, ZGEMV, ZGERC, ZLACGV, ZLARNV,
       $                   ZSCAL, ZSYMV
  *     ..
  *     .. External Functions ..
-@@ -142,6 +142,8 @@
+@@ -142,6 +143,8 @@
        INTRINSIC          ABS, DBLE, MAX
  *     ..
  *     .. Executable Statements ..
@@ -2934,41 +5162,43 @@ index e030a5f18..4f705182a 100644
  *     Test the input arguments
  *
 diff --git a/TESTING/MATGEN/zlahilb.f b/TESTING/MATGEN/zlahilb.f
-index e5a317821..a56d918df 100644
+index e5a317821..669322c60 100644
 --- a/TESTING/MATGEN/zlahilb.f
 +++ b/TESTING/MATGEN/zlahilb.f
-@@ -175,7 +175,7 @@
+@@ -175,7 +175,8 @@
       $     (-.5,.5),(.5,.5),(.5,-.5)/
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL XERBLA
-+      EXTERNAL XERBLA, MKL_INIT_XERBLA
++      EXTERNAL XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. External Functions
        EXTERNAL ZLASET, LSAMEN
-@@ -183,6 +183,8 @@
+@@ -183,6 +184,8 @@
        LOGICAL LSAMEN
  *     ..
  *     .. Executable Statements ..
-+*
 +      CALL MKL_INIT_XERBLA()
++*
        C2 = PATH( 2: 3 )
  *
  *     Test the input arguments
 diff --git a/TESTING/MATGEN/zlarge.f b/TESTING/MATGEN/zlarge.f
-index 4e1de110e..e20ba8a07 100644
+index 4e1de110e..be842b785 100644
 --- a/TESTING/MATGEN/zlarge.f
 +++ b/TESTING/MATGEN/zlarge.f
-@@ -113,7 +113,7 @@
+@@ -113,7 +113,8 @@
        COMPLEX*16         TAU, WA, WB
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA, ZGEMV, ZGERC, ZLARNV, ZSCAL
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA, ZGEMV, ZGERC, ZLARNV, ZSCAL
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA, ZGEMV, ZGERC, ZLARNV, ZSCAL
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, DBLE, MAX
-@@ -123,6 +123,8 @@
+@@ -123,6 +124,8 @@
        EXTERNAL           DZNRM2
  *     ..
  *     .. Executable Statements ..
@@ -2978,15 +5208,16 @@ index 4e1de110e..e20ba8a07 100644
  *     Test the input arguments
  *
 diff --git a/TESTING/MATGEN/zlaror.f b/TESTING/MATGEN/zlaror.f
-index b8c4fdfa5..3cc18f5fd 100644
+index b8c4fdfa5..f73c89c11 100644
 --- a/TESTING/MATGEN/zlaror.f
 +++ b/TESTING/MATGEN/zlaror.f
-@@ -194,12 +194,14 @@
+@@ -194,12 +194,15 @@
        EXTERNAL           LSAME, DZNRM2, ZLARND
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA, ZGEMV, ZGERC, ZLACGV, ZLASET, ZSCAL
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA, ZGEMV, ZGERC, ZLACGV, ZLASET, ZSCAL
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA, ZGEMV, ZGERC, ZLACGV, ZLASET, ZSCAL
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, DCMPLX, DCONJG
@@ -2998,15 +5229,16 @@ index b8c4fdfa5..3cc18f5fd 100644
        INFO = 0
        IF( N.EQ.0 .OR. M.EQ.0 )
 diff --git a/TESTING/MATGEN/zlarot.f b/TESTING/MATGEN/zlarot.f
-index ebb5d98f9..4b9373b0d 100644
+index ebb5d98f9..b6fd045e9 100644
 --- a/TESTING/MATGEN/zlarot.f
 +++ b/TESTING/MATGEN/zlarot.f
-@@ -253,12 +253,14 @@
+@@ -253,12 +253,15 @@
        COMPLEX*16         XT( 2 ), YT( 2 )
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          DCONJG
@@ -3018,15 +5250,16 @@ index ebb5d98f9..4b9373b0d 100644
  *     Set up indices, arrays for ends
  *
 diff --git a/TESTING/MATGEN/zlatm1.f b/TESTING/MATGEN/zlatm1.f
-index a829d9119..621431bc3 100644
+index a829d9119..994fcf78f 100644
 --- a/TESTING/MATGEN/zlatm1.f
 +++ b/TESTING/MATGEN/zlatm1.f
-@@ -168,12 +168,14 @@
+@@ -168,12 +168,15 @@
        EXTERNAL           DLARAN, ZLARND
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA, ZLARNV
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA, ZLARNV
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA, ZLARNV
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, DBLE, EXP, LOG
@@ -3038,19 +5271,20 @@ index a829d9119..621431bc3 100644
  *     Decode and Test the input parameters. Initialize flags & seed.
  *
 diff --git a/TESTING/MATGEN/zlatme.f b/TESTING/MATGEN/zlatme.f
-index fee1eca6e..6a95731a5 100644
+index fee1eca6e..5dc1d51a1 100644
 --- a/TESTING/MATGEN/zlatme.f
 +++ b/TESTING/MATGEN/zlatme.f
-@@ -347,7 +347,7 @@
+@@ -347,7 +347,8 @@
        EXTERNAL           LSAME, ZLANGE, ZLARND
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DLATM1, XERBLA, ZCOPY, ZDSCAL, ZGEMV, ZGERC,
-+      EXTERNAL           DLATM1, XERBLA, MKL_INIT_XERBLA, ZCOPY, ZDSCAL, ZGEMV, ZGERC,
++      EXTERNAL           DLATM1, XERBLA,
++     $          MKL_INIT_XERBLA, ZCOPY, ZDSCAL, ZGEMV, ZGERC,
       $                   ZLACGV, ZLARFG, ZLARGE, ZLARNV, ZLASET, ZLATM1,
       $                   ZSCAL
  *     ..
-@@ -355,6 +355,8 @@
+@@ -355,6 +356,8 @@
        INTRINSIC          ABS, DCONJG, MAX, MOD
  *     ..
  *     .. Executable Statements ..
@@ -3060,15 +5294,16 @@ index fee1eca6e..6a95731a5 100644
  *     1)      Decode and Test the input parameters.
  *             Initialize flags & seed.
 diff --git a/TESTING/MATGEN/zlatmr.f b/TESTING/MATGEN/zlatmr.f
-index 56285e1f4..586b3b227 100644
+index 56285e1f4..fc9eb4b19 100644
 --- a/TESTING/MATGEN/zlatmr.f
 +++ b/TESTING/MATGEN/zlatmr.f
-@@ -537,12 +537,14 @@
+@@ -537,12 +537,15 @@
       $                   ZLATM2, ZLATM3
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           XERBLA, ZDSCAL, ZLATM1
-+      EXTERNAL           XERBLA, MKL_INIT_XERBLA, ZDSCAL, ZLATM1
++      EXTERNAL           XERBLA,
++     $          MKL_INIT_XERBLA, ZDSCAL, ZLATM1
  *     ..
  *     .. Intrinsic Functions ..
        INTRINSIC          ABS, DBLE, DCONJG, MAX, MIN, MOD
@@ -3080,19 +5315,20 @@ index 56285e1f4..586b3b227 100644
  *     1)      Decode and Test the input parameters.
  *             Initialize flags & seed.
 diff --git a/TESTING/MATGEN/zlatms.f b/TESTING/MATGEN/zlatms.f
-index 9bad54860..20b750602 100644
+index 9bad54860..f23d7de6b 100644
 --- a/TESTING/MATGEN/zlatms.f
 +++ b/TESTING/MATGEN/zlatms.f
-@@ -377,7 +377,7 @@
+@@ -377,7 +377,8 @@
        EXTERNAL           LSAME, DLARND, ZLARND
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DLATM1, DSCAL, XERBLA, ZLAGGE, ZLAGHE, ZLAGSY,
-+      EXTERNAL           DLATM1, DSCAL, XERBLA, MKL_INIT_XERBLA, ZLAGGE, ZLAGHE, ZLAGSY,
++      EXTERNAL           DLATM1, DSCAL, XERBLA,
++     $          MKL_INIT_XERBLA, ZLAGGE, ZLAGHE, ZLAGSY,
       $                   ZLAROT, ZLARTG, ZLASET
  *     ..
  *     .. Intrinsic Functions ..
-@@ -385,6 +385,8 @@
+@@ -385,6 +386,8 @@
       $                   SIN
  *     ..
  *     .. Executable Statements ..
@@ -3102,19 +5338,20 @@ index 9bad54860..20b750602 100644
  *     1)      Decode and Test the input parameters.
  *             Initialize flags & seed.
 diff --git a/TESTING/MATGEN/zlatmt.f b/TESTING/MATGEN/zlatmt.f
-index 257c2627e..b3f4360a2 100644
+index 257c2627e..ad81ac3a8 100644
 --- a/TESTING/MATGEN/zlatmt.f
 +++ b/TESTING/MATGEN/zlatmt.f
-@@ -385,7 +385,7 @@
+@@ -385,7 +385,8 @@
        EXTERNAL           ZLARND, DLARND, LSAME
  *     ..
  *     .. External Subroutines ..
 -      EXTERNAL           DLATM7, DSCAL, XERBLA, ZLAGGE, ZLAGHE,
-+      EXTERNAL           DLATM7, DSCAL, XERBLA, MKL_INIT_XERBLA, ZLAGGE, ZLAGHE,
++      EXTERNAL           DLATM7, DSCAL, XERBLA,
++     $          MKL_INIT_XERBLA, ZLAGGE, ZLAGHE,
       $                   ZLAGSY, ZLAROT, ZLARTG, ZLASET
  *     ..
  *     .. Intrinsic Functions ..
-@@ -393,6 +393,8 @@
+@@ -393,6 +394,8 @@
       $                   SIN
  *     ..
  *     .. Executable Statements ..
