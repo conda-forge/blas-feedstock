@@ -22,7 +22,7 @@ if "%blas_impl%" == "mkl" (
     set "extra_deps=mkl-devel=%mkl%"
 )
 
-%MINIFORGE_HOME%\Scripts\conda.exe create -p %NEW_ENV% -c conda-forge --yes --quiet ^
+%MINIFORGE_HOME%\Scripts\conda.exe create -p %NEW_ENV% -c conda-forge/label/mkl_rc -c conda-forge --yes --quiet ^
     libblas=%PKG_VERSION%=*netlib ^
     libcblas=%PKG_VERSION%=*netlib ^
     liblapack=%PKG_VERSION%=*netlib ^

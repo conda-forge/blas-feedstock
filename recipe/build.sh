@@ -19,7 +19,7 @@ if [[ "$blas_impl" == "mkl" ]]; then
 fi
 
 export CONDA_SUBDIR="${target_platform}"
-conda create -p ${NEW_ENV} -c conda-forge --yes --quiet \
+conda create -p ${NEW_ENV} -c conda-forge/label/mkl_rc -c conda-forge --yes --quiet \
     libblas=${PKG_VERSION}=*netlib \
     libcblas=${PKG_VERSION}=*netlib \
     liblapack=${PKG_VERSION}=*netlib \
