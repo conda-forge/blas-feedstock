@@ -17,6 +17,7 @@
 # to avoid tempting the solver into switching the underlying blas flavour "just" to update MKL,
 # we add a constraint on the MKL-version across all flavours. This means (essentially) that any
 # new MKL major version must first pass the tests on this feedstock
+{% set mkl_next = mkl_version.split(".")[0]|int + 1 %}
 
 package:
   name: blas-split
@@ -84,9 +85,8 @@ outputs:
       host:
         - blis {{ blis_version }}               # [blas_impl == 'blis']
         # from https://github.com/conda-forge/intel_repack-feedstock/
-        # for run-export across all flavours, see comment at the top
-        - mkl-devel  {{ mkl_version }}          # [blas_impl == 'mkl']
         - libopenblas {{ openblas_version }}    # [blas_impl == 'openblas']
+        - mkl-devel  {{ mkl_version }}          # [blas_impl == 'mkl']
         # on windows we pin exactly, so need to build twice
         - libopenblas =*={{ openblas_type }}*   # [win and blas_impl == 'openblas']
         - llvm-openmp                           # [win and openblas_type == 'openmp']
@@ -102,6 +102,8 @@ outputs:
         - liblapack ={{ version }}={{ build_num }}*_{{ blas_impl }}     # [blas_impl != 'blis']
         - liblapacke ={{ version }}={{ build_num }}*_{{ blas_impl }}    # [blas_impl != 'blis']
         - blas ={{ blas_major }}.{{ blas_minor }}={{ blas_impl }}
+        # for run_constrained across all flavours, see comment at the top
+        - mkl <{{ mkl_next }}                   # [blas_impl != 'mkl']
     files:
       - lib/libblas.so                          # [linux]
       - lib/libblas.dylib                       # [osx]
