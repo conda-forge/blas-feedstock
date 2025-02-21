@@ -1,4 +1,5 @@
 #!/bin/bash
+set -ex
 
 mkdir build
 cd build
@@ -12,21 +13,32 @@ export LDFLAGS="-L${LIBRARY_PREFIX}/lib -Wl,-rpath,${LIBRARY_PREFIX}/lib $LDFLAG
 export CPATH="${LIBRARY_PREFIX}/include"
 export LIBRARY_PATH="${LIBRARY_PREFIX}/lib"
 
+extra_deps=""
+if [[ "$blas_impl" == "mkl" ]]; then
+    extra_deps="mkl-devel=${mkl}"
+fi
+
 export CONDA_SUBDIR="${target_platform}"
-conda create -p ${NEW_ENV} -c conda-forge --yes --quiet \
+conda create -p ${NEW_ENV} -c conda-forge/label/mkl_rc -c conda-forge --yes --quiet \
     libblas=${PKG_VERSION}=*netlib \
     libcblas=${PKG_VERSION}=*netlib \
     liblapack=${PKG_VERSION}=*netlib \
     liblapacke=${PKG_VERSION}=*netlib \
+    ${extra_deps} \
     ${fortran_compiler}_${target_platform}=${fortran_compiler_version}
 unset CONDA_SUBDIR
+
+# debug
+ls ${NEW_ENV}/include
 
 # Link against the netlib libraries
 cmake ${CMAKE_ARGS} -LAH -G "${CMAKE_GENERATOR}" .. \
     "-DBLAS_LIBRARIES=libblas${SHLIB_EXT};libcblas${SHLIB_EXT}" \
     "-DLAPACK_LIBRARIES=liblapack${SHLIB_EXT};liblapacke${SHLIB_EXT}" \
     -DBUILD_TESTING=yes \
-    -DCMAKE_BUILD_TYPE=Release || (cat $SRC_DIR/build/CMakeFiles/CMakeError.log && $SRC_DIR/build/CMakeFiles/CMakeOutput.log && false)
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_PREFIX_PATH=${NEW_ENV} \
+    || (cat $SRC_DIR/build/CMakeFiles/CMakeError.log && $SRC_DIR/build/CMakeFiles/CMakeOutput.log && false)
 
 cmake --build . --config Release
 

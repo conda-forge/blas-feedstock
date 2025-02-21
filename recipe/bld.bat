@@ -1,4 +1,5 @@
 @echo on
+setlocal enabledelayedexpansion
 
 mkdir build
 cd build
@@ -16,24 +17,34 @@ set "CFLAGS=-I%LIBRARY_PREFIX%\include %CFLAGS%"
 set "FFLAGS=-I%LIBRARY_PREFIX%\include %FFLAGS%"
 set "LDFLAGS=/LIBPATH:%LIBRARY_PREFIX%\lib %LDFLAGS%"
 
-%MINIFORGE_HOME%\Scripts\conda.exe create -p %NEW_ENV% -c conda-forge --yes --quiet ^
+set "extra_deps= "
+if "%blas_impl%" == "mkl" (
+    set "extra_deps=mkl-devel=%mkl%"
+)
+
+%MINIFORGE_HOME%\Scripts\conda.exe create -p %NEW_ENV% -c conda-forge/label/mkl_rc -c conda-forge --yes --quiet ^
     libblas=%PKG_VERSION%=*netlib ^
     libcblas=%PKG_VERSION%=*netlib ^
     liblapack=%PKG_VERSION%=*netlib ^
     liblapacke=%PKG_VERSION%=*netlib ^
-    flang_win-64=%fortran_compiler_version%
+    flang_win-64=%fortran_compiler_version% ^
+    !extra_deps!
 
 :: default activation for clang-windows uses clang.exe, not clang-cl.exe, see
 :: https://github.com/conda-forge/clang-win-activation-feedstock/pull/48
 :: clang.exe cannot handle /LIBPATH: in LDFLAGS, but we need that for lld-link
 set "CC=clang-cl.exe"
 
+:: debug
+dir %NEW_ENV%\Library\include
+
 :: Link against the netlib libraries
 cmake -LAH -G Ninja .. ^
     "-DBLAS_LIBRARIES=blas.lib;cblas.lib" ^
     "-DLAPACK_LIBRARIES=lapack.lib;lapacke.lib" ^
     -DBUILD_TESTING=yes ^
-    -DCMAKE_BUILD_TYPE=Release
+    -DCMAKE_BUILD_TYPE=Release ^
+    -DCMAKE_PREFIX_PATH=%NEW_ENV%\Library
 if %ERRORLEVEL% neq 0 (type .\CMakeFiles\CMakeError.log && type .\CMakeFiles\CMakeOutput.log && exit 1)
 
 cmake --build . --config Release
