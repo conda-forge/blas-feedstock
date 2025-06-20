@@ -1,6 +1,6 @@
 {% set version = "3.9.0" %}
 # if build_num is reset to 0 (for new version), update increment for blas_minor below
-{% set build_num = 31 %}
+{% set build_num = 32 %}
 {% set version_major = version.split(".")[0] %}
 # blas_major denotes major infrastructural change to how blas is managed
 {% set blas_major = "2" %}
@@ -11,7 +11,7 @@
 # versions of pinned blas implementation flavours
 {% set blis_version = "0.9.0" %}
 {% set mkl_version = "2024.2" %}
-{% set openblas_version = "0.3.29" %}
+{% set openblas_version = "0.3.30" %}
 # MKL uses the yyyy-portion of CalVer also as the major version indicating API/ABI stability, see
 # https://github.com/conda-forge/intel_repack-feedstock/issues/81
 # to avoid tempting the solver into switching the underlying blas flavour "just" to update MKL,
