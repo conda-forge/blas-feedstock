@@ -1,9 +1,9 @@
 blas_default_impl:
 - openblas
 blas_impl:
-- openblas
+- mkl
 blas_impl_lib:
-- libopenblas.so.0
+- libmkl_rt.so
 c_compiler:
 - gcc
 c_compiler_version:
@@ -32,8 +32,6 @@ liblapack:
 - 3.9.* *netlib
 liblapacke:
 - 3.9.* *netlib
-mkl:
-- '2024'
 target_platform:
 - linux-64
 zip_keys:
