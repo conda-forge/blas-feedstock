@@ -8,20 +8,20 @@ jobs:
     vmImage: macOS-13
   strategy:
     matrix:
-      osx_64_blas_implaccelerateblas_impl_liblibvecLibFort-ng.dylib:
-        CONFIG: osx_64_blas_implaccelerateblas_impl_liblibvecLibFort-ng.dylib
+      osx_64_blas_implaccelerate:
+        CONFIG: osx_64_blas_implaccelerate
         UPLOAD_PACKAGES: 'True'
-      osx_64_blas_implblisblas_impl_liblibblis.4.dylib:
-        CONFIG: osx_64_blas_implblisblas_impl_liblibblis.4.dylib
+      osx_64_blas_implblis:
+        CONFIG: osx_64_blas_implblis
         UPLOAD_PACKAGES: 'True'
-      osx_64_blas_implopenblasblas_impl_liblibopenblas.0.dylib:
-        CONFIG: osx_64_blas_implopenblasblas_impl_liblibopenblas.0.dylib
+      osx_64_blas_implopenblas:
+        CONFIG: osx_64_blas_implopenblas
         UPLOAD_PACKAGES: 'True'
-      osx_arm64_blas_implaccelerateblas_impl_liblibvecLibFort-ng.dylib:
-        CONFIG: osx_arm64_blas_implaccelerateblas_impl_liblibvecLibFort-ng.dylib
+      osx_arm64_blas_implaccelerate:
+        CONFIG: osx_arm64_blas_implaccelerate
         UPLOAD_PACKAGES: 'True'
-      osx_arm64_blas_implopenblasblas_impl_liblibopenblas.0.dylib:
-        CONFIG: osx_arm64_blas_implopenblasblas_impl_liblibopenblas.0.dylib
+      osx_arm64_blas_implopenblas:
+        CONFIG: osx_arm64_blas_implopenblas
         UPLOAD_PACKAGES: 'True'
   timeoutInMinutes: 360
   variables: {}

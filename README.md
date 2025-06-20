@@ -13,6 +13,24 @@ Package license: BSD-3-Clause
 
 Summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism in your environment to control which variant you want.
 
+About blas
+----------
+
+Home: https://github.com/conda-forge/blas-feedstock
+
+Package license: BSD-3-Clause
+
+Summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism in your environment to control which variant you want.
+
+About blas-devel
+----------------
+
+Home: https://github.com/conda-forge/blas-feedstock
+
+Package license: BSD-3-Clause
+
+Summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism in your environment to control which variant you want.
+
 About libblas
 -------------
 
@@ -49,24 +67,6 @@ Package license: BSD-3-Clause
 
 Summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism in your environment to control which variant you want.
 
-About blas-devel
-----------------
-
-Home: https://github.com/conda-forge/blas-feedstock
-
-Package license: BSD-3-Clause
-
-Summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism in your environment to control which variant you want.
-
-About blas
-----------
-
-Home: https://github.com/conda-forge/blas-feedstock
-
-Package license: BSD-3-Clause
-
-Summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism in your environment to control which variant you want.
-
 Current build status
 ====================
 
@@ -85,24 +85,24 @@ Current build status
         <table>
           <thead><tr><th>Variant</th><th>Status</th></tr></thead>
           <tbody><tr>
-              <td>linux_64_blas_implblisblas_impl_liblibblis.so.4</td>
+              <td>linux_64_blas_implblis</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=linux&configuration=linux%20linux_64_blas_implblisblas_impl_liblibblis.so.4" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=linux&configuration=linux%20linux_64_blas_implblis" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>linux_64_blas_implmklblas_impl_liblibmkl_rt.so</td>
+              <td>linux_64_blas_implmkl</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=linux&configuration=linux%20linux_64_blas_implmklblas_impl_liblibmkl_rt.so" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=linux&configuration=linux%20linux_64_blas_implmkl" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>linux_64_blas_implopenblasblas_impl_liblibopenblas.so.0</td>
+              <td>linux_64_blas_implopenblas</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=linux&configuration=linux%20linux_64_blas_implopenblasblas_impl_liblibopenblas.so.0" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=linux&configuration=linux%20linux_64_blas_implopenblas" alt="variant">
                 </a>
               </td>
             </tr><tr>
@@ -120,66 +120,66 @@ Current build status
                 </a>
               </td>
             </tr><tr>
-              <td>osx_64_blas_implaccelerateblas_impl_liblibvecLibFort-ng.dylib</td>
+              <td>osx_64_blas_implaccelerate</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_64_blas_implaccelerateblas_impl_liblibvecLibFort-ng.dylib" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_64_blas_implaccelerate" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>osx_64_blas_implblisblas_impl_liblibblis.4.dylib</td>
+              <td>osx_64_blas_implblis</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_64_blas_implblisblas_impl_liblibblis.4.dylib" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_64_blas_implblis" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>osx_64_blas_implopenblasblas_impl_liblibopenblas.0.dylib</td>
+              <td>osx_64_blas_implopenblas</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_64_blas_implopenblasblas_impl_liblibopenblas.0.dylib" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_64_blas_implopenblas" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>osx_arm64_blas_implaccelerateblas_impl_liblibvecLibFort-ng.dylib</td>
+              <td>osx_arm64_blas_implaccelerate</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_arm64_blas_implaccelerateblas_impl_liblibvecLibFort-ng.dylib" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_arm64_blas_implaccelerate" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>osx_arm64_blas_implopenblasblas_impl_liblibopenblas.0.dylib</td>
+              <td>osx_arm64_blas_implopenblas</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_arm64_blas_implopenblasblas_impl_liblibopenblas.0.dylib" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_arm64_blas_implopenblas" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>win_64_blas_implblisblas_impl_liblibblis.4.dllopenblas_typedummy</td>
+              <td>win_64_blas_implblisopenblas_typedummy</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=win&configuration=win%20win_64_blas_implblisblas_impl_liblibblis.4.dllopenblas_typedummy" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=win&configuration=win%20win_64_blas_implblisopenblas_typedummy" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>win_64_blas_implmklblas_impl_libmkl_rt.2.dllopenblas_typedummy</td>
+              <td>win_64_blas_implmklopenblas_typedummy</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=win&configuration=win%20win_64_blas_implmklblas_impl_libmkl_rt.2.dllopenblas_typedummy" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=win&configuration=win%20win_64_blas_implmklopenblas_typedummy" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>win_64_blas_implopenblasblas_impl_libopenblas.dllopenblas_typeopenmp</td>
+              <td>win_64_blas_implopenblasopenblas_typeopenmp</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=win&configuration=win%20win_64_blas_implopenblasblas_impl_libopenblas.dllopenblas_typeopenmp" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=win&configuration=win%20win_64_blas_implopenblasopenblas_typeopenmp" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>win_64_blas_implopenblasblas_impl_libopenblas.dllopenblas_typepthreads</td>
+              <td>win_64_blas_implopenblasopenblas_typepthreads</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=win&configuration=win%20win_64_blas_implopenblasblas_impl_libopenblas.dllopenblas_typepthreads" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=win&configuration=win%20win_64_blas_implopenblasopenblas_typepthreads" alt="variant">
                 </a>
               </td>
             </tr>

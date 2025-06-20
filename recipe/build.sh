@@ -26,7 +26,8 @@ cmake ${CMAKE_ARGS} -LAH -G "${CMAKE_GENERATOR}" .. \
     "-DBLAS_LIBRARIES=libblas${SHLIB_EXT};libcblas${SHLIB_EXT}" \
     "-DLAPACK_LIBRARIES=liblapack${SHLIB_EXT};liblapacke${SHLIB_EXT}" \
     -DBUILD_TESTING=yes \
-    -DCMAKE_BUILD_TYPE=Release || (cat $SRC_DIR/build/CMakeFiles/CMakeError.log && $SRC_DIR/build/CMakeFiles/CMakeOutput.log && false)
+    -DCMAKE_BUILD_TYPE=Release \
+    || (cat $SRC_DIR/build/CMakeFiles/CMakeError.log && $SRC_DIR/build/CMakeFiles/CMakeOutput.log && exit 1)
 
 cmake --build . --config Release
 
