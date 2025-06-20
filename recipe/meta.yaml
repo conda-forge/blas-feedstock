@@ -52,7 +52,7 @@ requirements:
     - {{ stdlib("c") }}
     - {{ compiler("c") }}
     - {{ compiler("fortran") }}
-    - cmake
+    - cmake <4
     - make      # [not win]
     - ninja     # [win]
     # The following are actual build dependencies of this recipe; however, they
@@ -278,7 +278,7 @@ outputs:
         - {{ stdlib("c") }}
         - {{ compiler("c") }}
         - {{ compiler("fortran") }}
-        - cmake
+        - cmake <4
         - ninja         # [win]
         - llvm-openmp   # [linux and ((blas_impl == "openblas") or (blas_impl == "mkl"))]
       host:
