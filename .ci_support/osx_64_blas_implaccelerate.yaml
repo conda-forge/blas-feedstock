@@ -1,43 +1,43 @@
+MACOSX_DEPLOYMENT_TARGET:
+- '10.13'
+MACOSX_SDK_VERSION:
+- '10.13'
 ace:
-- 8.0.2
+- 8.0.4
 blas_default_impl:
 - openblas
 blas_impl:
-- blis
+- accelerate
 blas_impl_lib:
-- libblis.so.4
+- libvecLibFort-ng.dylib
 c_compiler:
-- gcc
+- clang
 c_compiler_version:
-- '13'
+- '19'
 c_stdlib:
-- sysroot
+- macosx_deployment_target
 c_stdlib_version:
-- '2.17'
-cdt_name:
-- conda
+- '10.13'
 channel_sources:
 - conda-forge
 channel_targets:
 - conda-forge main
-docker_image:
-- quay.io/condaforge/linux-anvil-x86_64:alma9
 fortran_compiler:
 - gfortran
 fortran_compiler_version:
-- '13'
+- '14'
 libblas:
-- 3.9 *netlib
+- 3.9.* *netlib
 libcblas:
-- 3.9 *netlib
+- 3.9.* *netlib
 liblapack:
-- 3.9 *netlib
+- 3.9.* *netlib
 liblapacke:
-- 3.9 *netlib
-mkl:
-- '2024'
+- 3.9.* *netlib
+macos_machine:
+- x86_64-apple-darwin13.4.0
 target_platform:
-- linux-64
+- osx-64
 zip_keys:
 - - blas_impl
   - blas_impl_lib

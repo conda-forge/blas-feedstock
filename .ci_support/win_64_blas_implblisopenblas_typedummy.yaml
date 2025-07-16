@@ -1,11 +1,11 @@
 ace:
-- 8.0.2
+- 8.0.4
 blas_default_impl:
 - mkl
 blas_impl:
-- openblas
+- blis
 blas_impl_lib:
-- openblas.dll
+- libblis.4.dll
 c_compiler:
 - clang
 c_stdlib:
@@ -19,17 +19,17 @@ fortran_compiler:
 fortran_compiler_version:
 - '19'
 libblas:
-- 3.9 *netlib
+- 3.9.* *netlib
 libcblas:
-- 3.9 *netlib
+- 3.9.* *netlib
 liblapack:
-- 3.9 *netlib
+- 3.9.* *netlib
 liblapacke:
-- 3.9 *netlib
+- 3.9.* *netlib
 mkl:
 - '2024'
 openblas_type:
-- openmp
+- dummy
 target_platform:
 - win-64
 zip_keys:
