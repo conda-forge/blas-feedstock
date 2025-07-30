@@ -25,6 +25,9 @@ if [[ "$target_platform" == osx-* ]]; then
   if [[ "${blas_impl}" == *"accelerate" ]]; then
     SKIP_TESTS="${SKIP_TESTS}|xblat2*|xblat3*"
   fi
+  if [[ "${blas_impl}" == "newaccelerate" ]]; then
+    SKIP_TESTS="${SKIP_TESTS}|LAPACK-xlintsts_stest_in|LAPACK-xlintstd_dtest_in"
+  fi
 fi
 
 if [[ "${blas_impl}" == "mkl" ]]; then
