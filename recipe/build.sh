@@ -105,7 +105,6 @@ elif [[ "$blas_impl" == "newaccelerate" ]]; then
     echo _cladiv _cladiv_ >> aliases.txt
     echo _zladiv _zladiv_ >> aliases.txt
     cat aliases.txt
-    touch re-exports.txt
 
     $CC ${CFLAGS} -O3 -c -o wrap_accelerate.o ${RECIPE_DIR}/wrap_accelerate.c
     OBJECTS="wrap_accelerate.o"
@@ -120,7 +119,6 @@ elif [[ "$blas_impl" == "newaccelerate" ]]; then
         -lgfortran \
         -Wl,-alias_list,${PWD}/aliases.txt \
         -Wl,-reexport_library,$SRC_DIR/accelerate/liblapacke-netlib.${PKG_VERSION}.dylib \
-        -Wl,-reexported_symbols_list,${PWD}/re-exports.txt \
 	-framework Accelerate
 
     cp libblas_reexport.dylib $SRC_DIR/accelerate/
