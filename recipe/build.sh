@@ -104,13 +104,10 @@ elif [[ "$blas_impl" == "newaccelerate" ]]; then
     echo _zdotc _zdotc_ >> aliases.txt
     cat aliases.txt
 
-    # No _lsame$NEWLAPACK
-    echo _lsame_ >> re-exports.txt
-
     $CC ${CFLAGS} -O3 -c -o wrap_accelerate.o ${RECIPE_DIR}/wrap_accelerate.c
     OBJECTS="wrap_accelerate.o"
     # These timing utility functions are not in accelerate
-    for utilf in ${SRC_DIR}/INSTALL/second_INT_ETIME.f ${SRC_DIR}/INSTALL/dsecnd_INT_ETIME.f; do
+    for utilf in ${SRC_DIR}/INSTALL/second_INT_ETIME.f ${SRC_DIR}/INSTALL/dsecnd_INT_ETIME.f BLAS/SRC/lsame.f; do
        $FC ${FFLAGS} -O3 -c $utilf -o util_$(basename $utilf).o
        OBJECTS="${OBJECTS} util_$(basename $utilf).o"
     done
