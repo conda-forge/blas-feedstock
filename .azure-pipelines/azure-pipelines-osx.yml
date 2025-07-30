@@ -14,11 +14,17 @@ jobs:
       osx_64_blas_implblis:
         CONFIG: osx_64_blas_implblis
         UPLOAD_PACKAGES: 'True'
+      osx_64_blas_implnewaccelerate:
+        CONFIG: osx_64_blas_implnewaccelerate
+        UPLOAD_PACKAGES: 'True'
       osx_64_blas_implopenblas:
         CONFIG: osx_64_blas_implopenblas
         UPLOAD_PACKAGES: 'True'
       osx_arm64_blas_implaccelerate:
         CONFIG: osx_arm64_blas_implaccelerate
+        UPLOAD_PACKAGES: 'True'
+      osx_arm64_blas_implnewaccelerate:
+        CONFIG: osx_arm64_blas_implnewaccelerate
         UPLOAD_PACKAGES: 'True'
       osx_arm64_blas_implopenblas:
         CONFIG: osx_arm64_blas_implopenblas

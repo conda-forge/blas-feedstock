@@ -19,6 +19,10 @@
 # new MKL major version must first pass the tests on this feedstock
 {% set mkl_next = mkl_version.split(".")[0]|int + 1 %}
 
+{% if blas_impl is not defined %}
+{% set blas_impl = "openblas" %}
+{% endif %}
+
 package:
   name: blas-split
   version: "{{ version }}"
@@ -80,8 +84,10 @@ outputs:
        - blas_{{ blas_impl }}  # [blas_impl != blas_default_impl]
     requirements:
       build:
-        - {{ compiler('fortran') }}   # [blas_impl == 'accelerate']
-        - {{ stdlib('c') }}           # [blas_impl == 'accelerate']
+        - {{ compiler('fortran') }}   # [blas_impl in ('accelerate', 'newaccelerate')]
+        # need to compile wrapper code, see build.sh
+        - {{ compiler('c') }}         # [blas_impl == 'newaccelerate']
+        - {{ stdlib('c') }}           # [blas_impl in ('accelerate', 'newaccelerate')]
       host:
         - blis {{ blis_version }}               # [blas_impl == 'blis']
         # from https://github.com/conda-forge/intel_repack-feedstock/
@@ -96,6 +102,7 @@ outputs:
         - {{ pin_compatible("libopenblas", max_pin="x.x.x", exact=win) }}  # [blas_impl == 'openblas']
         # not strictly necessary, but for clarity/legibility in metadata
         - libopenblas * {{ openblas_type }}*                               # [blas_impl == 'openblas' and win]
+        - __osx >=13.3                                                     # [blas_impl == 'newaccelerate']
       run_constrained:
         # cannot pin exactly due to https://github.com/conda/conda-build/issues/5572
         - libcblas   {{ version }}   {{ build_num }}*_{{ blas_impl }}
@@ -110,6 +117,8 @@ outputs:
       - lib/libblas.so.{{ version_major }}      # [linux]
       - lib/libblas.{{ version_major }}.dylib   # [osx]
       - Library/bin/libblas.dll                 # [win]
+      - lib/libblas_reexport.dylib              # [blas_impl == 'newaccelerate']
+      - lib/liblapacke-netlib.*.dylib           # [blas_impl == 'newaccelerate']
       - lib/libvecLibFort-ng.dylib              # [blas_impl == 'accelerate']
       - lib/liblapack-netlib.*.dylib            # [blas_impl == 'accelerate']
       - lib/liblapacke-netlib.*.dylib           # [blas_impl == 'accelerate']

@@ -11,7 +11,7 @@ blas_impl_lib:
 c_compiler:
 - clang
 c_compiler_version:
-- '18'
+- '19'
 c_stdlib:
 - macosx_deployment_target
 c_stdlib_version:
@@ -23,7 +23,7 @@ channel_targets:
 fortran_compiler:
 - gfortran
 fortran_compiler_version:
-- '13'
+- '14'
 libblas:
 - 3.9.* *netlib
 libcblas:
@@ -33,13 +33,16 @@ liblapack:
 liblapacke:
 - 3.9.* *netlib
 llvm_openmp:
-- '18'
+- '19'
 macos_machine:
 - x86_64-apple-darwin13.4.0
+openblas:
+- 0.3.*
 target_platform:
 - osx-64
 zip_keys:
 - - blas_impl
   - blas_impl_lib
+  - MACOSX_SDK_VERSION
 - - c_compiler_version
   - fortran_compiler_version

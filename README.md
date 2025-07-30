@@ -13,52 +13,7 @@ Package license: BSD-3-Clause
 
 Summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism in your environment to control which variant you want.
 
-About blas
-----------
-
-Home: https://github.com/conda-forge/blas-feedstock
-
-Package license: BSD-3-Clause
-
-Summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism in your environment to control which variant you want.
-
 About blas-devel
-----------------
-
-Home: https://github.com/conda-forge/blas-feedstock
-
-Package license: BSD-3-Clause
-
-Summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism in your environment to control which variant you want.
-
-About libblas
--------------
-
-Home: https://github.com/conda-forge/blas-feedstock
-
-Package license: BSD-3-Clause
-
-Summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism in your environment to control which variant you want.
-
-About libcblas
---------------
-
-Home: https://github.com/conda-forge/blas-feedstock
-
-Package license: BSD-3-Clause
-
-Summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism in your environment to control which variant you want.
-
-About liblapack
----------------
-
-Home: https://github.com/conda-forge/blas-feedstock
-
-Package license: BSD-3-Clause
-
-Summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism in your environment to control which variant you want.
-
-About liblapacke
 ----------------
 
 Home: https://github.com/conda-forge/blas-feedstock
@@ -134,6 +89,13 @@ Current build status
                 </a>
               </td>
             </tr><tr>
+              <td>osx_64_blas_implnewaccelerate</td>
+              <td>
+                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_64_blas_implnewaccelerate" alt="variant">
+                </a>
+              </td>
+            </tr><tr>
               <td>osx_64_blas_implopenblas</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
@@ -145,6 +107,13 @@ Current build status
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
                   <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_arm64_blas_implaccelerate" alt="variant">
+                </a>
+              </td>
+            </tr><tr>
+              <td>osx_arm64_blas_implnewaccelerate</td>
+              <td>
+                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_arm64_blas_implnewaccelerate" alt="variant">
                 </a>
               </td>
             </tr><tr>

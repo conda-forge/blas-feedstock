@@ -9,6 +9,7 @@ blas_impl:
 - mkl                      # [x86_64 and not osx]
 - blis                     # [x86_64]
 - accelerate               # [osx]
+- newaccelerate            # [osx]
 
 blas_impl_lib:
 - libopenblas.so.0         # [linux]
@@ -24,10 +25,23 @@ blas_impl_lib:
 - libblis.4.dll            # [win64]
 
 - libvecLibFort-ng.dylib   # [osx]
+- libblas_reexport.dylib   # [osx]
 
 blas_default_impl:
 - openblas                 # [not win]
 - mkl                      # [win]
+
+MACOSX_SDK_VERSION:
+# openblas
+- 10.13                    # [osx and x86_64]
+- 11.0                     # [osx and arm64]
+# blis
+- 10.13                    # [osx and x86_64]
+# accelerate
+- 10.13                    # [osx and x86_64]
+- 11.0                     # [osx and arm64]
+# newaccelerate
+- 13.3                     # [osx]
 
 openblas_type:             # [win]
 - openmp                   # [win]
@@ -39,4 +53,5 @@ zip_keys:
 -
   - blas_impl
   - blas_impl_lib
+  - MACOSX_SDK_VERSION     # [osx]
   - openblas_type          # [win]

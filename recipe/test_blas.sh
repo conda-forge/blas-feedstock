@@ -22,8 +22,11 @@ if [[ "$target_platform" == osx-* ]]; then
   SKIP_TESTS="${SKIP_TESTS}|x*cblat2|x*cblat3"
   # Not sure why the following tests work with other blas implementations, but
   # they check error codes as well
-  if [[ "${blas_impl}" == "accelerate" ]]; then
+  if [[ "${blas_impl}" == *"accelerate" ]]; then
     SKIP_TESTS="${SKIP_TESTS}|xblat2*|xblat3*"
+  fi
+  if [[ "${blas_impl}" == "newaccelerate" ]]; then
+    SKIP_TESTS="${SKIP_TESTS}|LAPACK-xlintsts_stest_in|LAPACK-xlintstd_dtest_in"
   fi
 fi
 

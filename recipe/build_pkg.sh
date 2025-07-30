@@ -1,4 +1,4 @@
-if [[ "$blas_impl" == "accelerate" && "${PKG_NAME}" == "libblas" ]]; then
+if [[ "$blas_impl" == *"accelerate" && "${PKG_NAME}" == "libblas" ]]; then
     cp $SRC_DIR/accelerate/* $PREFIX/lib/
 fi
 

@@ -24,6 +24,8 @@ liblapack:
 - 3.9.* *netlib
 liblapacke:
 - 3.9.* *netlib
+openblas:
+- 0.3.*
 openblas_type:
 - pthreads
 target_platform:
