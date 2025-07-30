@@ -111,7 +111,7 @@ elif [[ "$blas_impl" == "newaccelerate" ]]; then
     OBJECTS="wrap_accelerate.o"
     # These timing utility functions, lsame, dcabs1 are not in accelerate
     for utilf in INSTALL/second_INT_ETIME.f INSTALL/dsecnd_INT_ETIME.f BLAS/SRC/lsame.f BLAS/SRC/dcabs1.f; do
-       $FC ${FFLAGS} -O3 -c ${SRC_DIR}${utilf} -o util_$(basename ${utilf}).o
+       $FC ${FFLAGS} -O3 -c ${SRC_DIR}/${utilf} -o util_$(basename ${utilf}).o
        OBJECTS="${OBJECTS} util_$(basename $utilf).o"
     done
     $CC -shared -o libblas_reexport.dylib \
