@@ -126,5 +126,4 @@ elif [[ "$blas_impl" == "newaccelerate" ]]; then
     cp libblas_reexport.dylib $SRC_DIR/accelerate/
 fi
 
-exit 1
 rm -rf ${NEW_ENV}
