@@ -106,14 +106,10 @@ elif [[ "$blas_impl" == "newaccelerate" ]]; then
     echo _zladiv _zladiv_ >> aliases.txt
     cat aliases.txt
 
-    # lsame, dcabs1 are not in accelerate
-    echo _lsame_  >> re-exports.txt
-    echo _dcabs1_ >> re-exports.txt
-
     $CC ${CFLAGS} -O3 -c -o wrap_accelerate.o ${RECIPE_DIR}/wrap_accelerate.c
     OBJECTS="wrap_accelerate.o"
-    # These timing utility functions are not in accelerate
-    for utilf in INSTALL/second_INT_ETIME.f INSTALL/dsecnd_INT_ETIME.f; do
+    # These timing utility functions, lsame, dcabs1 are not in accelerate
+    for utilf in INSTALL/second_INT_ETIME.f INSTALL/dsecnd_INT_ETIME.f BLAS/SRC/lsame.f BLAS/SRC/dcabs1.f; do
        $FC ${FFLAGS} -O3 -c ${SRC_DIR}/${utilf} -o util_$(basename ${utilf}).o
        OBJECTS="${OBJECTS} util_$(basename $utilf).o"
     done
@@ -123,7 +119,6 @@ elif [[ "$blas_impl" == "newaccelerate" ]]; then
         -lgfortran \
         -Wl,-alias_list,${PWD}/aliases.txt \
         -Wl,-reexport_library,$SRC_DIR/accelerate/liblapacke-netlib.${PKG_VERSION}.dylib \
-	-Wl,-reexported_symbols_list,${PWD}/re-exports.txt \
 	-framework Accelerate
 
     cp libblas_reexport.dylib $SRC_DIR/accelerate/
