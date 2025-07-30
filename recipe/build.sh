@@ -102,7 +102,10 @@ elif [[ "$blas_impl" == "newaccelerate" ]]; then
     echo _cdotc _cdotc_ >> aliases.txt
     echo _zdotu _zdotu_ >> aliases.txt
     echo _zdotc _zdotc_ >> aliases.txt
+    echo _cladiv _cladiv_ >> aliases.txt
+    echo _zladiv _zladiv_ >> aliases.txt
     cat aliases.txt
+    touch re-exports.txt
 
     $CC ${CFLAGS} -O3 -c -o wrap_accelerate.o ${RECIPE_DIR}/wrap_accelerate.c
     OBJECTS="wrap_accelerate.o"
@@ -123,4 +126,5 @@ elif [[ "$blas_impl" == "newaccelerate" ]]; then
     cp libblas_reexport.dylib $SRC_DIR/accelerate/
 fi
 
+exit 1
 rm -rf ${NEW_ENV}
