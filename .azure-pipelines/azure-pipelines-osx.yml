@@ -8,26 +8,26 @@ jobs:
     vmImage: macOS-13
   strategy:
     matrix:
-      osx_64_blas_implacceleratec_stdlib_version10.13:
-        CONFIG: osx_64_blas_implacceleratec_stdlib_version10.13
+      osx_64_blas_implaccelerate:
+        CONFIG: osx_64_blas_implaccelerate
         UPLOAD_PACKAGES: 'True'
-      osx_64_blas_implblisc_stdlib_version10.13:
-        CONFIG: osx_64_blas_implblisc_stdlib_version10.13
+      osx_64_blas_implblis:
+        CONFIG: osx_64_blas_implblis
         UPLOAD_PACKAGES: 'True'
-      osx_64_blas_implnewacceleratec_stdlib_version13.3:
-        CONFIG: osx_64_blas_implnewacceleratec_stdlib_version13.3
+      osx_64_blas_implnewaccelerate:
+        CONFIG: osx_64_blas_implnewaccelerate
         UPLOAD_PACKAGES: 'True'
-      osx_64_blas_implopenblasc_stdlib_version10.13:
-        CONFIG: osx_64_blas_implopenblasc_stdlib_version10.13
+      osx_64_blas_implopenblas:
+        CONFIG: osx_64_blas_implopenblas
         UPLOAD_PACKAGES: 'True'
-      osx_arm64_blas_implacceleratec_stdlib_version11.0:
-        CONFIG: osx_arm64_blas_implacceleratec_stdlib_version11.0
+      osx_arm64_blas_implaccelerate:
+        CONFIG: osx_arm64_blas_implaccelerate
         UPLOAD_PACKAGES: 'True'
-      osx_arm64_blas_implnewacceleratec_stdlib_version13.3:
-        CONFIG: osx_arm64_blas_implnewacceleratec_stdlib_version13.3
+      osx_arm64_blas_implnewaccelerate:
+        CONFIG: osx_arm64_blas_implnewaccelerate
         UPLOAD_PACKAGES: 'True'
-      osx_arm64_blas_implopenblasc_stdlib_version11.0:
-        CONFIG: osx_arm64_blas_implopenblasc_stdlib_version11.0
+      osx_arm64_blas_implopenblas:
+        CONFIG: osx_arm64_blas_implopenblas
         UPLOAD_PACKAGES: 'True'
   timeoutInMinutes: 360
   variables: {}

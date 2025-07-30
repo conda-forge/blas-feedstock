@@ -31,7 +31,7 @@ blas_default_impl:
 - openblas                 # [not win]
 - mkl                      # [win]
 
-c_stdlib_version:
+MACOSX_SDK_VERSION:
 # openblas
 - 10.13                    # [osx and x86_64]
 - 11.0                     # [osx and arm64]
@@ -53,5 +53,5 @@ zip_keys:
 -
   - blas_impl
   - blas_impl_lib
-  - c_stdlib_version       # [osx]
+  - MACOSX_SDK_VERSION     # [osx]
   - openblas_type          # [win]

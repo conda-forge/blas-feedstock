@@ -102,6 +102,7 @@ outputs:
         - {{ pin_compatible("libopenblas", max_pin="x.x.x", exact=win) }}  # [blas_impl == 'openblas']
         # not strictly necessary, but for clarity/legibility in metadata
         - libopenblas * {{ openblas_type }}*                               # [blas_impl == 'openblas' and win]
+        - __osx >=13.3                                                     # [blas_impl == 'newaccelerate']
       run_constrained:
         # cannot pin exactly due to https://github.com/conda/conda-build/issues/5572
         - libcblas   {{ version }}   {{ build_num }}*_{{ blas_impl }}

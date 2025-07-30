@@ -75,52 +75,52 @@ Current build status
                 </a>
               </td>
             </tr><tr>
-              <td>osx_64_blas_implacceleratec_stdlib_version10.13</td>
+              <td>osx_64_blas_implaccelerate</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_64_blas_implacceleratec_stdlib_version10.13" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_64_blas_implaccelerate" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>osx_64_blas_implblisc_stdlib_version10.13</td>
+              <td>osx_64_blas_implblis</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_64_blas_implblisc_stdlib_version10.13" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_64_blas_implblis" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>osx_64_blas_implnewacceleratec_stdlib_version13.3</td>
+              <td>osx_64_blas_implnewaccelerate</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_64_blas_implnewacceleratec_stdlib_version13.3" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_64_blas_implnewaccelerate" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>osx_64_blas_implopenblasc_stdlib_version10.13</td>
+              <td>osx_64_blas_implopenblas</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_64_blas_implopenblasc_stdlib_version10.13" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_64_blas_implopenblas" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>osx_arm64_blas_implacceleratec_stdlib_version11.0</td>
+              <td>osx_arm64_blas_implaccelerate</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_arm64_blas_implacceleratec_stdlib_version11.0" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_arm64_blas_implaccelerate" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>osx_arm64_blas_implnewacceleratec_stdlib_version13.3</td>
+              <td>osx_arm64_blas_implnewaccelerate</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_arm64_blas_implnewacceleratec_stdlib_version13.3" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_arm64_blas_implnewaccelerate" alt="variant">
                 </a>
               </td>
             </tr><tr>
-              <td>osx_arm64_blas_implopenblasc_stdlib_version11.0</td>
+              <td>osx_arm64_blas_implopenblas</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_arm64_blas_implopenblasc_stdlib_version11.0" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_arm64_blas_implopenblas" alt="variant">
                 </a>
               </td>
             </tr><tr>
