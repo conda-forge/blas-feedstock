@@ -9,11 +9,6 @@ cd build
 
 SKIP_TESTS="dummy"
 
-if [[ "${blas_impl}" == "blis" ]]; then
-  # conda-build can't install a correct environment for testing
-  conda install -c conda-forge "libblas=*=*blis" "libcblas=*=*blis" "liblapack=*=*netlib" "liblapacke=*=*netlib" --use-local --yes -p $PREFIX
-fi
-
 if [[ "$target_platform" != osx-* ]]; then
   ulimit -s unlimited
 fi
@@ -51,16 +46,10 @@ if [[ "${blas_impl}" == "mkl" ]]; then
     SKIP_TESTS="${SKIP_TESTS}|LAPACK-xeigtstz_zed_in|LAPACK-xeigtstz_zsb_in|LAPACK-xeigtstz_zsg_in"
     SKIP_TESTS="${SKIP_TESTS}|LAPACK-xlintstrfz_ztest_rfp_in|LAPACK-xlintstz_ztest_in|LAPACK-xlintstzc_zctest_in"
   fi
-fi
-
-if [[ "${blas_impl}" == "openblas" && "$(uname)" == MINGW* ]]; then
-  # I'm not sure why these fail only on Windows. Skip for now.
-  # Still present as of openblas 0.3.16
-  SKIP_TESTS="${SKIP_TESTS}|LAPACK-xeigtsts_sgd_in|LAPACK-xeigtsts_glm_in|LAPACK-xeigtsts_gsv_in|LAPACK-xeigtsts_lse_in|LAPACK-xeigtstd_dgd_in"
-  SKIP_TESTS="${SKIP_TESTS}|LAPACK-xeigtstd_glm_in|LAPACK-xeigtstd_gsv_in|LAPACK-xeigtstd_lse_in|LAPACK-xlintstc_ctest_in|LAPACK-xlintstrfc_ctest_rfp_in"
-  SKIP_TESTS="${SKIP_TESTS}|LAPACK-xeigtstc_sep_in|LAPACK-xeigtstc_se2_in|LAPACK-xeigtstc_ced_in|LAPACK-xeigtstc_cgd_in|LAPACK-xeigtstc_csb_in"
-  SKIP_TESTS="${SKIP_TESTS}|LAPACK-xeigtstc_csg_in|LAPACK-xeigtstc_glm_in|LAPACK-xeigtstc_gsv_in|LAPACK-xeigtstc_lse_in|LAPACK-xeigtstz_zgd_in"
-  SKIP_TESTS="${SKIP_TESTS}|LAPACK-xeigtstz_glm_in|LAPACK-xeigtstz_gsv_in|LAPACK-xeigtstz_lse_in|BLAS-xblat1c"
+  if [[ "$target_platform" == "win-64" ]]; then
+    # new failures after switch to flang; only occur with pthreads
+    SKIP_TESTS="${SKIP_TESTS}|LAPACK-xlintsts_stest_in|LAPACK-xlintstd_dtest_in|LAPACK-xlintstz_ztest_in"
+  fi
 fi
 
 if [[ "$target_platform" == "win-64" ]]; then

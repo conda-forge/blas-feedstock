@@ -1,29 +1,21 @@
 blas_default_impl:
-- openblas
+- mkl
 blas_impl:
-- openblas
+- mkl
 blas_impl_lib:
-- libopenblas.so.0
+- mkl_rt.2.dll
 c_compiler:
-- gcc
-c_compiler_version:
-- '14'
+- clang
 c_stdlib:
-- sysroot
-c_stdlib_version:
-- '2.17'
-cdt_name:
-- conda
+- vs
 channel_sources:
 - conda-forge
 channel_targets:
 - conda-forge main
-docker_image:
-- quay.io/condaforge/linux-anvil-x86_64:alma9
 fortran_compiler:
-- gfortran
+- flang
 fortran_compiler_version:
-- '14'
+- '19'
 libblas:
 - 3.9.* *netlib
 libcblas:
@@ -34,10 +26,11 @@ liblapacke:
 - 3.9.* *netlib
 openblas:
 - 0.3.*
+openblas_type:
+- dummy
 target_platform:
-- linux-ppc64le
+- win-64
 zip_keys:
 - - blas_impl
   - blas_impl_lib
-- - c_compiler_version
-  - fortran_compiler_version
+  - openblas_type

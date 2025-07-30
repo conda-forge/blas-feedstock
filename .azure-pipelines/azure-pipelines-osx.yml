@@ -8,31 +8,29 @@ jobs:
     vmImage: macOS-13
   strategy:
     matrix:
-      osx_64_blas_implaccelerateblas_impl_liblibvecLibFort-ng.dylib:
-        CONFIG: osx_64_blas_implaccelerateblas_impl_liblibvecLibFort-ng.dylib
+      osx_64_blas_implacceleratec_stdlib_version10.13:
+        CONFIG: osx_64_blas_implacceleratec_stdlib_version10.13
         UPLOAD_PACKAGES: 'True'
-      osx_64_blas_implblisblas_impl_liblibblis.4.dylib:
-        CONFIG: osx_64_blas_implblisblas_impl_liblibblis.4.dylib
+      osx_64_blas_implblisc_stdlib_version10.13:
+        CONFIG: osx_64_blas_implblisc_stdlib_version10.13
         UPLOAD_PACKAGES: 'True'
-      osx_64_blas_implmklblas_impl_liblibmkl_rt.dylib:
-        CONFIG: osx_64_blas_implmklblas_impl_liblibmkl_rt.dylib
+      osx_64_blas_implnewacceleratec_stdlib_version13.3:
+        CONFIG: osx_64_blas_implnewacceleratec_stdlib_version13.3
         UPLOAD_PACKAGES: 'True'
-      osx_64_blas_implnewaccelerateblas_impl_liblibblas_reexport.dylib:
-        CONFIG: osx_64_blas_implnewaccelerateblas_impl_liblibblas_reexport.dylib
+      osx_64_blas_implopenblasc_stdlib_version10.13:
+        CONFIG: osx_64_blas_implopenblasc_stdlib_version10.13
         UPLOAD_PACKAGES: 'True'
-      osx_64_blas_implopenblasblas_impl_liblibopenblas.0.dylib:
-        CONFIG: osx_64_blas_implopenblasblas_impl_liblibopenblas.0.dylib
+      osx_arm64_blas_implacceleratec_stdlib_version11.0:
+        CONFIG: osx_arm64_blas_implacceleratec_stdlib_version11.0
         UPLOAD_PACKAGES: 'True'
-      osx_arm64_blas_implaccelerateblas_impl_liblibvecLibFort-ng.dylib:
-        CONFIG: osx_arm64_blas_implaccelerateblas_impl_liblibvecLibFort-ng.dylib
+      osx_arm64_blas_implnewacceleratec_stdlib_version13.3:
+        CONFIG: osx_arm64_blas_implnewacceleratec_stdlib_version13.3
         UPLOAD_PACKAGES: 'True'
-      osx_arm64_blas_implnewaccelerateblas_impl_liblibblas_reexport.dylib:
-        CONFIG: osx_arm64_blas_implnewaccelerateblas_impl_liblibblas_reexport.dylib
-        UPLOAD_PACKAGES: 'True'
-      osx_arm64_blas_implopenblasblas_impl_liblibopenblas.0.dylib:
-        CONFIG: osx_arm64_blas_implopenblasblas_impl_liblibopenblas.0.dylib
+      osx_arm64_blas_implopenblasc_stdlib_version11.0:
+        CONFIG: osx_arm64_blas_implopenblasc_stdlib_version11.0
         UPLOAD_PACKAGES: 'True'
   timeoutInMinutes: 360
+  variables: {}
 
   steps:
   # TODO: Fast finish on azure pipelines?
