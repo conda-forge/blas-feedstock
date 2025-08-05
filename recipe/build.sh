@@ -109,7 +109,7 @@ elif [[ "$blas_impl" == "newaccelerate" ]]; then
     $CC ${CFLAGS} -O3 -c -o wrap_accelerate.o ${RECIPE_DIR}/wrap_accelerate.c
     OBJECTS="wrap_accelerate.o"
     # These timing utility functions, lsame, dcabs1 are not in accelerate
-    for utilf in INSTALL/second_INT_ETIME.f INSTALL/dsecnd_INT_ETIME.f BLAS/SRC/lsame.f BLAS/SRC/dcabs1.f; do
+    for utilf in INSTALL/second_INT_ETIME.f INSTALL/dsecnd_INT_ETIME.f BLAS/SRC/lsame.f BLAS/SRC/dcabs1.f SRC/xerbla_array.f; do
        $FC ${FFLAGS} -O3 -c ${SRC_DIR}/${utilf} -o util_$(basename ${utilf}).o
        OBJECTS="${OBJECTS} util_$(basename $utilf).o"
     done
