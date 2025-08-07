@@ -6,9 +6,8 @@ def run(arg):
 
 NEW_ENV = os.environ["NEW_ENV"]
 REF_DLL_DIR = os.path.join(NEW_ENV, "Library", "bin")
-PREFIX = os.environ["PREFIX"]
-IMPL_LIB_DIR = os.path.join(PREFIX, "Library", "lib")
 target_platform = os.environ["target_platform"]
+blas_impl_lib = os.environ["blas_impl_lib"]
 
 if target_platform == "win-64":
   machine = "x64"
@@ -17,7 +16,6 @@ else:
 
 # create empty object file to which we can attach symbol export list
 open("empty.c", "a").close()
-blas_impl_lib = os.environ["blas_impl_lib"]
 run("cl.exe /c empty.c")
 
 # extract symbols from blas/lapack
