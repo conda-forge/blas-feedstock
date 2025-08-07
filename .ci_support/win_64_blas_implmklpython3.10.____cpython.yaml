@@ -1,9 +1,9 @@
 blas_default_impl:
 - mkl
 blas_impl:
-- openblas
+- mkl
 blas_impl_lib:
-- openblas.dll
+- mkl_rt.2.dll
 c_compiler:
 - clang
 c_stdlib:
@@ -26,11 +26,14 @@ liblapacke:
 - 3.9.* *netlib
 openblas:
 - 0.3.*
-openblas_type:
-- pthreads
+pin_run_as_build:
+  python:
+    min_pin: x.x
+    max_pin: x.x
+python:
+- 3.10.* *_cpython
 target_platform:
 - win-64
 zip_keys:
 - - blas_impl
   - blas_impl_lib
-  - openblas_type
