@@ -32,6 +32,8 @@ for name in ["libblas", "libcblas", "liblapack", "liblapacke"]:
       break 
     if started and line.strip() != "":
       symbol = line.strip().split(" ")[-1]
+      # A crude way to filter out unwanted symbols like fprintf which should
+      # not have been exported in netlib libraries. probably a flang bug
       if symbol.startswith(("c", "s", "L", "d", "z", "i", "l", "x", "C", "R")):
         symbols.append(symbol)
       else:
