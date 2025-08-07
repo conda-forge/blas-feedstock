@@ -15,6 +15,7 @@ if target_platform == "win-64":
 else:
   raise NotImplementedError(f"Unknown platform: {machine}")
 
+# create empty object file to which we can attach symbol export list
 open("empty.c", "a").close()
 blas_impl_lib = os.environ["blas_impl_lib"]
 run("cl.exe /c empty.c")
@@ -36,14 +37,17 @@ for name in ["libblas", "libcblas", "liblapack", "liblapacke"]:
         print(f"ignoring: {symbol}")
   print(symbols)
   
+# create def file for explicit symbol export
   with open(f"{name}_impl.def", "w") as f:
     f.write(f"LIBRARY {blas_impl_lib}\n")
     f.write("EXPORTS\n")
     for symbol in symbols:
       f.write(f"  {symbol}\n")
       
+  # create import library with that list of symbols
   run(f"lib /def:{name}_impl.def /out:{name}_impl.lib /MACHINE:{machine}")
 
+  # create DLL from empty object and the import library
   with open(f"{name}.def", "w") as f:
     f.write(f"LIBRARY {name}.dll\n")
     f.write("EXPORTS\n")
