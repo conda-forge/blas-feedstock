@@ -43,15 +43,8 @@ MACOSX_SDK_VERSION:
 # newaccelerate
 - 13.3                     # [osx]
 
-openblas_type:             # [win]
-- openmp                   # [win]
-- pthreads                 # [win]
-- dummy                    # [win]
-- dummy                    # [win]
-
 zip_keys:
 -
   - blas_impl
   - blas_impl_lib
   - MACOSX_SDK_VERSION     # [osx]
-  - openblas_type          # [win]

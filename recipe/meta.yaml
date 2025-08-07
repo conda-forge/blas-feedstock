@@ -48,9 +48,6 @@ source:
 build:
   number: "{{ build_num }}"
 
-# ensure smithy splits windows openblas jobs by using it as a selector here
-# [openblas_type]
-
 requirements:
   build:
     - {{ stdlib("c") }}
@@ -59,6 +56,7 @@ requirements:
     - cmake <4
     - make      # [not win]
     - ninja     # [win]
+    - python    # [win]
     # The following are actual build dependencies of this recipe; however, they
     # only get installed by the build scripts, since they must be installed in a
     # different environment (otherwise there'd be a variant collision)! The build
@@ -93,16 +91,11 @@ outputs:
         # from https://github.com/conda-forge/intel_repack-feedstock/
         - libopenblas {{ openblas_version }}    # [blas_impl == 'openblas']
         - mkl-devel  {{ mkl_version }}          # [blas_impl == 'mkl']
-        # on windows we pin exactly, so need to build twice
-        - libopenblas * {{ openblas_type }}*    # [blas_impl == 'openblas' and win]
-        - llvm-openmp                           # [openblas_type == 'openmp']
       run:
-        - {{ pin_compatible("blis", max_pin="x.x.x", exact=win) }}         # [blas_impl == 'blis']
-        - {{ pin_compatible("mkl", max_pin="x", exact=win) }}              # [blas_impl == 'mkl']
-        - {{ pin_compatible("libopenblas", max_pin="x.x.x", exact=win) }}  # [blas_impl == 'openblas']
-        # not strictly necessary, but for clarity/legibility in metadata
-        - libopenblas * {{ openblas_type }}*                               # [blas_impl == 'openblas' and win]
-        - __osx >=13.3                                                     # [blas_impl == 'newaccelerate']
+        - {{ pin_compatible("blis", max_pin="x.x.x") }}         # [blas_impl == 'blis']
+        - {{ pin_compatible("mkl", max_pin="x") }}              # [blas_impl == 'mkl']
+        - {{ pin_compatible("libopenblas", max_pin="x.x.x") }}  # [blas_impl == 'openblas']
+        - __osx >=13.3                                          # [blas_impl == 'newaccelerate']
       run_constrained:
         # cannot pin exactly due to https://github.com/conda/conda-build/issues/5572
         - libcblas   {{ version }}   {{ build_num }}*_{{ blas_impl }}
@@ -147,7 +140,6 @@ outputs:
         - libblas {{ version }}   {{ build_num }}*_{{ blas_impl }}
       run:
         - {{ pin_subpackage("libblas", exact=True) }}
-        - libopenblas * {{ openblas_type }}*     # [blas_impl == 'openblas' and win]
       run_constrained:
         # cannot pin exactly due to https://github.com/conda/conda-build/issues/5572
         - liblapack  {{ version }}   {{ build_num }}*_{{ blas_impl }}   # [blas_impl != 'blis']
@@ -180,7 +172,6 @@ outputs:
         - {{ pin_subpackage("libblas", exact=True) }}
       run:
         - {{ pin_subpackage("libblas", exact=True) }}
-        - libopenblas * {{ openblas_type }}*      # [blas_impl == 'openblas' and win]
       run_constrained:
         # cannot pin exactly due to https://github.com/conda/conda-build/issues/5572
         - libcblas   {{ version }}   {{ build_num }}*_{{ blas_impl }}
@@ -217,7 +208,6 @@ outputs:
         - {{ pin_subpackage("libblas", exact=True) }}
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("liblapack", exact=True) }}
-        - libopenblas * {{ openblas_type }}*       # [blas_impl == 'openblas' and win]
       run_constrained:
         - blas {{ blas_major }}.{{ blas_minor }}   {{ blas_impl }}
     files:
@@ -242,13 +232,10 @@ outputs:
         - blis      {{ blis_version }}      # [blas_impl == "blis"]
         - mkl-devel {{ mkl_version }}       # [blas_impl == "mkl"]
         - openblas  {{ openblas_version }}  # [blas_impl == "openblas"]
-        - openblas * {{ openblas_type }}*   # [blas_impl == "openblas" and win]
-        - llvm-openmp                       # [openblas_type == "openmp"]
       run:
         - blis      {{ blis_version }}      # [blas_impl == "blis"]
         - mkl-devel {{ mkl_version }}       # [blas_impl == "mkl"]
         - openblas  {{ openblas_version }}  # [blas_impl == "openblas"]
-        - openblas * {{ openblas_type }}*   # [blas_impl == "openblas" and win]
         - {{ pin_subpackage("libblas", exact=True) }}
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
