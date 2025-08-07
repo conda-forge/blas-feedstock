@@ -228,6 +228,8 @@ outputs:
     build:
       string: {{ build_num }}_h{{ PKG_HASH }}_{{ blas_impl }}
     requirements:
+      build:
+        - python *                          # [win]
       host:
         - blis      {{ blis_version }}      # [blas_impl == "blis"]
         - mkl-devel {{ mkl_version }}       # [blas_impl == "mkl"]
