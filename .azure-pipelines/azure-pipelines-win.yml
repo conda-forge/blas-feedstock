@@ -8,41 +8,14 @@ jobs:
     vmImage: windows-2022
   strategy:
     matrix:
-      win_64_blas_implblispython3.10.____cpython:
-        CONFIG: win_64_blas_implblispython3.10.____cpython
+      win_64_blas_implblis:
+        CONFIG: win_64_blas_implblis
         UPLOAD_PACKAGES: 'True'
-      win_64_blas_implblispython3.11.____cpython:
-        CONFIG: win_64_blas_implblispython3.11.____cpython
+      win_64_blas_implmkl:
+        CONFIG: win_64_blas_implmkl
         UPLOAD_PACKAGES: 'True'
-      win_64_blas_implblispython3.12.____cpython:
-        CONFIG: win_64_blas_implblispython3.12.____cpython
-        UPLOAD_PACKAGES: 'True'
-      win_64_blas_implblispython3.9.____cpython:
-        CONFIG: win_64_blas_implblispython3.9.____cpython
-        UPLOAD_PACKAGES: 'True'
-      win_64_blas_implmklpython3.10.____cpython:
-        CONFIG: win_64_blas_implmklpython3.10.____cpython
-        UPLOAD_PACKAGES: 'True'
-      win_64_blas_implmklpython3.11.____cpython:
-        CONFIG: win_64_blas_implmklpython3.11.____cpython
-        UPLOAD_PACKAGES: 'True'
-      win_64_blas_implmklpython3.12.____cpython:
-        CONFIG: win_64_blas_implmklpython3.12.____cpython
-        UPLOAD_PACKAGES: 'True'
-      win_64_blas_implmklpython3.9.____cpython:
-        CONFIG: win_64_blas_implmklpython3.9.____cpython
-        UPLOAD_PACKAGES: 'True'
-      win_64_blas_implopenblaspython3.10.____cpython:
-        CONFIG: win_64_blas_implopenblaspython3.10.____cpython
-        UPLOAD_PACKAGES: 'True'
-      win_64_blas_implopenblaspython3.11.____cpython:
-        CONFIG: win_64_blas_implopenblaspython3.11.____cpython
-        UPLOAD_PACKAGES: 'True'
-      win_64_blas_implopenblaspython3.12.____cpython:
-        CONFIG: win_64_blas_implopenblaspython3.12.____cpython
-        UPLOAD_PACKAGES: 'True'
-      win_64_blas_implopenblaspython3.9.____cpython:
-        CONFIG: win_64_blas_implopenblaspython3.9.____cpython
+      win_64_blas_implopenblas:
+        CONFIG: win_64_blas_implopenblas
         UPLOAD_PACKAGES: 'True'
   timeoutInMinutes: 360
   variables:
