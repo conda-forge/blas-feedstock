@@ -20,6 +20,7 @@ open("empty.c", "a").close()
 blas_impl_lib = os.environ["blas_impl_lib"]
 run("cl.exe /c empty.c")
 
+# extract symbols from blas/lapack
 for name in ["libblas", "libcblas", "liblapack", "liblapacke"]:
   dump = run(f"dumpbin /EXPORTS {REF_DLL_DIR}\\{name}.dll")
   started = False
