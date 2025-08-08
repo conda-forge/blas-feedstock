@@ -228,8 +228,6 @@ outputs:
     build:
       string: {{ build_num }}_h{{ PKG_HASH }}_{{ blas_impl }}
     requirements:
-      build:
-        - python *                          # [win]
       host:
         - blis      {{ blis_version }}      # [blas_impl == "blis"]
         - mkl-devel {{ mkl_version }}       # [blas_impl == "mkl"]
@@ -279,6 +277,7 @@ outputs:
         - cmake <4
         - ninja         # [win]
         - llvm-openmp   # [linux and ((blas_impl == "openblas") or (blas_impl == "mkl"))]
+        - python *                          # [win]
       host:
         - blas-devel {{ version }}   {{ build_num }}*_{{ blas_impl }}
       run:
