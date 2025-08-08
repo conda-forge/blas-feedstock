@@ -23,7 +23,7 @@ for name in ["libblas", "libcblas", "liblapack", "liblapacke"]:
   dump = run(f"dumpbin /EXPORTS {REF_DLL_DIR}\\{name}.dll")
   started = False
   symbols = []
-  for line in dump.split("\n"):
+  for line in dump.splitlines():
     if line.strip().startswith("ordinal"):
       started = True
     if line.strip().startswith("Summary"):
