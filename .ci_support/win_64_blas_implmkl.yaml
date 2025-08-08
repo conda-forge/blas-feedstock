@@ -1,9 +1,9 @@
 blas_default_impl:
 - mkl
 blas_impl:
-- openblas
+- mkl
 blas_impl_lib:
-- openblas.dll
+- mkl_rt.2.dll
 c_compiler:
 - clang
 c_stdlib:
@@ -26,11 +26,8 @@ liblapacke:
 - 3.9.* *netlib
 openblas:
 - 0.3.*
-openblas_type:
-- pthreads
 target_platform:
 - win-64
 zip_keys:
 - - blas_impl
   - blas_impl_lib
-  - openblas_type

@@ -28,6 +28,8 @@ set "LDFLAGS=/LIBPATH:%LIBRARY_PREFIX%\lib %LDFLAGS%"
 :: clang.exe cannot handle /LIBPATH: in LDFLAGS, but we need that for lld-link
 set "CC=clang-cl.exe"
 
+python %RECIPE_DIR%\create_forwarder_dll.py
+
 :: Link against the netlib libraries
 cmake -LAH -G Ninja .. ^
     "-DBLAS_LIBRARIES=blas.lib;cblas.lib" ^

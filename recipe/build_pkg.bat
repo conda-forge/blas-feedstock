@@ -1,1 +1,1 @@
-copy "%LIBRARY_BIN%\\%blas_impl_lib%" "%LIBRARY_BIN%\\%PKG_NAME%.dll"
+copy "%SRC_DIR%\\build\\%PKG_NAME%.dll" "%LIBRARY_BIN%\\%PKG_NAME%.dll"

@@ -56,7 +56,7 @@ if [[ "${blas_impl}" == "mkl" ]]; then
 fi
 
 if [[ "$target_platform" == "win-64" ]]; then
-  ${BUILD_PREFIX}/Library/bin/ctest --output-on-failure -E "${SKIP_TESTS}"
+  ${BUILD_PREFIX}/Library/bin/ctest --timeout 30 --output-on-failure -E "${SKIP_TESTS}"
 else
-  ctest --output-on-failure -E "${SKIP_TESTS}"
+  ctest --timeout 30 --output-on-failure -E "${SKIP_TESTS}"
 fi
