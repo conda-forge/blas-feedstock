@@ -121,8 +121,9 @@ outputs:
       - etc/conda/deactivate.d/libblas_mkl_*    # [blas_impl == 'mkl']
     test:
       commands:
-        # Following line is just to help conda-build's used variables detection
+        # Following two lines are just to help conda-build's used variables detection
         - echo hello  # [blas_impl_lib == 'blas']
+        - echo hello  # [lapack_impl_lib == 'blas']
         - test -f $PREFIX/lib/libblas.so.{{ version_major }}      # [linux]
         - test -f $PREFIX/lib/libblas.{{ version_major }}.dylib   # [osx]
         - if not exist %LIBRARY_BIN%/libblas.dll exit 1           # [win]
