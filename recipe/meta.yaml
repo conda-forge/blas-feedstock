@@ -1,6 +1,6 @@
 {% set version = "3.9.0" %}
 # if build_num is reset to 0 (for new version), update increment for blas_minor below
-{% set build_num = 34 %}
+{% set build_num = 35 %}
 {% set version_major = version.split(".")[0] %}
 # blas_major denotes major infrastructural change to how blas is managed
 {% set blas_major = "2" %}
@@ -12,6 +12,7 @@
 {% set blis_version = "0.9.0" %}
 {% set mkl_version = "2024.2" %}
 {% set openblas_version = "0.3.30" %}
+{% set aocl_version = "5.1" %}
 # MKL uses the yyyy-portion of CalVer also as the major version indicating API/ABI stability, see
 # https://github.com/conda-forge/intel_repack-feedstock/issues/81
 # to avoid tempting the solver into switching the underlying blas flavour "just" to update MKL,
@@ -88,6 +89,7 @@ outputs:
         - {{ stdlib('c') }}           # [blas_impl in ('accelerate', 'newaccelerate')]
       host:
         - blis {{ blis_version }}               # [blas_impl == 'blis']
+        - aocl-blas {{ aocl_version }}          # [blas_impl == 'aocl']
         # from https://github.com/conda-forge/intel_repack-feedstock/
         - libopenblas {{ openblas_version }}    # [blas_impl == 'openblas']
         - mkl-devel  {{ mkl_version }}          # [blas_impl == 'mkl']
@@ -158,10 +160,10 @@ outputs:
         - if not exist %LIBRARY_BIN%/libcblas.dll exit 1           # [win]
 
   - name: liblapack
-    script: build_pkg.sh     # [unix]
-    script: build_pkg.bat    # [win]
+    script: build_pkg_lapack.sh     # [unix]
+    script: build_pkg.bat           # [win]
     build:
-      skip: true  # [blas_impl == 'blis']
+      skip: true  # [blas_impl == 'blis' or ((blas_impl == 'aocl') and osx)]
       string: {{ build_num }}_h{{ PKG_HASH }}_{{ blas_impl }}
       run_exports:
         - {{ pin_subpackage("liblapack", max_pin="x.x") }}
@@ -190,10 +192,10 @@ outputs:
         - if not exist %LIBRARY_BIN%/liblapack.dll exit 1           # [win]
 
   - name: liblapacke
-    script: build_pkg.sh     # [unix]
-    script: build_pkg.bat    # [win]
+    script: build_pkg_lapack.sh     # [unix]
+    script: build_pkg.bat           # [win]
     build:
-      skip: true  # [blas_impl == 'blis']
+      skip: true  # [blas_impl == 'blis' or ((blas_impl == 'aocl') and osx)]
       string: {{ build_num }}_h{{ PKG_HASH }}_{{ blas_impl }}
       run_exports:
         - {{ pin_subpackage("liblapacke", max_pin="x.x") }}
@@ -230,10 +232,12 @@ outputs:
     requirements:
       host:
         - blis      {{ blis_version }}      # [blas_impl == "blis"]
+        - aocl-blas {{ aocl_version }}      # [blas_impl == "aocl"]
         - mkl-devel {{ mkl_version }}       # [blas_impl == "mkl"]
         - openblas  {{ openblas_version }}  # [blas_impl == "openblas"]
       run:
         - blis      {{ blis_version }}      # [blas_impl == "blis"]
+        - aocl-blas {{ aocl_version }}      # [blas_impl == "aocl"]
         - mkl-devel {{ mkl_version }}       # [blas_impl == "mkl"]
         - openblas  {{ openblas_version }}  # [blas_impl == "openblas"]
         - {{ pin_subpackage("libblas", exact=True) }}

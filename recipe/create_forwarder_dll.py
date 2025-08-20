@@ -8,6 +8,7 @@ NEW_ENV = os.environ["NEW_ENV"]
 REF_DLL_DIR = os.path.join(NEW_ENV, "Library", "bin")
 target_platform = os.environ["target_platform"]
 blas_impl_lib = os.environ["blas_impl_lib"]
+lapack_impl_lib = os.environ["lapack_impl_lib"]
 
 if target_platform == "win-64":
   machine = "x64"
@@ -22,7 +23,7 @@ run("cl.exe /c empty.c")
 for name in ["libblas", "libcblas", "liblapack", "liblapacke"]:
   dump = run(f"dumpbin /EXPORTS {REF_DLL_DIR}\\{name}.dll")
   started = False
-  symbols = []
+  symbols_lib_pairs = []
   for line in dump.splitlines():
     if line.strip().startswith("ordinal"):
       started = True
@@ -30,19 +31,20 @@ for name in ["libblas", "libcblas", "liblapack", "liblapacke"]:
       break 
     if started and line.strip() != "":
       symbol = line.strip().split(" ")[-1]
+      libname = blas_impl_lib if name in ("libblas", "libcblas") else lapack_impl_lib
       # A crude way to filter out unwanted symbols like fprintf which should
       # not have been exported in netlib libraries. probably a flang bug
       if symbol.startswith(("c", "s", "L", "d", "z", "i", "l", "x", "C", "R")):
-        symbols.append(symbol)
+        symbols_lib_pairs.append((symbol, libname))
       else:
         print(f"ignoring: {symbol}")
-  print(symbols)
-  
+  print(symbols_lib_pairs)
+
 # create def file for explicit symbol export
   with open(f"{name}_impl.def", "w") as f:
     f.write(f"LIBRARY {blas_impl_lib}\n")
     f.write("EXPORTS\n")
-    for symbol in symbols:
+    for symbol, _ in symbols_lib_pairs:
       f.write(f"  {symbol}\n")
       
   # create import library with that list of symbols
@@ -52,6 +54,6 @@ for name in ["libblas", "libcblas", "liblapack", "liblapacke"]:
   with open(f"{name}.def", "w") as f:
     f.write(f"LIBRARY {name}.dll\n")
     f.write("EXPORTS\n")
-    for symbol in symbols:
-      f.write(f"  {symbol} = {blas_impl_lib}.{symbol}\n")
+    for symbol, libname in symbols_lib_pairs:
+      f.write(f"  {symbol} = {libname}.{symbol}\n")
   run(f"link.exe /DLL /OUT:{name}.dll /DEF:{name}.def /MACHINE:{machine} empty.obj {name}_impl.lib")
