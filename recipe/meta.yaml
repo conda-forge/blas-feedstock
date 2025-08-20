@@ -173,6 +173,7 @@ outputs:
     requirements:
       host:
         - {{ pin_subpackage("libblas", exact=True) }}
+        - aocl-lapack {{ aocl_version }}          # [blas_impl == 'aocl']
       run:
         - {{ pin_subpackage("libblas", exact=True) }}
       run_constrained:
