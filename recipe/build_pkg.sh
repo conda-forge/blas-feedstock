@@ -1,13 +1,19 @@
+if [[ "${PKG_NAME}" == "liblapack" || "${PKG_NAME}" == "liblapacke" ]]; then
+    impl_lib="${lapack_impl_lib}"
+else
+    impl_lib="${blas_impl_lib}"
+fi
+
 if [[ "$blas_impl" == *"accelerate" && "${PKG_NAME}" == "libblas" ]]; then
     cp $SRC_DIR/accelerate/* $PREFIX/lib/
 fi
 
 if [[ "$target_platform" == osx-* ]]; then
-    ln -s $PREFIX/lib/${blas_impl_lib} $PREFIX/lib/${PKG_NAME}.${PKG_VERSION:0:1}.dylib
+    ln -s $PREFIX/lib/${impl_lib} $PREFIX/lib/${PKG_NAME}.${PKG_VERSION:0:1}.dylib
 else
-    ln -s $PREFIX/lib/${blas_impl_lib} $PREFIX/lib/${PKG_NAME}.so.${PKG_VERSION:0:1}
+    ln -s $PREFIX/lib/${impl_lib} $PREFIX/lib/${PKG_NAME}.so.${PKG_VERSION:0:1}
 fi
-ln -s $PREFIX/lib/${blas_impl_lib} $PREFIX/lib/${PKG_NAME}${SHLIB_EXT}
+ln -s $PREFIX/lib/${impl_lib} $PREFIX/lib/${PKG_NAME}${SHLIB_EXT}
 
 if [[ "${blas_impl}" == "mkl" ]]; then
     for CHANGE in "activate" "deactivate"

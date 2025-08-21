@@ -161,7 +161,7 @@ outputs:
         - if not exist %LIBRARY_BIN%/libcblas.dll exit 1           # [win]
 
   - name: liblapack
-    script: build_pkg_lapack.sh     # [unix]
+    script: build_pkg.sh            # [unix]
     script: build_pkg.bat           # [win]
     build:
       skip: true  # [blas_impl == 'blis' or ((blas_impl == 'aocl') and osx)]
@@ -194,7 +194,7 @@ outputs:
         - if not exist %LIBRARY_BIN%/liblapack.dll exit 1           # [win]
 
   - name: liblapacke
-    script: build_pkg_lapack.sh     # [unix]
+    script: build_pkg.sh            # [unix]
     script: build_pkg.bat           # [win]
     build:
       skip: true  # [blas_impl == 'blis' or ((blas_impl == 'aocl') and osx)]
