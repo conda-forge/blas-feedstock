@@ -95,14 +95,15 @@ outputs:
         - mkl-devel  {{ mkl_version }}          # [blas_impl == 'mkl']
       run:
         - {{ pin_compatible("blis", max_pin="x.x.x") }}         # [blas_impl == 'blis']
+        - {{ pin_compatible("aocl-blas", max_pin="x.x") }}      # [blas_impl == 'aocl']
         - {{ pin_compatible("mkl", max_pin="x") }}              # [blas_impl == 'mkl']
         - {{ pin_compatible("libopenblas", max_pin="x.x.x") }}  # [blas_impl == 'openblas']
         - __osx >=13.3                                          # [blas_impl == 'newaccelerate']
       run_constrained:
         # cannot pin exactly due to https://github.com/conda/conda-build/issues/5572
         - libcblas   {{ version }}   {{ build_num }}*_{{ blas_impl }}
-        - liblapack  {{ version }}   {{ build_num }}*_{{ blas_impl }}   # [blas_impl != 'blis']
-        - liblapacke {{ version }}   {{ build_num }}*_{{ blas_impl }}   # [blas_impl != 'blis']
+        - liblapack  {{ version }}   {{ build_num }}*_{{ blas_impl }}   # [blas_impl != 'blis' and blas_impl != 'aocl']
+        - liblapacke {{ version }}   {{ build_num }}*_{{ blas_impl }}   # [blas_impl != 'blis' and blas_impl != 'aocl']
         - blas {{ blas_major }}.{{ blas_minor }}   {{ blas_impl }}
         # for run_constrained across all flavours, see comment at the top
         - mkl <{{ mkl_next }}                   # [blas_impl != 'mkl']
@@ -145,8 +146,8 @@ outputs:
         - {{ pin_subpackage("libblas", exact=True) }}
       run_constrained:
         # cannot pin exactly due to https://github.com/conda/conda-build/issues/5572
-        - liblapack  {{ version }}   {{ build_num }}*_{{ blas_impl }}   # [blas_impl != 'blis']
-        - liblapacke {{ version }}   {{ build_num }}*_{{ blas_impl }}   # [blas_impl != 'blis']
+        - liblapack  {{ version }}   {{ build_num }}*_{{ blas_impl }}   # [blas_impl != 'blis' and blas_impl != 'aocl']
+        - liblapacke {{ version }}   {{ build_num }}*_{{ blas_impl }}   # [blas_impl != 'blis' and blas_impl != 'aocl']
         - blas {{ blas_major }}.{{ blas_minor }}   {{ blas_impl }}
     files:
       - lib/libcblas.so                          # [linux]
@@ -173,10 +174,10 @@ outputs:
     requirements:
       host:
         - {{ pin_subpackage("libblas", exact=True) }}
-        - aocl-lapack {{ aocl_version }}    # [blas_impl == "aocl"]
+        - aocl-lapack {{ aocl_version }}    # [not osx and blas_impl == "aocl"]
       run:
         - {{ pin_subpackage("libblas", exact=True) }}
-        - aocl-lapack {{ aocl_version }}    # [blas_impl == "aocl"]
+        - aocl-lapack {{ aocl_version }}    # [not osx and blas_impl == "aocl"]
       run_constrained:
         # cannot pin exactly due to https://github.com/conda/conda-build/issues/5572
         - libcblas   {{ version }}   {{ build_num }}*_{{ blas_impl }}
@@ -236,13 +237,13 @@ outputs:
       host:
         - blis      {{ blis_version }}      # [blas_impl == "blis"]
         - aocl-blas {{ aocl_version }}      # [blas_impl == "aocl"]
-        - aocl-lapack {{ aocl_version }}    # [blas_impl == "aocl" and not osx]
+        - aocl-lapack {{ aocl_version }}    # [not osx and blas_impl == "aocl"]
         - mkl-devel {{ mkl_version }}       # [blas_impl == "mkl"]
         - openblas  {{ openblas_version }}  # [blas_impl == "openblas"]
       run:
         - blis      {{ blis_version }}      # [blas_impl == "blis"]
         - aocl-blas {{ aocl_version }}      # [blas_impl == "aocl"]
-        - aocl-lapack {{ aocl_version }}    # [blas_impl == "aocl" and not osx]
+        - aocl-lapack {{ aocl_version }}    # [not osx and blas_impl == "aocl"]
         - mkl-devel {{ mkl_version }}       # [blas_impl == "mkl"]
         - openblas  {{ openblas_version }}  # [blas_impl == "openblas"]
         - {{ pin_subpackage("libblas", exact=True) }}
