@@ -55,6 +55,9 @@ if [[ "${blas_impl}" == "mkl" ]]; then
   fi
 fi
 
+# avoid hyperthreading problems in runners
+export OMP_NUM_THREADS=1
+
 if [[ "$target_platform" == "win-64" ]]; then
   ${BUILD_PREFIX}/Library/bin/ctest --timeout 30 --output-on-failure -E "${SKIP_TESTS}"
 else
