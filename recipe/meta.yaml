@@ -173,9 +173,10 @@ outputs:
     requirements:
       host:
         - {{ pin_subpackage("libblas", exact=True) }}
-        - aocl-lapack {{ aocl_version }}          # [blas_impl == 'aocl']
+        - aocl-lapack {{ aocl_version }}    # [blas_impl == "aocl"]
       run:
         - {{ pin_subpackage("libblas", exact=True) }}
+        - aocl-lapack {{ aocl_version }}    # [blas_impl == "aocl"]
       run_constrained:
         # cannot pin exactly due to https://github.com/conda/conda-build/issues/5572
         - libcblas   {{ version }}   {{ build_num }}*_{{ blas_impl }}
