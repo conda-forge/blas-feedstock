@@ -21,6 +21,7 @@ run("cl.exe /c empty.c")
 
 # extract symbols from blas/lapack
 for name in ["libblas", "libcblas", "liblapack", "liblapacke"]:
+  libname = blas_impl_lib if name in ("libblas", "libcblas") else lapack_impl_lib
   dump = run(f"dumpbin /EXPORTS {REF_DLL_DIR}\\{name}.dll")
   started = False
   symbols_lib_pairs = []
@@ -31,7 +32,6 @@ for name in ["libblas", "libcblas", "liblapack", "liblapacke"]:
       break 
     if started and line.strip() != "":
       symbol = line.strip().split(" ")[-1]
-      libname = blas_impl_lib if name in ("libblas", "libcblas") else lapack_impl_lib
       # A crude way to filter out unwanted symbols like fprintf which should
       # not have been exported in netlib libraries. probably a flang bug
       if symbol.startswith(("c", "s", "L", "d", "z", "i", "l", "x", "C", "R")):
@@ -42,7 +42,7 @@ for name in ["libblas", "libcblas", "liblapack", "liblapacke"]:
 
 # create def file for explicit symbol export
   with open(f"{name}_impl.def", "w") as f:
-    f.write(f"LIBRARY {blas_impl_lib}\n")
+    f.write(f"LIBRARY {libname}\n")
     f.write("EXPORTS\n")
     for symbol, _ in symbols_lib_pairs:
       f.write(f"  {symbol}\n")
