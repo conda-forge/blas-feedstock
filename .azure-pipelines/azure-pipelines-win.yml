@@ -8,6 +8,9 @@ jobs:
     vmImage: windows-2022
   strategy:
     matrix:
+      win_64_blas_implaocl:
+        CONFIG: win_64_blas_implaocl
+        UPLOAD_PACKAGES: 'True'
       win_64_blas_implblis:
         CONFIG: win_64_blas_implblis
         UPLOAD_PACKAGES: 'True'

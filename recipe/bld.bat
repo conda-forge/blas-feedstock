@@ -38,7 +38,7 @@ cmake -LAH -G Ninja .. ^
     -DCMAKE_BUILD_TYPE=Release
 if %ERRORLEVEL% neq 0 (type .\CMakeFiles\CMakeError.log && type .\CMakeFiles\CMakeOutput.log && exit 1)
 
-cmake --build . --config Release
+cmake --build . --config Release --parallel %CPU_COUNT%
 if %ERRORLEVEL% neq 0 exit 1
 
 rmdir /s /q %NEW_ENV%

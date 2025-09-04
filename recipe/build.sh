@@ -29,7 +29,7 @@ cmake ${CMAKE_ARGS} -LAH -G "${CMAKE_GENERATOR}" .. \
     -DCMAKE_BUILD_TYPE=Release \
     || (cat $SRC_DIR/build/CMakeFiles/CMakeError.log && $SRC_DIR/build/CMakeFiles/CMakeOutput.log && exit 1)
 
-cmake --build . --config Release
+cmake --build . --config Release --parallel ${CPU_COUNT}
 
 if [[ "$blas_impl" == "accelerate" ]]; then
     mkdir -p $SRC_DIR/accelerate
