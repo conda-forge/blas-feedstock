@@ -3,7 +3,7 @@ blas_default_impl:
 blas_impl:
 - nvpl
 blas_impl_lib:
-- libnvpl_blas_ilp64_seq.so.0
+- libnvpl_blas_ilp64_seq.so.0,libnvpl_lapack_ilp64_seq.so.0
 c_compiler:
 - gcc
 c_compiler_version:
