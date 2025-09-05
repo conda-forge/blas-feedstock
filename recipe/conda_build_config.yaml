@@ -10,6 +10,7 @@ blas_impl:
 - blis                     # [x86_64]
 - accelerate               # [osx]
 - newaccelerate            # [osx]
+- nvpl                     # [linux and aarch64]
 
 blas_impl_lib:
 - libopenblas.so.0         # [linux]
@@ -26,6 +27,9 @@ blas_impl_lib:
 
 - libvecLibFort-ng.dylib   # [osx]
 - libblas_reexport.dylib   # [osx]
+
+- libnvpl_blas_ilp64_seq.so.0  # [linux and aarch64]
+
 
 blas_default_impl:
 - openblas                 # [not win]
