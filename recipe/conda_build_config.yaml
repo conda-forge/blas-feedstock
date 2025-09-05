@@ -28,7 +28,7 @@ blas_impl_lib:
 - libvecLibFort-ng.dylib   # [osx]
 - libblas_reexport.dylib   # [osx]
 
-- libnvpl_blas_ilp64_seq.so.0  # [linux and aarch64]
+- libnvpl_blas_ilp64_seq.so.0,libnvpl_lapack_ilp64_seq.so.0  # [linux and aarch64]
 
 
 blas_default_impl:

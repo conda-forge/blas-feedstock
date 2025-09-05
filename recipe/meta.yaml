@@ -12,7 +12,7 @@
 {% set blis_version = "0.9.0" %}
 {% set mkl_version = "2024.2" %}
 {% set openblas_version = "0.3.30" %}
-{% set nvpl_version = "0.4.*" %}
+{% set nvpl_version = "25.5.0" %}
 # MKL uses the yyyy-portion of CalVer also as the major version indicating API/ABI stability, see
 # https://github.com/conda-forge/intel_repack-feedstock/issues/81
 # to avoid tempting the solver into switching the underlying blas flavour "just" to update MKL,
@@ -92,7 +92,8 @@ outputs:
         # from https://github.com/conda-forge/intel_repack-feedstock/
         - libopenblas {{ openblas_version }}    # [blas_impl == 'openblas']
         - mkl-devel  {{ mkl_version }}          # [blas_impl == 'mkl']
-        - libnvpl-blas-dev  {{ nvpl_version }}  # [blas_impl == 'nvpl']
+        - _nvpl_dev_mutex {{ nvpl_version }}  # [blas_impl == 'nvpl']
+        - libnvpl-blas-dev                    # [blas_impl == 'nvpl']
       run:
         - {{ pin_compatible("blis", max_pin="x.x.x") }}         # [blas_impl == 'blis']
         - {{ pin_compatible("mkl", max_pin="x") }}              # [blas_impl == 'mkl']
@@ -173,7 +174,10 @@ outputs:
     requirements:
       host:
         - {{ pin_subpackage("libblas", exact=True) }}
+        - _nvpl_dev_mutex {{ nvpl_version }}  # [blas_impl == 'nvpl']
+        - libnvpl-lapack-dev                  # [blas_impl == 'nvpl']
       run:
+        # libnvpl-lapack-dev has run_exports
         - {{ pin_subpackage("libblas", exact=True) }}
       run_constrained:
         # cannot pin exactly due to https://github.com/conda/conda-build/issues/5572
@@ -235,12 +239,16 @@ outputs:
         - blis      {{ blis_version }}      # [blas_impl == "blis"]
         - mkl-devel {{ mkl_version }}       # [blas_impl == "mkl"]
         - openblas  {{ openblas_version }}  # [blas_impl == "openblas"]
-        - libnvpl-blas-dev  {{ nvpl_version }}  # [blas_impl == "nvpl"]
+        - _nvpl_dev_mutex {{ nvpl_version }}  # [blas_impl == 'nvpl']
+        - libnvpl-lapack-dev                  # [blas_impl == 'nvpl']
+        - libnvpl-blas-dev                    # [blas_impl == "nvpl"]
       run:
         - blis      {{ blis_version }}      # [blas_impl == "blis"]
         - mkl-devel {{ mkl_version }}       # [blas_impl == "mkl"]
         - openblas  {{ openblas_version }}  # [blas_impl == "openblas"]
-        - libnvpl-blas-dev  {{ nvpl_version }}  # [blas_impl == "nvpl"]
+        - _nvpl_dev_mutex {{ nvpl_version }}  # [blas_impl == 'nvpl']
+        - libnvpl-lapack-dev                  # [blas_impl == 'nvpl']
+        - libnvpl-blas-dev                    # [blas_impl == "nvpl"]
         - {{ pin_subpackage("libblas", exact=True) }}
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
@@ -251,7 +259,8 @@ outputs:
     test:
       commands:
         - test -f $PREFIX/lib/pkgconfig/blas.pc                     # [unix and blas_impl == "openblas"]
-        - test -f $PREFIX/lib/cmake/nvpl_blas/nvpl_blas-config.cmake  # [unix and blas_impl == "nvpl"]
+        - test -f $PREFIX/lib/cmake/nvpl_blas/nvpl_blas-config.cmake              # [blas_impl == "nvpl"]
+        - test -f $PREFIX/lib/cmake/nvpl_lapack/nvpl_lapack-config-version.cmake  # [blas_impl == "nvpl"]
         - test -f $PREFIX/lib/liblapack.so                          # [linux]
         - test -f $PREFIX/lib/liblapack.dylib                       # [osx]
         - test -f $PREFIX/lib/liblapacke.so                         # [linux]
