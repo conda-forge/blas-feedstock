@@ -3,7 +3,7 @@ blas_default_impl:
 blas_impl:
 - nvpl
 blas_impl_lib:
-- libnvpl_blas_ilp64_seq.so.0,libnvpl_lapack_ilp64_seq.so.0
+- libnvpl_blas_lp64_seq.so.0,libnvpl_lapack_lp64_seq.so.0
 c_compiler:
 - gcc
 c_compiler_version:
@@ -19,7 +19,7 @@ channel_sources:
 channel_targets:
 - conda-forge main
 docker_image:
-- quay.io/condaforge/linux-anvil-x86_64:alma9
+- quay.io/condaforge/linux-anvil-aarch64:alma9
 fortran_compiler:
 - gfortran
 fortran_compiler_version:
