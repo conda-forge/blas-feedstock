@@ -24,6 +24,10 @@ jobs:
         CONFIG: linux_aarch64_blas_implnvpl
         UPLOAD_PACKAGES: 'True'
         DOCKER_IMAGE: quay.io/condaforge/linux-anvil-aarch64:alma9
+      linux_aarch64_blas_implnvpl_gomp:
+        CONFIG: linux_aarch64_blas_implnvpl_gomp
+        UPLOAD_PACKAGES: 'True'
+        DOCKER_IMAGE: quay.io/condaforge/linux-anvil-aarch64:alma9
       linux_aarch64_blas_implopenblas:
         CONFIG: linux_aarch64_blas_implopenblas
         UPLOAD_PACKAGES: 'True'
