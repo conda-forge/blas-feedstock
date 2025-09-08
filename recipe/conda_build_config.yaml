@@ -11,7 +11,6 @@ blas_impl:
 - accelerate               # [osx]
 - newaccelerate            # [osx]
 - nvpl                     # [linux and aarch64]
-- nvpl_gomp                # [linux and aarch64]
 
 blas_impl_lib:
 - libopenblas.so.0         # [linux]
@@ -30,7 +29,6 @@ blas_impl_lib:
 - libblas_reexport.dylib   # [osx]
 
 # We use the lp64 ABI instead of ipl64 ABI to avoid segfaults in the compatability tests
-- libnvpl_blas_lp64_seq.so.0,libnvpl_lapack_lp64_seq.so.0    # [linux and aarch64]
 - libnvpl_blas_lp64_gomp.so.0,libnvpl_lapack_lp64_gomp.so.0  # [linux and aarch64]
 
 blas_default_impl:
