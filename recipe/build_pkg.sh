@@ -3,7 +3,7 @@ if [[ "$blas_impl" == *"accelerate" && "${PKG_NAME}" == "libblas" ]]; then
 fi
 
 # NVPL BLAS has separate entrypoints for BLAS and LAPACK
-if [[ "$blas_impl" == "nvpl" ]]; then
+if [[ "$blas_impl" == "nvpl"* ]]; then
     if [[ "${PKG_NAME}" == *"blas" ]]; then
         export blas_impl_lib=${blas_impl_lib%%,*}
     elif [[ "${PKG_NAME}" == "liblapack"* ]]; then
