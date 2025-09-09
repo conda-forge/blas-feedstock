@@ -2,6 +2,7 @@
 set -ex
 
 if [[ "$CONDA_BUILD_CROSS_COMPILATION" == "1" ]]; then
+  echo "BLAS compatibility tests skipped because of cross-compilation."
   exit 0
 fi
 

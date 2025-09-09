@@ -3,46 +3,6 @@ About blas-feedstock
 
 Feedstock license: [BSD-3-Clause](https://github.com/conda-forge/blas-feedstock/blob/main/LICENSE.txt)
 
-
-About blas
-----------
-
-Home: https://github.com/conda-forge/blas-feedstock
-
-Package license: BSD-3-Clause
-
-Summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism in your environment to control which variant you want.
-
-About blas-devel
-----------------
-
-Home: https://github.com/conda-forge/blas-feedstock
-
-Package license: BSD-3-Clause
-
-Summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism in your environment to control which variant you want.
-
-About libblas
--------------
-
-Home: https://github.com/conda-forge/blas-feedstock
-
-Package license: BSD-3-Clause
-
-Summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism in your environment to control which variant you want.
-
-About libcblas
---------------
-
-Home: https://github.com/conda-forge/blas-feedstock
-
-Package license: BSD-3-Clause
-
-Summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism in your environment to control which variant you want.
-
-About liblapack
----------------
-
 Home: https://github.com/conda-forge/blas-feedstock
 
 Package license: BSD-3-Clause
@@ -88,10 +48,17 @@ Current build status
                 </a>
               </td>
             </tr><tr>
-              <td>linux_aarch64</td>
+              <td>linux_aarch64_blas_implnvpl</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=linux&configuration=linux%20linux_aarch64_" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=linux&configuration=linux%20linux_aarch64_blas_implnvpl" alt="variant">
+                </a>
+              </td>
+            </tr><tr>
+              <td>linux_aarch64_blas_implopenblas</td>
+              <td>
+                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3701&branchName=main">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/blas-feedstock?branchName=main&jobName=linux&configuration=linux%20linux_aarch64_blas_implopenblas" alt="variant">
                 </a>
               </td>
             </tr><tr>
