@@ -22,6 +22,15 @@ Package license: BSD-3-Clause
 
 Summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism in your environment to control which variant you want.
 
+About libblas
+-------------
+
+Home: https://github.com/conda-forge/blas-feedstock
+
+Package license: BSD-3-Clause
+
+Summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism in your environment to control which variant you want.
+
 About libcblas
 --------------
 

@@ -1,6 +1,6 @@
 {% set version = "3.9.0" %}
 # if build_num is reset to 0 (for new version), update increment for blas_minor below
-{% set build_num = 34 %}
+{% set build_num = 35 %}
 {% set version_major = version.split(".")[0] %}
 # blas_major denotes major infrastructural change to how blas is managed
 {% set blas_major = "2" %}
@@ -119,8 +119,9 @@ outputs:
       - etc/conda/deactivate.d/libblas_mkl_*    # [blas_impl == 'mkl']
     test:
       commands:
-        # Following line is just to help conda-build's used variables detection
+        # Following two lines are just to help conda-build's used variables detection
         - echo hello  # [blas_impl_lib == 'blas']
+        - echo hello  # [lapack_impl_lib == 'blas']
         - test -f $PREFIX/lib/libblas.so.{{ version_major }}      # [linux]
         - test -f $PREFIX/lib/libblas.{{ version_major }}.dylib   # [osx]
         - if not exist %LIBRARY_BIN%/libblas.dll exit 1           # [win]
@@ -158,8 +159,8 @@ outputs:
         - if not exist %LIBRARY_BIN%/libcblas.dll exit 1           # [win]
 
   - name: liblapack
-    script: build_pkg.sh     # [unix]
-    script: build_pkg.bat    # [win]
+    script: build_pkg.sh            # [unix]
+    script: build_pkg.bat           # [win]
     build:
       skip: true  # [blas_impl == 'blis']
       string: {{ build_num }}_h{{ PKG_HASH }}_{{ blas_impl }}
@@ -190,8 +191,8 @@ outputs:
         - if not exist %LIBRARY_BIN%/liblapack.dll exit 1           # [win]
 
   - name: liblapacke
-    script: build_pkg.sh     # [unix]
-    script: build_pkg.bat    # [win]
+    script: build_pkg.sh            # [unix]
+    script: build_pkg.bat           # [win]
     build:
       skip: true  # [blas_impl == 'blis']
       string: {{ build_num }}_h{{ PKG_HASH }}_{{ blas_impl }}
