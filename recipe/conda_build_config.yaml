@@ -27,6 +27,22 @@ blas_impl_lib:
 - libvecLibFort-ng.dylib   # [osx]
 - libblas_reexport.dylib   # [osx]
 
+lapack_impl_lib:
+- libopenblas.so.0         # [linux]
+- libopenblas.0.dylib      # [osx]
+- openblas.dll             # [win]
+- openblas.dll             # [win]
+
+- libmkl_rt.so             # [linux64]
+- mkl_rt.2.dll             # [win64]
+
+- notapplicable            # [linux64]
+- notapplicable            # [osx and x86_64]
+- notapplicable            # [win64]
+
+- libvecLibFort-ng.dylib   # [osx]
+- libblas_reexport.dylib   # [osx]
+
 blas_default_impl:
 - openblas                 # [not win]
 - mkl                      # [win]
@@ -47,4 +63,5 @@ zip_keys:
 -
   - blas_impl
   - blas_impl_lib
+  - lapack_impl_lib
   - MACOSX_SDK_VERSION     # [osx]
