@@ -12,6 +12,7 @@
 {% set blis_version = "0.9.0" %}
 {% set mkl_version = "2024.2" %}
 {% set openblas_version = "0.3.30" %}
+{% set aocl_version = "5.1" %}
 # MKL uses the yyyy-portion of CalVer also as the major version indicating API/ABI stability, see
 # https://github.com/conda-forge/intel_repack-feedstock/issues/81
 # to avoid tempting the solver into switching the underlying blas flavour "just" to update MKL,
@@ -88,19 +89,21 @@ outputs:
         - {{ stdlib('c') }}           # [blas_impl in ('accelerate', 'newaccelerate')]
       host:
         - blis {{ blis_version }}               # [blas_impl == 'blis']
+        - aocl-blas {{ aocl_version }}          # [blas_impl == 'aocl']
         # from https://github.com/conda-forge/intel_repack-feedstock/
         - libopenblas {{ openblas_version }}    # [blas_impl == 'openblas']
         - mkl-devel  {{ mkl_version }}          # [blas_impl == 'mkl']
       run:
         - {{ pin_compatible("blis", max_pin="x.x.x") }}         # [blas_impl == 'blis']
+        - {{ pin_compatible("aocl-blas", max_pin="x.x") }}      # [blas_impl == 'aocl']
         - {{ pin_compatible("mkl", max_pin="x") }}              # [blas_impl == 'mkl']
         - {{ pin_compatible("libopenblas", max_pin="x.x.x") }}  # [blas_impl == 'openblas']
         - __osx >=13.3                                          # [blas_impl == 'newaccelerate']
       run_constrained:
         # cannot pin exactly due to https://github.com/conda/conda-build/issues/5572
         - libcblas   {{ version }}   {{ build_num }}*_{{ blas_impl }}
-        - liblapack  {{ version }}   {{ build_num }}*_{{ blas_impl }}   # [blas_impl != 'blis']
-        - liblapacke {{ version }}   {{ build_num }}*_{{ blas_impl }}   # [blas_impl != 'blis']
+        - liblapack  {{ version }}   {{ build_num }}*_{{ blas_impl }}   # [blas_impl != 'blis' and blas_impl != 'aocl']
+        - liblapacke {{ version }}   {{ build_num }}*_{{ blas_impl }}   # [blas_impl != 'blis' and blas_impl != 'aocl']
         - blas {{ blas_major }}.{{ blas_minor }}   {{ blas_impl }}
         # for run_constrained across all flavours, see comment at the top
         - mkl <{{ mkl_next }}                   # [blas_impl != 'mkl']
@@ -143,8 +146,8 @@ outputs:
         - {{ pin_subpackage("libblas", exact=True) }}
       run_constrained:
         # cannot pin exactly due to https://github.com/conda/conda-build/issues/5572
-        - liblapack  {{ version }}   {{ build_num }}*_{{ blas_impl }}   # [blas_impl != 'blis']
-        - liblapacke {{ version }}   {{ build_num }}*_{{ blas_impl }}   # [blas_impl != 'blis']
+        - liblapack  {{ version }}   {{ build_num }}*_{{ blas_impl }}   # [blas_impl != 'blis' and blas_impl != 'aocl']
+        - liblapacke {{ version }}   {{ build_num }}*_{{ blas_impl }}   # [blas_impl != 'blis' and blas_impl != 'aocl']
         - blas {{ blas_major }}.{{ blas_minor }}   {{ blas_impl }}
     files:
       - lib/libcblas.so                          # [linux]
@@ -162,7 +165,7 @@ outputs:
     script: build_pkg.sh            # [unix]
     script: build_pkg.bat           # [win]
     build:
-      skip: true  # [blas_impl == 'blis']
+      skip: true  # [blas_impl == 'blis' or ((blas_impl == 'aocl') and osx)]
       string: {{ build_num }}_h{{ PKG_HASH }}_{{ blas_impl }}
       run_exports:
         - {{ pin_subpackage("liblapack", max_pin="x.x") }}
@@ -171,8 +174,10 @@ outputs:
     requirements:
       host:
         - {{ pin_subpackage("libblas", exact=True) }}
+        - aocl-lapack {{ aocl_version }}    # [not osx and blas_impl == "aocl"]
       run:
         - {{ pin_subpackage("libblas", exact=True) }}
+        - aocl-lapack {{ aocl_version }}    # [not osx and blas_impl == "aocl"]
       run_constrained:
         # cannot pin exactly due to https://github.com/conda/conda-build/issues/5572
         - libcblas   {{ version }}   {{ build_num }}*_{{ blas_impl }}
@@ -194,7 +199,7 @@ outputs:
     script: build_pkg.sh            # [unix]
     script: build_pkg.bat           # [win]
     build:
-      skip: true  # [blas_impl == 'blis']
+      skip: true  # [blas_impl == 'blis' or ((blas_impl == 'aocl') and osx)]
       string: {{ build_num }}_h{{ PKG_HASH }}_{{ blas_impl }}
       run_exports:
         - {{ pin_subpackage("liblapacke", max_pin="x.x") }}
@@ -231,19 +236,23 @@ outputs:
     requirements:
       host:
         - blis      {{ blis_version }}      # [blas_impl == "blis"]
+        - aocl-blas {{ aocl_version }}      # [blas_impl == "aocl"]
+        - aocl-lapack {{ aocl_version }}    # [not osx and blas_impl == "aocl"]
         - mkl-devel {{ mkl_version }}       # [blas_impl == "mkl"]
         - openblas  {{ openblas_version }}  # [blas_impl == "openblas"]
       run:
         - blis      {{ blis_version }}      # [blas_impl == "blis"]
+        - aocl-blas {{ aocl_version }}      # [blas_impl == "aocl"]
+        - aocl-lapack {{ aocl_version }}    # [not osx and blas_impl == "aocl"]
         - mkl-devel {{ mkl_version }}       # [blas_impl == "mkl"]
         - openblas  {{ openblas_version }}  # [blas_impl == "openblas"]
         - {{ pin_subpackage("libblas", exact=True) }}
         - {{ pin_subpackage("libcblas", exact=True) }}
-        - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
-        - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
+        - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis' and (not osx or blas_impl != 'aocl')]
+        - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis' and (not osx or blas_impl != 'aocl')]
         # netlib variants don't have the same build number
-        - liblapack  {{ version }}   *_netlib                # [blas_impl == 'blis']
-        - liblapacke {{ version }}   *_netlib                # [blas_impl == 'blis']
+        - liblapack  {{ version }}   *_netlib                # [blas_impl == 'blis' or (osx and blas_impl == 'aocl')]
+        - liblapacke {{ version }}   *_netlib                # [blas_impl == 'blis' or (osx and blas_impl == 'aocl')]
     test:
       commands:
         - test -f $PREFIX/lib/pkgconfig/blas.pc                     # [unix and blas_impl == "openblas"]

@@ -8,6 +8,7 @@ blas_impl:
 - openblas                 # [win]
 - mkl                      # [x86_64 and not osx]
 - blis                     # [x86_64]
+- aocl                     # [x86_64]
 - accelerate               # [osx]
 - newaccelerate            # [osx]
 
@@ -23,6 +24,30 @@ blas_impl_lib:
 - libblis.so.4             # [linux64]
 - libblis.4.dylib          # [osx and x86_64]
 - libblis.4.dll            # [win64]
+
+- libblis-mt.so.5              # [linux64]
+- libblis-mt.5.dylib           # [osx and x86_64]
+- AOCL-LibBlis-Win-MT-dll.dll  # [win64]
+
+- libvecLibFort-ng.dylib   # [osx]
+- libblas_reexport.dylib   # [osx]
+
+lapack_impl_lib:
+- libopenblas.so.0         # [linux]
+- libopenblas.0.dylib      # [osx]
+- openblas.dll             # [win]
+- openblas.dll             # [win]
+
+- libmkl_rt.so             # [linux64]
+- mkl_rt.2.dll             # [win64]
+
+- notapplicable            # [linux64]
+- notapplicable            # [osx and x86_64]
+- notapplicable            # [win64]
+
+- libflame.so                    # [linux64]
+- notapplicable                  # [osx and x86_64]
+- AOCL-LibFlame-Win-MT-dll.dll   # [win64]
 
 - libvecLibFort-ng.dylib   # [osx]
 - libblas_reexport.dylib   # [osx]
@@ -52,6 +77,8 @@ MACOSX_SDK_VERSION:
 - 10.13                    # [osx and x86_64]
 - 11.0                     # [osx and arm64]
 # blis
+- 10.13                    # [osx and x86_64]
+# aocl
 - 10.13                    # [osx and x86_64]
 # accelerate
 - 10.13                    # [osx and x86_64]
