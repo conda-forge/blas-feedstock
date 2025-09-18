@@ -98,7 +98,7 @@ outputs:
         - {{ pin_compatible("blis", max_pin="x.x.x") }}         # [blas_impl == 'blis']
         - {{ pin_compatible("mkl", max_pin="x") }}              # [blas_impl == 'mkl']
         - {{ pin_compatible("libopenblas", max_pin="x.x.x") }}  # [blas_impl == 'openblas']
-        # libnvpl-blas-dev has run_exports
+        - {{ pin_compatible("libnvpl-blas0", max_pin="x.x.x") }}  # [(blas_impl or '').startswith('nvpl')]
         - __osx >=13.3                                          # [blas_impl == 'newaccelerate']
       run_constrained:
         # cannot pin exactly due to https://github.com/conda/conda-build/issues/5572
@@ -178,7 +178,7 @@ outputs:
         - _nvpl_dev_mutex {{ nvpl_version }}  # [(blas_impl or '').startswith('nvpl')]
         - libnvpl-lapack-dev                  # [(blas_impl or '').startswith('nvpl')]
       run:
-        # libnvpl-lapack-dev has run_exports
+        - {{ pin_compatible("libnvpl-lapack0", max_pin="x.x.x") }}  # [(blas_impl or '').startswith('nvpl')]
         - {{ pin_subpackage("libblas", exact=True) }}
       run_constrained:
         # cannot pin exactly due to https://github.com/conda/conda-build/issues/5572
