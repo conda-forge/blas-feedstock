@@ -28,7 +28,7 @@ blas_impl_lib:
 - libvecLibFort-ng.dylib   # [osx]
 - libblas_reexport.dylib   # [osx]
 
-# An ipl64 NVPL ABIs is available, but not compatible with this package (lp64).
+# An ilp64 NVPL ABIs is available, but not compatible with this package (lp64).
 - libnvpl_blas_lp64_gomp.so.0  # [linux and aarch64]
 
 lapack_impl_lib:
@@ -47,7 +47,7 @@ lapack_impl_lib:
 - libvecLibFort-ng.dylib   # [osx]
 - libblas_reexport.dylib   # [osx]
 
-# An ipl64 NVPL ABIs is available, but not compatible with this package (lp64).
+# An ilp64 NVPL ABIs is available, but not compatible with this package (lp64).
 - libnvpl_lapack_lp64_gomp.so.0  # [linux and aarch64]
 
 blas_default_impl:
