@@ -94,6 +94,7 @@ outputs:
         - mkl-devel  {{ mkl_version }}          # [blas_impl == 'mkl']
         - _nvpl_dev_mutex {{ nvpl_version }}  # [(blas_impl or '').startswith('nvpl')]
         - libnvpl-blas-dev                    # [(blas_impl or '').startswith('nvpl')]
+        - libnvpl-blas0                       # [(blas_impl or '').startswith('nvpl')]
       run:
         - {{ pin_compatible("blis", max_pin="x.x.x") }}         # [blas_impl == 'blis']
         - {{ pin_compatible("mkl", max_pin="x") }}              # [blas_impl == 'mkl']
@@ -177,6 +178,7 @@ outputs:
         - {{ pin_subpackage("libblas", exact=True) }}
         - _nvpl_dev_mutex {{ nvpl_version }}  # [(blas_impl or '').startswith('nvpl')]
         - libnvpl-lapack-dev                  # [(blas_impl or '').startswith('nvpl')]
+        - libnvpl-lapack0                     # [(blas_impl or '').startswith('nvpl')]
       run:
         - {{ pin_compatible("libnvpl-lapack0", max_pin="x.x.x") }}  # [(blas_impl or '').startswith('nvpl')]
         - {{ pin_subpackage("libblas", exact=True) }}
