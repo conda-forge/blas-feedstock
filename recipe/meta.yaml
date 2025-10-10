@@ -1,6 +1,6 @@
 {% set version = "3.9.0" %}
 # if build_num is reset to 0 (for new version), update increment for blas_minor below
-{% set build_num = 36 %}
+{% set build_num = 37 %}
 {% set version_major = version.split(".")[0] %}
 # blas_major denotes major infrastructural change to how blas is managed
 {% set blas_major = "2" %}
@@ -82,6 +82,7 @@ outputs:
         - {{ pin_subpackage("libblas", max_pin="x") }}
       track_features:
        - blas_{{ blas_impl }}  # [blas_impl != blas_default_impl]
+       - blas_{{ blas_impl }}_2  # [blas_impl != blas_default_impl]
     requirements:
       build:
         - {{ compiler('fortran') }}   # [blas_impl in ('accelerate', 'newaccelerate')]
