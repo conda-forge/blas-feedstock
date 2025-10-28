@@ -8,17 +8,8 @@ jobs:
     vmImage: windows-2022
   strategy:
     matrix:
-      win_64_blas_implblisblas_impl_liblibblis.4.dllopenblas_typedummy:
-        CONFIG: win_64_blas_implblisblas_impl_liblibblis.4.dllopenblas_typedummy
-        UPLOAD_PACKAGES: 'True'
-      win_64_blas_implmklblas_impl_libmkl_rt.2.dllopenblas_typedummy:
-        CONFIG: win_64_blas_implmklblas_impl_libmkl_rt.2.dllopenblas_typedummy
-        UPLOAD_PACKAGES: 'True'
-      win_64_blas_implopenblasblas_impl_libopenblas.dllopenblas_typeopenmp:
-        CONFIG: win_64_blas_implopenblasblas_impl_libopenblas.dllopenblas_typeopenmp
-        UPLOAD_PACKAGES: 'True'
-      win_64_blas_implopenblasblas_impl_libopenblas.dllopenblas_typepthreads:
-        CONFIG: win_64_blas_implopenblasblas_impl_libopenblas.dllopenblas_typepthreads
+      win_64_blas_implmkl:
+        CONFIG: win_64_blas_implmkl
         UPLOAD_PACKAGES: 'True'
   timeoutInMinutes: 360
   variables:
