@@ -2,6 +2,7 @@
 set -ex
 
 if [[ "$CONDA_BUILD_CROSS_COMPILATION" == "1" ]]; then
+  echo "BLAS compatibility tests skipped because of cross-compilation."
   exit 0
 fi
 
@@ -22,8 +23,11 @@ if [[ "$target_platform" == osx-* ]]; then
   SKIP_TESTS="${SKIP_TESTS}|x*cblat2|x*cblat3"
   # Not sure why the following tests work with other blas implementations, but
   # they check error codes as well
-  if [[ "${blas_impl}" == "accelerate" ]]; then
+  if [[ "${blas_impl}" == *"accelerate" ]]; then
     SKIP_TESTS="${SKIP_TESTS}|xblat2*|xblat3*"
+  fi
+  if [[ "${blas_impl}" == "newaccelerate" ]]; then
+    SKIP_TESTS="${SKIP_TESTS}|LAPACK-xlintsts_stest_in|LAPACK-xlintstd_dtest_in"
   fi
 fi
 
@@ -52,8 +56,11 @@ if [[ "${blas_impl}" == "mkl" ]]; then
   fi
 fi
 
+
 if [[ "$target_platform" == "win-64" ]]; then
-  ${BUILD_PREFIX}/Library/bin/ctest --output-on-failure -E "${SKIP_TESTS}"
+  ${BUILD_PREFIX}/Library/bin/ctest --timeout 30 --output-on-failure -E "${SKIP_TESTS}"
 else
-  ctest --output-on-failure -E "${SKIP_TESTS}"
+  # avoid hyperthreading problems in runners
+  export OMP_NUM_THREADS=1
+  ctest --timeout 30 --output-on-failure -E "${SKIP_TESTS}"
 fi

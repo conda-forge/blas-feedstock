@@ -13,6 +13,8 @@ blas_impl:
 - mkl                      # [x86_64 and not osx]
 - blis                     # [x86_64]
 - accelerate               # [osx]
+- newaccelerate            # [osx]
+- nvpl                     # [linux and aarch64]
 
 blas_impl_lib:
 - libopenblas.so.0         # [linux]
@@ -28,19 +30,49 @@ blas_impl_lib:
 - libblis.4.dll            # [win64]
 
 - libvecLibFort-ng.dylib   # [osx]
+- libblas_reexport.dylib   # [osx]
+
+# An ilp64 NVPL ABIs is available, but not compatible with this package (lp64).
+- libnvpl_blas_lp64_gomp.so.0  # [linux and aarch64]
+
+lapack_impl_lib:
+- libopenblas.so.0         # [linux]
+- libopenblas.0.dylib      # [osx]
+- openblas.dll             # [win]
+- openblas.dll             # [win]
+
+- libmkl_rt.so             # [linux64]
+- mkl_rt.2.dll             # [win64]
+
+- notapplicable            # [linux64]
+- notapplicable            # [osx and x86_64]
+- notapplicable            # [win64]
+
+- libvecLibFort-ng.dylib   # [osx]
+- libblas_reexport.dylib   # [osx]
+
+# An ilp64 NVPL ABIs is available, but not compatible with this package (lp64).
+- libnvpl_lapack_lp64_gomp.so.0  # [linux and aarch64]
 
 blas_default_impl:
 - openblas                 # [not win]
 - mkl                      # [win]
 
-openblas_type:             # [win]
-- openmp                   # [win]
-- pthreads                 # [win]
-- dummy                    # [win]
-- dummy                    # [win]
+MACOSX_SDK_VERSION:
+# openblas
+- 10.13                    # [osx and x86_64]
+- 11.0                     # [osx and arm64]
+# blis
+- 10.13                    # [osx and x86_64]
+# accelerate
+- 10.13                    # [osx and x86_64]
+- 11.0                     # [osx and arm64]
+# newaccelerate
+- 13.3                     # [osx]
 
 zip_keys:
 -
   - blas_impl
   - blas_impl_lib
-  - openblas_type          # [win]
+  - lapack_impl_lib
+  - MACOSX_SDK_VERSION     # [osx]

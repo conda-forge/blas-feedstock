@@ -35,8 +35,7 @@ if "%blas_impl%" == "mkl" (
 :: clang.exe cannot handle /LIBPATH: in LDFLAGS, but we need that for lld-link
 set "CC=clang-cl.exe"
 
-:: debug
-dir %NEW_ENV%\Library\include
+python %RECIPE_DIR%\create_forwarder_dll.py
 
 :: Link against the netlib libraries
 cmake -LAH -G Ninja .. ^
@@ -47,7 +46,7 @@ cmake -LAH -G Ninja .. ^
     -DCMAKE_PREFIX_PATH=%NEW_ENV%\Library
 if %ERRORLEVEL% neq 0 (type .\CMakeFiles\CMakeError.log && type .\CMakeFiles\CMakeOutput.log && exit 1)
 
-cmake --build . --config Release
+cmake --build . --config Release --parallel %CPU_COUNT%
 if %ERRORLEVEL% neq 0 exit 1
 
 rmdir /s /q %NEW_ENV%

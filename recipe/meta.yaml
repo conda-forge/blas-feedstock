@@ -1,6 +1,6 @@
 {% set version = "3.9.0" %}
 # if build_num is reset to 0 (for new version), update increment for blas_minor below
-{% set build_num = 30 %}
+{% set build_num = 37 %}
 {% set version_major = version.split(".")[0] %}
 # blas_major denotes major infrastructural change to how blas is managed
 {% set blas_major = "2" %}
@@ -11,12 +11,19 @@
 # versions of pinned blas implementation flavours
 {% set blis_version = "0.9.0" %}
 {% set mkl_version = "2025.0" %}
-{% set openblas_version = "0.3.29" %}
+{% set openblas_version = "0.3.30" %}
+# NOTE: aarch64 compatibility tests are skipped in CI; run locally before merging
+{% set nvpl_version = "25.5.0.*" %}
 # MKL uses the yyyy-portion of CalVer also as the major version indicating API/ABI stability, see
 # https://github.com/conda-forge/intel_repack-feedstock/issues/81
 # to avoid tempting the solver into switching the underlying blas flavour "just" to update MKL,
 # we add a constraint on the MKL-version across all flavours. This means (essentially) that any
 # new MKL major version must first pass the tests on this feedstock
+{% set mkl_next = mkl_version.split(".")[0]|int + 1 %}
+
+{% if blas_impl is not defined %}
+{% set blas_impl = "openblas" %}
+{% endif %}
 
 package:
   name: blas-split
@@ -49,17 +56,15 @@ build:
   # debug
   skip: true  # [blas_impl != 'mkl']
 
-# ensure smithy splits windows openblas jobs by using it as a selector here
-# [openblas_type]
-
 requirements:
   build:
     - {{ stdlib("c") }}
     - {{ compiler("c") }}
     - {{ compiler("fortran") }}
-    - cmake
+    - cmake <4
     - make      # [not win]
     - ninja     # [win]
+    - python *  # [win]
     # The following are actual build dependencies of this recipe; however, they
     # only get installed by the build scripts, since they must be installed in a
     # different environment (otherwise there'd be a variant collision)! The build
@@ -83,38 +88,43 @@ outputs:
         - {{ pin_subpackage("libblas", max_pin="x") }}
       track_features:
        - blas_{{ blas_impl }}  # [blas_impl != blas_default_impl]
+       - blas_{{ blas_impl }}_2  # [blas_impl != blas_default_impl]
     requirements:
       build:
-        - {{ compiler('fortran') }}   # [blas_impl == 'accelerate']
-        - {{ stdlib('c') }}           # [blas_impl == 'accelerate']
+        - {{ compiler('fortran') }}   # [blas_impl in ('accelerate', 'newaccelerate')]
+        # need to compile wrapper code, see build.sh
+        - {{ compiler('c') }}         # [blas_impl == 'newaccelerate']
+        - {{ stdlib('c') }}           # [blas_impl in ('accelerate', 'newaccelerate')]
       host:
         - blis {{ blis_version }}               # [blas_impl == 'blis']
         # from https://github.com/conda-forge/intel_repack-feedstock/
-        - mkl  {{ mkl_version }}                # [blas_impl == 'mkl']
         - libopenblas {{ openblas_version }}    # [blas_impl == 'openblas']
-        # on windows we pin exactly, so need to build twice
-        - libopenblas =*={{ openblas_type }}*   # [win and blas_impl == 'openblas']
-        - llvm-openmp                           # [win and openblas_type == 'openmp']
-        # for run-export across all flavours, see comment at the top
-        - mkl-devel {{ mkl_version }}           # [x86_64 and not osx]
+        - mkl-devel  {{ mkl_version }}          # [blas_impl == 'mkl']
+        - _nvpl_dev_mutex {{ nvpl_version }}  # [(blas_impl or '').startswith('nvpl')]
+        - libnvpl-blas-dev                    # [(blas_impl or '').startswith('nvpl')]
+        - libnvpl-blas0                       # [(blas_impl or '').startswith('nvpl')]
       run:
-        - {{ pin_compatible("blis", max_pin="x.x.x", exact=win) }}         # [blas_impl == 'blis']
-        - {{ pin_compatible("mkl", max_pin="x", exact=win) }}              # [blas_impl == 'mkl']
-        - {{ pin_compatible("libopenblas", max_pin="x.x.x", exact=win) }}  # [blas_impl == 'openblas']
-        # not strictly necessary, but for clarity/legibility in metadata
-        - libopenblas =*={{ openblas_type }}*                              # [win and blas_impl == 'openblas']
+        - {{ pin_compatible("blis", max_pin="x.x.x") }}         # [blas_impl == 'blis']
+        - {{ pin_compatible("mkl", max_pin="x") }}              # [blas_impl == 'mkl']
+        - {{ pin_compatible("libopenblas", max_pin="x.x.x") }}  # [blas_impl == 'openblas']
+        - {{ pin_compatible("libnvpl-blas0", max_pin="x.x.x") }}  # [(blas_impl or '').startswith('nvpl')]
+        - __osx >=13.3                                          # [blas_impl == 'newaccelerate']
       run_constrained:
         # cannot pin exactly due to https://github.com/conda/conda-build/issues/5572
-        - libcblas ={{ version }}={{ build_num }}*_{{ blas_impl }}
-        - liblapack ={{ version }}={{ build_num }}*_{{ blas_impl }}     # [blas_impl != 'blis']
-        - liblapacke ={{ version }}={{ build_num }}*_{{ blas_impl }}    # [blas_impl != 'blis']
-        - blas ={{ blas_major }}.{{ blas_minor }}={{ blas_impl }}
+        - libcblas   {{ version }}   {{ build_num }}*_{{ blas_impl }}
+        - liblapack  {{ version }}   {{ build_num }}*_{{ blas_impl }}   # [blas_impl != 'blis']
+        - liblapacke {{ version }}   {{ build_num }}*_{{ blas_impl }}   # [blas_impl != 'blis']
+        - blas {{ blas_major }}.{{ blas_minor }}   {{ blas_impl }}
+        # for run_constrained across all flavours, see comment at the top
+        - mkl <{{ mkl_next }}                   # [blas_impl != 'mkl']
     files:
       - lib/libblas.so                          # [linux]
       - lib/libblas.dylib                       # [osx]
       - lib/libblas.so.{{ version_major }}      # [linux]
       - lib/libblas.{{ version_major }}.dylib   # [osx]
       - Library/bin/libblas.dll                 # [win]
+      - lib/libblas_reexport.dylib              # [blas_impl == 'newaccelerate']
+      - lib/liblapacke-netlib.*.dylib           # [blas_impl == 'newaccelerate']
       - lib/libvecLibFort-ng.dylib              # [blas_impl == 'accelerate']
       - lib/liblapack-netlib.*.dylib            # [blas_impl == 'accelerate']
       - lib/liblapacke-netlib.*.dylib           # [blas_impl == 'accelerate']
@@ -122,8 +132,9 @@ outputs:
       - etc/conda/deactivate.d/libblas_mkl_*    # [blas_impl == 'mkl']
     test:
       commands:
-        # Following line is just to help conda-build's used variables detection
+        # Following two lines are just to help conda-build's used variables detection
         - echo hello  # [blas_impl_lib == 'blas']
+        - echo hello  # [lapack_impl_lib == 'blas']
         - test -f $PREFIX/lib/libblas.so.{{ version_major }}      # [linux]
         - test -f $PREFIX/lib/libblas.{{ version_major }}.dylib   # [osx]
         - if not exist %LIBRARY_BIN%/libblas.dll exit 1           # [win]
@@ -140,19 +151,14 @@ outputs:
     requirements:
       host:
         # cannot pin exactly due to https://github.com/conda/conda-build/issues/5573
-        - libblas ={{ version }}={{ build_num }}*_{{ blas_impl }}
-        - libopenblas =*={{ openblas_type }}*   # [win and blas_impl == 'openblas']
-        - llvm-openmp                           # [win and openblas_type == 'openmp']
-        # for run-export across all flavours, see comment at the top
-        - mkl-devel {{ mkl_version }}           # [x86_64 and not osx]
+        - libblas {{ version }}   {{ build_num }}*_{{ blas_impl }}
       run:
         - {{ pin_subpackage("libblas", exact=True) }}
-        - libopenblas =*={{ openblas_type }}*   # [win and blas_impl == 'openblas']
       run_constrained:
         # cannot pin exactly due to https://github.com/conda/conda-build/issues/5572
-        - liblapack ={{ version }}={{ build_num }}*_{{ blas_impl }}     # [blas_impl != 'blis']
-        - liblapacke ={{ version }}={{ build_num }}*_{{ blas_impl }}    # [blas_impl != 'blis']
-        - blas ={{ blas_major }}.{{ blas_minor }}={{ blas_impl }}
+        - liblapack  {{ version }}   {{ build_num }}*_{{ blas_impl }}   # [blas_impl != 'blis']
+        - liblapacke {{ version }}   {{ build_num }}*_{{ blas_impl }}   # [blas_impl != 'blis']
+        - blas {{ blas_major }}.{{ blas_minor }}   {{ blas_impl }}
     files:
       - lib/libcblas.so                          # [linux]
       - lib/libcblas.dylib                       # [osx]
@@ -166,8 +172,8 @@ outputs:
         - if not exist %LIBRARY_BIN%/libcblas.dll exit 1           # [win]
 
   - name: liblapack
-    script: build_pkg.sh     # [unix]
-    script: build_pkg.bat    # [win]
+    script: build_pkg.sh            # [unix]
+    script: build_pkg.bat           # [win]
     build:
       skip: true  # [blas_impl == 'blis']
       string: {{ build_num }}_h{{ PKG_HASH }}_{{ blas_impl }}
@@ -178,18 +184,17 @@ outputs:
     requirements:
       host:
         - {{ pin_subpackage("libblas", exact=True) }}
-        - libopenblas =*={{ openblas_type }}*   # [win and blas_impl == 'openblas']
-        - llvm-openmp                           # [win and openblas_type == 'openmp']
-        # for run-export across all flavours, see comment at the top
-        - mkl-devel {{ mkl_version }}           # [x86_64 and not osx]
+        - _nvpl_dev_mutex {{ nvpl_version }}  # [(blas_impl or '').startswith('nvpl')]
+        - libnvpl-lapack-dev                  # [(blas_impl or '').startswith('nvpl')]
+        - libnvpl-lapack0                     # [(blas_impl or '').startswith('nvpl')]
       run:
+        - {{ pin_compatible("libnvpl-lapack0", max_pin="x.x.x") }}  # [(blas_impl or '').startswith('nvpl')]
         - {{ pin_subpackage("libblas", exact=True) }}
-        - libopenblas =*={{ openblas_type }}*   # [win and blas_impl == 'openblas']
       run_constrained:
         # cannot pin exactly due to https://github.com/conda/conda-build/issues/5572
-        - libcblas ={{ version }}={{ build_num }}*_{{ blas_impl }}
-        - liblapacke ={{ version }}={{ build_num }}*_{{ blas_impl }}
-        - blas ={{ blas_major }}.{{ blas_minor }}={{ blas_impl }}
+        - libcblas   {{ version }}   {{ build_num }}*_{{ blas_impl }}
+        - liblapacke {{ version }}   {{ build_num }}*_{{ blas_impl }}
+        - blas {{ blas_major }}.{{ blas_minor }}   {{ blas_impl }}
     files:
       - lib/liblapack.so                          # [linux]
       - lib/liblapack.dylib                       # [osx]
@@ -203,8 +208,8 @@ outputs:
         - if not exist %LIBRARY_BIN%/liblapack.dll exit 1           # [win]
 
   - name: liblapacke
-    script: build_pkg.sh     # [unix]
-    script: build_pkg.bat    # [win]
+    script: build_pkg.sh            # [unix]
+    script: build_pkg.bat           # [win]
     build:
       skip: true  # [blas_impl == 'blis']
       string: {{ build_num }}_h{{ PKG_HASH }}_{{ blas_impl }}
@@ -217,17 +222,12 @@ outputs:
         - {{ pin_subpackage("libblas", exact=True) }}
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("liblapack", exact=True) }}
-        - libopenblas =*={{ openblas_type }}*   # [win and blas_impl == 'openblas']
-        - llvm-openmp                           # [win and openblas_type == 'openmp']
-        # for run-export across all flavours, see comment at the top
-        - mkl-devel {{ mkl_version }}           # [x86_64 and not osx]
       run:
         - {{ pin_subpackage("libblas", exact=True) }}
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("liblapack", exact=True) }}
-        - libopenblas =*={{ openblas_type }}*   # [win and blas_impl == 'openblas']
       run_constrained:
-        - blas ={{ blas_major }}.{{ blas_minor }}={{ blas_impl }}
+        - blas {{ blas_major }}.{{ blas_minor }}   {{ blas_impl }}
     files:
       - lib/liblapacke.so                          # [linux]
       - lib/liblapacke.dylib                       # [osx]
@@ -250,23 +250,28 @@ outputs:
         - blis      {{ blis_version }}      # [blas_impl == "blis"]
         - mkl-devel {{ mkl_version }}       # [blas_impl == "mkl"]
         - openblas  {{ openblas_version }}  # [blas_impl == "openblas"]
-        - openblas =*={{ openblas_type }}*  # [win and blas_impl == "openblas"]
-        - llvm-openmp                       # [win and openblas_type == "openmp"]
+        - _nvpl_dev_mutex {{ nvpl_version }}  # [(blas_impl or '').startswith('nvpl')]
+        - libnvpl-lapack-dev                  # [(blas_impl or '').startswith('nvpl')]
+        - libnvpl-blas-dev                    # [(blas_impl or '').startswith('nvpl')]
       run:
         - blis      {{ blis_version }}      # [blas_impl == "blis"]
         - mkl-devel {{ mkl_version }}       # [blas_impl == "mkl"]
         - openblas  {{ openblas_version }}  # [blas_impl == "openblas"]
-        - openblas =*={{ openblas_type }}*  # [win and blas_impl == "openblas"]
+        - _nvpl_dev_mutex {{ nvpl_version }}  # [(blas_impl or '').startswith('nvpl')]
+        - libnvpl-lapack-dev                  # [(blas_impl or '').startswith('nvpl')]
+        - libnvpl-blas-dev                    # [(blas_impl or '').startswith('nvpl')]
         - {{ pin_subpackage("libblas", exact=True) }}
         - {{ pin_subpackage("libcblas", exact=True) }}
         - {{ pin_subpackage("liblapack", exact=True) }}      # [blas_impl != 'blis']
         - {{ pin_subpackage("liblapacke", exact=True) }}     # [blas_impl != 'blis']
         # netlib variants don't have the same build number
-        - liblapack  ={{ version }}=*_netlib                 # [blas_impl == 'blis']
-        - liblapacke ={{ version }}=*_netlib                 # [blas_impl == 'blis']
+        - liblapack  {{ version }}   *_netlib                # [blas_impl == 'blis']
+        - liblapacke {{ version }}   *_netlib                # [blas_impl == 'blis']
     test:
       commands:
         - test -f $PREFIX/lib/pkgconfig/blas.pc                     # [unix and blas_impl == "openblas"]
+        - test -f $PREFIX/lib/cmake/nvpl_blas/nvpl_blas-config.cmake              # [(blas_impl or '').startswith('nvpl')]
+        - test -f $PREFIX/lib/cmake/nvpl_lapack/nvpl_lapack-config-version.cmake  # [(blas_impl or '').startswith('nvpl')]
         - test -f $PREFIX/lib/liblapack.so                          # [linux]
         - test -f $PREFIX/lib/liblapack.dylib                       # [osx]
         - test -f $PREFIX/lib/liblapacke.so                         # [linux]
@@ -295,13 +300,14 @@ outputs:
         - {{ stdlib("c") }}
         - {{ compiler("c") }}
         - {{ compiler("fortran") }}
-        - cmake
+        - cmake <4
         - ninja         # [win]
         - llvm-openmp   # [linux and ((blas_impl == "openblas") or (blas_impl == "mkl"))]
+        - python *                          # [win]
       host:
-        - blas-devel ={{ version }}={{ build_num }}*_{{ blas_impl }}
+        - blas-devel {{ version }}   {{ build_num }}*_{{ blas_impl }}
       run:
-        - blas-devel ={{ version }}={{ build_num }}*_{{ blas_impl }}
+        - blas-devel {{ version }}   {{ build_num }}*_{{ blas_impl }}
     test:
       commands:
         - test -f $PREFIX/lib/liblapacke.so                          # [linux]
@@ -315,7 +321,6 @@ about:
   license: BSD-3-Clause
   license_file:
     - LICENSE.txt
-    - {{ blas_impl }}_license.txt  # [win]
   summary: Metapackage to select the BLAS variant. Use conda's pinning mechanism in your environment to control which variant you want.
 
 extra:
