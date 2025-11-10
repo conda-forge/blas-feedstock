@@ -28,6 +28,7 @@ unset CONDA_SUBDIR
 cmake ${CMAKE_ARGS} -LAH -G "${CMAKE_GENERATOR}" .. \
     "-DBLAS_LIBRARIES=libblas${SHLIB_EXT};libcblas${SHLIB_EXT}" \
     "-DLAPACK_LIBRARIES=liblapack${SHLIB_EXT};liblapacke${SHLIB_EXT}" \
+    -DBUILD_INDEX64_EXT_API=OFF \
     -DBUILD_TESTING=yes \
     -DPYTHON_EXECUTABLE=$PYTHON_EXEC \
     -DCMAKE_BUILD_TYPE=Release \
