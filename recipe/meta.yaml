@@ -85,7 +85,7 @@ outputs:
        - blas_{{ blas_impl }}_2  # [blas_impl != blas_default_impl]
     requirements:
       build:
-        - {{ compiler('fortran') }}   # [blas_impl in ('accelerate', 'newaccelerate')]
+        - {{ compiler("fortran") }}
         # need to compile wrapper code, see build.sh
         - {{ compiler('c') }}         # [blas_impl == 'newaccelerate']
         - {{ stdlib('c') }}           # [blas_impl in ('accelerate', 'newaccelerate')]
