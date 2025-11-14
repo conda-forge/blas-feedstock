@@ -3,11 +3,12 @@
 {% set build_num = 0 %}
 
 {% set version_major = version.split(".")[0] %}
+{% set version_minor = version.split(".")[1] %}
 # blas_major denotes major infrastructural change to how blas is managed
 {% set blas_major = "2" %}
 # make sure we do not create colliding version strings of output "blas"
 # for builds across lapack-versions within the same blas_major
-{% set blas_minor = build_num + 300 %}
+{% set blas_minor = build_num + (version_minor|int - 8) * 100 %}
 
 # versions of pinned blas implementation flavours
 {% set blis_version = "0.9.0" %}
