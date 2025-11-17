@@ -1,12 +1,14 @@
-{% set version = "3.9.0" %}
+{% set version = "3.11.0" %}
 # if build_num is reset to 0 (for new version), update increment for blas_minor below
-{% set build_num = 39 %}
+{% set build_num = 0 %}
+
 {% set version_major = version.split(".")[0] %}
+{% set version_minor = version.split(".")[1] %}
 # blas_major denotes major infrastructural change to how blas is managed
 {% set blas_major = "2" %}
 # make sure we do not create colliding version strings of output "blas"
 # for builds across lapack-versions within the same blas_major
-{% set blas_minor = build_num + 100 %}
+{% set blas_minor = build_num + (version_minor|int - 8) * 100 %}
 
 # versions of pinned blas implementation flavours
 {% set blis_version = "0.9.0" %}
@@ -31,17 +33,18 @@ package:
 
 source:
   - url: https://github.com/Reference-LAPACK/lapack/archive/v{{ version }}.tar.gz
-    sha256: 106087f1bb5f46afdfba7f569d0cbe23dacb9a07cd24733765a0e89dbe1ad573
+    sha256: 4b9ba79bfd4921ca820e83979db76ab3363155709444a787979e81c22285ffa9
     patches:
       # Test BLAS and LAPACKE in addition to LAPACK
       - patches/0001-Test-BLAS-and-LAPACKE-in-addition-to-LAPACK.patch
-      # backport https://github.com/Reference-LAPACK/lapack/pull/391
-      # to fix https://gcc.gnu.org/bugzilla/show_bug.cgi?id=114304
-      - patches/0002-remove-extraneous-semicolon.patch
       # avoid corruption of characters through implicit decode
-      - patches/0003-read-pipe-as-binary.patch
+      - patches/0002-read-pipe-as-binary.patch
       # make symbol RowMajorStrg visible through DLL boundary
-      - patches/0004-add-DLL-import-export-machinery-for-RowMajorStrg.patch
+      - patches/0003-add-DLL-import-export-machinery-for-RowMajorStrg.patch
+      # backport https://github.com/Reference-LAPACK/lapack/pull/758, can be dropped for 3.12
+      - patches/0004-fixed-bug-in-array-bounds-in-complex-syl01-test.patch
+      # backport https://github.com/Reference-LAPACK/lapack/pull/854, can be dropped for 3.12
+      - patches/0005-Use-dynamic-allocation-in-SYL01-tests.patch
 
   - url: https://github.com/isuruf/vecLibFort/archive/99af8640e98c829b41c3235e3706760cd5696fe4.tar.gz
     sha256: 80de7c6e83d1d84d016b4cb299f2c15f5a82b9d36865dd5c16bf221fe9a303ad
@@ -58,7 +61,9 @@ requirements:
     - cmake <4
     - make      # [not win]
     - ninja     # [win]
-    - python *  # [win]
+    # in testing we end up calling a python script, see
+    # https://github.com/Reference-LAPACK/lapack/blame/master/lapack_testing.py
+    - python *
     # The following are actual build dependencies of this recipe; however, they
     # only get installed by the build scripts, since they must be installed in a
     # different environment (otherwise there'd be a variant collision)! The build
@@ -296,6 +301,9 @@ outputs:
         - {{ compiler("fortran") }}
         - cmake <4
         - ninja         # [win]
+        # we end up calling a python script, see
+        # https://github.com/Reference-LAPACK/lapack/blame/master/lapack_testing.py
+        - python *
         - llvm-openmp   # [linux and ((blas_impl == "openblas") or (blas_impl == "mkl"))]
         - python *                          # [win]
       host:

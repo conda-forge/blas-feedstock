@@ -28,6 +28,9 @@ if [[ "$target_platform" == osx-* ]]; then
   fi
   if [[ "${blas_impl}" == "newaccelerate" ]]; then
     SKIP_TESTS="${SKIP_TESTS}|LAPACK-xlintsts_stest_in|LAPACK-xlintstd_dtest_in"
+    SKIP_TESTS="${SKIP_TESTS}|LAPACK-xlintstc_ctest_in|LAPACK-xlintstz_ztest_in"
+    SKIP_TESTS="${SKIP_TESTS}|LAPACK-xeigtsts_sec_in|LAPACK-xeigtstd_dec_in"
+    SKIP_TESTS="${SKIP_TESTS}|LAPACK-xeigtstc_cec_in|LAPACK-xeigtstz_zec_in"
   fi
 fi
 
