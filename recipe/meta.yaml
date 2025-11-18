@@ -311,6 +311,11 @@ outputs:
       run:
         - blas-devel {{ version }}   {{ build_num }}*_{{ blas_impl }}
     test:
+      requires:
+        - numpy
+      imports:
+        # test that importing numpy works with LAPACK variant being built here
+        - numpy
       commands:
         - test -f $PREFIX/lib/liblapacke.so                          # [linux]
         - test -f $PREFIX/lib/liblapacke.so.{{ version_major }}      # [linux]
