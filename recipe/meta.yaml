@@ -1,6 +1,6 @@
 {% set version = "3.11.0" %}
 # if build_num is reset to 0 (for new version), update increment for blas_minor below
-{% set build_num = 1 %}
+{% set build_num = 2 %}
 
 {% set version_major = version.split(".")[0] %}
 {% set version_minor = version.split(".")[1] %}
@@ -311,6 +311,11 @@ outputs:
       run:
         - blas-devel {{ version }}   {{ build_num }}*_{{ blas_impl }}
     test:
+      requires:
+        - numpy
+      imports:
+        # test that importing numpy works with LAPACK variant being built here
+        - numpy
       commands:
         - test -f $PREFIX/lib/liblapacke.so                          # [linux]
         - test -f $PREFIX/lib/liblapacke.so.{{ version_major }}      # [linux]
