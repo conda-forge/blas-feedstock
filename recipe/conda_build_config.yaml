@@ -3,11 +3,6 @@ c_compiler:                # [win]
 cxx_compiler:              # [win]
 - clangxx                  # [win]
 
-# temporarily while we bring up LAPACK 3.10.1;
-# only required for blis; rest installs directly in build.sh
-channel_sources:
-  - conda-forge/label/lapack_rc,conda-forge
-
 blas_impl:
 - openblas
 - openblas                 # [win]
