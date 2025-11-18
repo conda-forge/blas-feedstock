@@ -24,6 +24,7 @@ set "PYTHON_EXEC=%BUILD_PREFIX%\python.exe"
     liblapack=%PKG_VERSION%=*netlib ^
     liblapacke=%PKG_VERSION%=*netlib ^
     flang_win-64=%fortran_compiler_version%
+if %ERRORLEVEL% neq 0 exit 1
 
 :: default activation for clang-windows uses clang.exe, not clang-cl.exe, see
 :: https://github.com/conda-forge/clang-win-activation-feedstock/pull/48
@@ -31,6 +32,7 @@ set "PYTHON_EXEC=%BUILD_PREFIX%\python.exe"
 set "CC=clang-cl.exe"
 
 python %RECIPE_DIR%\create_forwarder_dll.py
+if %ERRORLEVEL% neq 0 exit 1
 
 :: Link against the netlib libraries
 cmake -LAH -G Ninja .. ^
