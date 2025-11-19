@@ -26,6 +26,8 @@ liblapack:
 - 3.9.* *netlib
 liblapacke:
 - 3.9.* *netlib
+numpy:
+- '2'
 openblas:
 - 0.3.*
 target_platform:

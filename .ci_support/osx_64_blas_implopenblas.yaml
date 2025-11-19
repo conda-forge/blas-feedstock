@@ -38,6 +38,8 @@ llvm_openmp:
 - '19'
 macos_machine:
 - x86_64-apple-darwin13.4.0
+numpy:
+- '2'
 openblas:
 - 0.3.*
 target_platform:
