@@ -1,6 +1,6 @@
 {% set version = "3.11.0" %}
 # if build_num is reset to 0 (for new version), update increment for blas_minor below
-{% set build_num = 3 %}
+{% set build_num = 4 %}
 
 {% set version_major = version.split(".")[0] %}
 {% set version_minor = version.split(".")[1] %}
@@ -11,7 +11,7 @@
 {% set blas_minor = build_num + (version_minor|int - 8) * 100 %}
 
 # versions of pinned blas implementation flavours
-{% set blis_version = "0.9.0" %}
+{% set blis_version = "2.0" %}
 {% set mkl_version = "2025.3" %}
 {% set openblas_version = "0.3.30" %}
 # NOTE: aarch64 compatibility tests are skipped in CI; run locally before merging
