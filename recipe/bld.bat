@@ -1,4 +1,10 @@
 @echo on
+setlocal enabledelayedexpansion
+
+:: delete existing LLVM setup in image that often gets higher precedence, see
+:: https://github.com/conda-forge/conda-forge-ci-setup-feedstock/pull/408
+rmdir /s /q "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\Llvm"
+rmdir /s /q "C:\Program Files\LLVM\bin"
 
 mkdir build
 cd build
@@ -31,8 +37,25 @@ if %ERRORLEVEL% neq 0 exit 1
 :: clang.exe cannot handle /LIBPATH: in LDFLAGS, but we need that for lld-link
 set "CC=clang-cl.exe"
 
-python %RECIPE_DIR%\create_forwarder_dll.py
+:: the list of allowed starting letters of the symbol is a crude way to filter out things like
+:: fprintf, which should not have been exported in netlib libraries - probably a flang bug
+set "FILTER=^[cdilsxzCRL]"
+
+:: positional arguments are `create-forwarder-dll [input] [output]`; in our case, we have three libraries at play;
+:: `input` is the netlib implementation in %NEW_ENV% which provides us the list of symbols we need to replicate
+:: (modulo the filter above), `output` is the DLL forwarder we're creating, and the actual implementation of those
+:: symbols (which we need to encode in the forwarder) is the `--implementing-dll-name` that varies per flavour
+create-forwarder-dll "%NEW_ENV%\Library\bin\libblas.dll"  "%LIBRARY_BIN%\libblas.dll"  --implementing-dll-name="%LIBRARY_BIN%\%blas_impl_lib%" --no-temp-dir --symbol-filter-regex="%FILTER%"
 if %ERRORLEVEL% neq 0 exit 1
+create-forwarder-dll "%NEW_ENV%\Library\bin\libcblas.dll" "%LIBRARY_BIN%\libcblas.dll" --implementing-dll-name="%LIBRARY_BIN%\%blas_impl_lib%" --no-temp-dir --symbol-filter-regex="%FILTER%"
+if %ERRORLEVEL% neq 0 exit 1
+if not "%lapack_impl_lib%"=="notapplicable" (
+    create-forwarder-dll "%NEW_ENV%\Library\bin\liblapack.dll"  "%LIBRARY_BIN%\liblapack.dll"  --implementing-dll-name="%LIBRARY_BIN%\%lapack_impl_lib%"  --no-temp-dir --symbol-filter-regex="%FILTER%"
+    REM needs delayed expansion to work correctly
+    if !ERRORLEVEL! neq 0 exit 1
+    create-forwarder-dll "%NEW_ENV%\Library\bin\liblapacke.dll" "%LIBRARY_BIN%\liblapacke.dll" --implementing-dll-name="%LIBRARY_BIN%\%lapack_impl_lib%" --no-temp-dir --symbol-filter-regex="%FILTER%"
+    if !ERRORLEVEL! neq 0 exit 1
+)
 
 :: Link against the netlib libraries
 cmake -LAH -G Ninja .. ^
