@@ -45,15 +45,15 @@ set "FILTER=^[cdilsxzCRL]"
 :: `input` is the netlib implementation in %NEW_ENV% which provides us the list of symbols we need to replicate
 :: (modulo the filter above), `output` is the DLL forwarder we're creating, and the actual implementation of those
 :: symbols (which we need to encode in the forwarder) is the `--implementing-dll-name` that varies per flavour
-create-forwarder-dll "%NEW_ENV%\Library\bin\libblas.dll"  "%LIBRARY_BIN%\libblas.dll"  --implementing-dll-name="%LIBRARY_BIN%\%blas_impl_lib%" --no-temp-dir --symbol-filter-regex="%FILTER%"
+create-forwarder-dll "%NEW_ENV%\Library\bin\libblas.dll"  "%LIBRARY_BIN%\libblas.dll"  --implementing-dll-name=%blas_impl_lib% --no-temp-dir --symbol-filter-regex="%FILTER%"
 if %ERRORLEVEL% neq 0 exit 1
-create-forwarder-dll "%NEW_ENV%\Library\bin\libcblas.dll" "%LIBRARY_BIN%\libcblas.dll" --implementing-dll-name="%LIBRARY_BIN%\%blas_impl_lib%" --no-temp-dir --symbol-filter-regex="%FILTER%"
+create-forwarder-dll "%NEW_ENV%\Library\bin\libcblas.dll" "%LIBRARY_BIN%\libcblas.dll" --implementing-dll-name=%blas_impl_lib% --no-temp-dir --symbol-filter-regex="%FILTER%"
 if %ERRORLEVEL% neq 0 exit 1
 if not "%lapack_impl_lib%"=="notapplicable" (
-    create-forwarder-dll "%NEW_ENV%\Library\bin\liblapack.dll"  "%LIBRARY_BIN%\liblapack.dll"  --implementing-dll-name="%LIBRARY_BIN%\%lapack_impl_lib%"  --no-temp-dir --symbol-filter-regex="%FILTER%"
+    create-forwarder-dll "%NEW_ENV%\Library\bin\liblapack.dll"  "%LIBRARY_BIN%\liblapack.dll"  --implementing-dll-name=%lapack_impl_lib%  --no-temp-dir --symbol-filter-regex="%FILTER%"
     REM needs delayed expansion to work correctly
     if !ERRORLEVEL! neq 0 exit 1
-    create-forwarder-dll "%NEW_ENV%\Library\bin\liblapacke.dll" "%LIBRARY_BIN%\liblapacke.dll" --implementing-dll-name="%LIBRARY_BIN%\%lapack_impl_lib%" --no-temp-dir --symbol-filter-regex="%FILTER%"
+    create-forwarder-dll "%NEW_ENV%\Library\bin\liblapacke.dll" "%LIBRARY_BIN%\liblapacke.dll" --implementing-dll-name=%lapack_impl_lib% --no-temp-dir --symbol-filter-regex="%FILTER%"
     if !ERRORLEVEL! neq 0 exit 1
 )
 
