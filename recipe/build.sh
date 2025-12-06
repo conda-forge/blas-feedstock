@@ -16,7 +16,7 @@ export LIBRARY_PATH="${LIBRARY_PREFIX}/lib"
 export PYTHON_EXEC=$BUILD_PREFIX/bin/python
 
 export CONDA_SUBDIR="${target_platform}"
-conda create -p ${NEW_ENV} --yes --quiet \
+conda create -p ${NEW_ENV} -c conda-forge/label/lapack_rc -c conda-forge --yes --quiet \
     libblas=${PKG_VERSION}=*netlib \
     libcblas=${PKG_VERSION}=*netlib \
     liblapack=${PKG_VERSION}=*netlib \
@@ -28,6 +28,7 @@ unset CONDA_SUBDIR
 cmake ${CMAKE_ARGS} -LAH -G "${CMAKE_GENERATOR}" .. \
     "-DBLAS_LIBRARIES=libblas${SHLIB_EXT};libcblas${SHLIB_EXT}" \
     "-DLAPACK_LIBRARIES=liblapack${SHLIB_EXT};liblapacke${SHLIB_EXT}" \
+    -DBUILD_INDEX64_EXT_API=OFF \
     -DBUILD_TESTING=yes \
     -DPYTHON_EXECUTABLE=$PYTHON_EXEC \
     -DCMAKE_BUILD_TYPE=Release \
