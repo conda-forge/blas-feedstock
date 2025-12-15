@@ -1,4 +1,4 @@
-{% set version = "3.11.0" %}
+{% set version = "3.12.1" %}
 # if build_num is reset to 0 (for new version), update increment for blas_minor below
 {% set build_num = 5 %}
 
@@ -33,7 +33,7 @@ package:
 
 source:
   - url: https://github.com/Reference-LAPACK/lapack/archive/v{{ version }}.tar.gz
-    sha256: 4b9ba79bfd4921ca820e83979db76ab3363155709444a787979e81c22285ffa9
+    sha256: 2ca6407a001a474d4d4d35f3a61550156050c48016d949f0da0529c0aa052422
     patches:
       # Test BLAS and LAPACKE in addition to LAPACK
       - patches/0001-Test-BLAS-and-LAPACKE-in-addition-to-LAPACK.patch
@@ -80,15 +80,15 @@ requirements:
 
 outputs:
   - name: libblas
-    script: build_pkg.sh     # [unix]
-    script: build_pkg.bat    # [win]
+    script: build_pkg.sh  # [unix]
+    script: build_pkg.bat  # [win]
     build:
       string: {{ build_num }}_h{{ PKG_HASH }}_{{ blas_impl }}
       run_exports:
         - {{ pin_subpackage("libblas", max_pin="x") }}
       track_features:
-       - blas_{{ blas_impl }}  # [blas_impl != blas_default_impl]
-       - blas_{{ blas_impl }}_2  # [blas_impl != blas_default_impl]
+        - blas_{{ blas_impl }} # [blas_impl != blas_default_impl]
+        - blas_{{ blas_impl }}_2 # [blas_impl != blas_default_impl]
     requirements:
       build:
         - {{ compiler("fortran") }}   # [blas_impl in ('accelerate', 'newaccelerate')]
@@ -140,14 +140,14 @@ outputs:
         - if not exist %LIBRARY_BIN%/libblas.dll exit 1           # [win]
 
   - name: libcblas
-    script: build_pkg.sh     # [unix]
-    script: build_pkg.bat    # [win]
+    script: build_pkg.sh  # [unix]
+    script: build_pkg.bat  # [win]
     build:
       string: {{ build_num }}_h{{ PKG_HASH }}_{{ blas_impl }}
       run_exports:
         - {{ pin_subpackage("libcblas", max_pin="x") }}
       track_features:
-       - blas_{{ blas_impl }}     # [blas_impl != blas_default_impl]
+        - blas_{{ blas_impl }}    # [blas_impl != blas_default_impl]
     requirements:
       host:
         # cannot pin exactly due to https://github.com/conda/conda-build/issues/5573
@@ -172,15 +172,15 @@ outputs:
         - if not exist %LIBRARY_BIN%/libcblas.dll exit 1           # [win]
 
   - name: liblapack
-    script: build_pkg.sh            # [unix]
-    script: build_pkg.bat           # [win]
+    script: build_pkg.sh  # [unix]
+    script: build_pkg.bat  # [win]
     build:
       skip: true  # [blas_impl == 'blis']
       string: {{ build_num }}_h{{ PKG_HASH }}_{{ blas_impl }}
       run_exports:
         - {{ pin_subpackage("liblapack", max_pin="x.x") }}
       track_features:
-       - blas_{{ blas_impl }}     # [blas_impl != blas_default_impl]
+        - blas_{{ blas_impl }}    # [blas_impl != blas_default_impl]
     requirements:
       host:
         - {{ pin_subpackage("libblas", exact=True) }}
@@ -208,15 +208,15 @@ outputs:
         - if not exist %LIBRARY_BIN%/liblapack.dll exit 1           # [win]
 
   - name: liblapacke
-    script: build_pkg.sh            # [unix]
-    script: build_pkg.bat           # [win]
+    script: build_pkg.sh  # [unix]
+    script: build_pkg.bat  # [win]
     build:
       skip: true  # [blas_impl == 'blis']
       string: {{ build_num }}_h{{ PKG_HASH }}_{{ blas_impl }}
       run_exports:
         - {{ pin_subpackage("liblapacke", max_pin="x.x") }}
       track_features:
-       - blas_{{ blas_impl }}     # [blas_impl != blas_default_impl]
+        - blas_{{ blas_impl }}    # [blas_impl != blas_default_impl]
     requirements:
       host:
         - {{ pin_subpackage("libblas", exact=True) }}
@@ -242,7 +242,7 @@ outputs:
 
   - name: blas-devel
     # uses lapack {{ version }}, not {{ blas_major }}
-    script: install_blas_devel.sh   # [unix]
+    script: install_blas_devel.sh  # [unix]
     build:
       string: {{ build_num }}_h{{ PKG_HASH }}_{{ blas_impl }}
     requirements:
@@ -284,11 +284,11 @@ outputs:
   # For compatiblity
   - name: blas
     version: "{{ blas_major }}.{{ blas_minor }}"
-    script: test_blas.sh   # [unix]
+    script: test_blas.sh  # [unix]
     script: test_blas.bat  # [win]
     build:
       string: {{ blas_impl }}
-      activate_in_script: True
+      activate_in_script: true
       ignore_run_exports_from:
         # this is a metapackage; ignore the run-exports from the build environment
         - {{ stdlib("c") }}
