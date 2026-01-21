@@ -1,14 +1,14 @@
-From 3430230d700e7f34e70d727d9b21508728081a0c Mon Sep 17 00:00:00 2001
+From 2cce8546b17c445de470d34fdf79a86a76ec340c Mon Sep 17 00:00:00 2001
 From: "H. Vetinari" <h.vetinari@gmx.com>
 Date: Sun, 18 Aug 2024 14:03:42 +1100
-Subject: [PATCH 2/5] read pipe as binary
+Subject: [PATCH 2/7] read pipe as binary
 
 ---
  lapack_testing.py | 16 ++++++++--------
  1 file changed, 8 insertions(+), 8 deletions(-)
 
 diff --git a/lapack_testing.py b/lapack_testing.py
-index abda36898..b638e7662 100755
+index dc3c471b5..c4f312339 100755
 --- a/lapack_testing.py
 +++ b/lapack_testing.py
 @@ -110,7 +110,7 @@ def run_summary_test( f, cmdline, short_summary):
@@ -33,8 +33,8 @@ index abda36898..b638e7662 100755
          for line in pipe.readlines():
              f.write(str(line))
              words_in_line=line.split()
--            if (line.find("run")!=-1):
-+            if (line.find(b"run")!=-1):
+-            if (line.find("run)")!=-1):
++            if (line.find(b"run)")!=-1):
  #                  print line
 -                whereisrun=words_in_line.index("run)")
 +                whereisrun=words_in_line.index(b"run)")

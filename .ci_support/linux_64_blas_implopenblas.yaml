@@ -13,7 +13,7 @@ c_stdlib:
 c_stdlib_version:
 - '2.17'
 channel_sources:
-- conda-forge
+- conda-forge/label/lapack_rc,conda-forge
 channel_targets:
 - conda-forge main
 docker_image:
