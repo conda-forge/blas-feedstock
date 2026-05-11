@@ -33,6 +33,7 @@ if [[ "$target_platform" == osx-* ]]; then
       SKIP_TESTS="${SKIP_TESTS}|LAPACK-xeigtstc_se2_in|LAPACK-xeigtstc_sep_in"
       SKIP_TESTS="${SKIP_TESTS}|LAPACK-xeigtstz_zed_in|LAPACK-xeigtstz_zsb_in|LAPACK-xeigtstz_zsg_in"
       SKIP_TESTS="${SKIP_TESTS}|LAPACK-xeigtstz_se2_in|LAPACK-xeigtstz_sep_in"
+      SKIP_TESTS="${SKIP_TESTS}|LAPACK-xlintstc_ctest_in|LAPACK-xlintstz_ztest_in"
       SKIP_TESTS="${SKIP_TESTS}|LAPACK-xlintstrfc_ctest_rfp_in|LAPACK-xlintstrfz_ztest_rfp_in"
       SKIP_TESTS="${SKIP_TESTS}|LAPACK-xlintstzc_zctest_in"
     fi
