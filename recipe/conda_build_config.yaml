@@ -7,7 +7,7 @@ blas_impl:
 - openblas
 - openblas                 # [win]
 - mkl                      # [x86_64 and not osx]
-- blis                     # [x86_64]
+- blis                     # [x86_64 or (osx and arm64)]
 - accelerate               # [osx]
 - newaccelerate            # [osx]
 - nvpl                     # [linux and aarch64]
@@ -22,7 +22,7 @@ blas_impl_lib:
 - mkl_rt.3.dll             # [win64]
 
 - libblis.so.4             # [linux64]
-- libblis.4.dylib          # [osx and x86_64]
+- libblis.4.dylib          # [osx]
 - libblis.4.dll            # [win64]
 
 - libvecLibFort-ng.dylib   # [osx]
@@ -41,7 +41,7 @@ lapack_impl_lib:
 - mkl_rt.3.dll             # [win64]
 
 - notapplicable            # [linux64]
-- notapplicable            # [osx and x86_64]
+- notapplicable            # [osx]
 - notapplicable            # [win64]
 
 - libvecLibFort-ng.dylib   # [osx]
@@ -58,7 +58,7 @@ MACOSX_SDK_VERSION:
 # openblas
 - 11.0                     # [osx]
 # blis
-- 11.0                     # [osx and x86_64]
+- 11.0                     # [osx]
 # accelerate
 - 11.0                     # [osx]
 # newaccelerate
