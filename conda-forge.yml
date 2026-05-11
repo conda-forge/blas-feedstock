@@ -10,7 +10,7 @@ github:
   tooling_branch_name: main
 linter:
   skip:
-    - lint_stdlib
+  - lint_stdlib
 provider:
   linux_aarch64: default
   linux_ppc64le: default
