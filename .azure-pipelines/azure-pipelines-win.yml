@@ -11,12 +11,15 @@ jobs:
       win_64_blas_implblis:
         CONFIG: win_64_blas_implblis
         UPLOAD_PACKAGES: 'True'
+        store_build_artifacts: false
       win_64_blas_implmkl:
         CONFIG: win_64_blas_implmkl
         UPLOAD_PACKAGES: 'True'
+        store_build_artifacts: false
       win_64_blas_implopenblas:
         CONFIG: win_64_blas_implopenblas
         UPLOAD_PACKAGES: 'True'
+        store_build_artifacts: false
   timeoutInMinutes: 360
   variables:
     CONDA_BLD_PATH: D:\\bld\\
