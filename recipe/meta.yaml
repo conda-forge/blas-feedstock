@@ -12,7 +12,7 @@
 # versions of pinned blas implementation flavours
 {% set blis_version = "2.0" %}
 {% set mkl_version = "2026.0" %}
-{% set openblas_version = "0.3.30" %}
+{% set openblas_version = "0.3.33" %}
 # NOTE: aarch64 compatibility tests are skipped in CI; run locally before merging
 {% set nvpl_version = "25.5.0.*" %}
 # MKL uses the yyyy-portion of CalVer also as the major version indicating API/ABI stability, see
