@@ -19,7 +19,7 @@ blas_impl_lib:
 - openblas.dll             # [win]
 
 - libmkl_rt.so             # [linux64]
-- mkl_rt.2.dll             # [win64]
+- mkl_rt.3.dll             # [win64]
 
 - libblis.so.4             # [linux64]
 - libblis.4.dylib          # [osx and x86_64]
@@ -38,7 +38,7 @@ lapack_impl_lib:
 - openblas.dll             # [win]
 
 - libmkl_rt.so             # [linux64]
-- mkl_rt.2.dll             # [win64]
+- mkl_rt.3.dll             # [win64]
 
 - notapplicable            # [linux64]
 - notapplicable            # [osx and x86_64]
