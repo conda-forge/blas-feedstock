@@ -7,7 +7,7 @@ blas_impl:
 - openblas
 - openblas                 # [win]
 - mkl                      # [x86_64 and not osx]
-- blis                     # [x86_64 or (osx and arm64)]
+- blis                     # [x86_64 or arm64 or aarch64]
 - accelerate               # [osx]
 - newaccelerate            # [osx]
 - nvpl                     # [linux and aarch64]
@@ -21,7 +21,7 @@ blas_impl_lib:
 - libmkl_rt.so             # [linux64]
 - mkl_rt.3.dll             # [win64]
 
-- libblis.so.4             # [linux64]
+- libblis.so.4             # [linux64 or aarch64]
 - libblis.4.dylib          # [osx]
 - libblis.4.dll            # [win64]
 
@@ -40,7 +40,7 @@ lapack_impl_lib:
 - libmkl_rt.so             # [linux64]
 - mkl_rt.3.dll             # [win64]
 
-- notapplicable            # [linux64]
+- notapplicable            # [linux64 or aarch64]
 - notapplicable            # [osx]
 - notapplicable            # [win64]
 
