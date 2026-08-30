@@ -1,6 +1,6 @@
 {% set version = "3.9.0" %}
 # if build_num is reset to 0 (for new version), update increment for blas_minor below
-{% set build_num = 41 %}
+{% set build_num = 42 %}
 
 {% set version_major = version.split(".")[0] %}
 {% set version_minor = version.split(".")[1] %}
@@ -12,8 +12,8 @@
 
 # versions of pinned blas implementation flavours
 {% set blis_version = "2.0" %}
-{% set mkl_version = "2026.0" %}
-{% set openblas_version = "0.3.33" %}
+{% set mkl_version = "2026.1" %}
+{% set openblas_version = "0.3.34" %}
 # NOTE: aarch64 compatibility tests are skipped in CI; run locally before merging
 {% set nvpl_version = "25.5.0.*" %}
 # MKL uses the yyyy-portion of CalVer also as the major version indicating API/ABI stability, see
