@@ -27,7 +27,8 @@ set "LDFLAGS=/LIBPATH:%LIBRARY_PREFIX%\lib %LDFLAGS%"
     libcblas=%PKG_VERSION%=*netlib ^
     liblapack=%PKG_VERSION%=*netlib ^
     liblapacke=%PKG_VERSION%=*netlib ^
-    flang_win-64=%fortran_compiler_version%
+    flang_%target_platform%=%fortran_compiler_version%
+if %ERRORLEVEL% neq 0 exit 1
 
 :: default activation for clang-windows uses clang.exe, not clang-cl.exe, see
 :: https://github.com/conda-forge/clang-win-activation-feedstock/pull/48
@@ -53,6 +54,9 @@ if not "%lapack_impl_lib%"=="notapplicable" (
     create-forwarder-dll "%NEW_ENV%\Library\bin\liblapacke.dll" "%LIBRARY_BIN%\liblapacke.dll" --implementing-dll-name=%lapack_impl_lib% --no-temp-dir --symbol-filter-regex="%FILTER%"
     if !ERRORLEVEL! neq 0 exit 1
 )
+
+:: Initialize the policy value in this configure and nested try_compile projects.
+set "CMAKE_POLICY_VERSION_MINIMUM=3.5"
 
 :: Link against the netlib libraries
 cmake -LAH -G Ninja .. ^

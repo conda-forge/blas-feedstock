@@ -22,6 +22,9 @@ conda create -p ${NEW_ENV} -c conda-forge --yes --quiet \
     ${fortran_compiler}_${target_platform}=${fortran_compiler_version}
 unset CONDA_SUBDIR
 
+# Initialize the policy value in this configure and nested try_compile projects.
+export CMAKE_POLICY_VERSION_MINIMUM=3.5
+
 # Link against the netlib libraries
 cmake ${CMAKE_ARGS} -LAH -G "${CMAKE_GENERATOR}" .. \
     "-DBLAS_LIBRARIES=libblas${SHLIB_EXT};libcblas${SHLIB_EXT}" \
