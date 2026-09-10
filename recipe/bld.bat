@@ -54,6 +54,9 @@ if not "%lapack_impl_lib%"=="notapplicable" (
     if !ERRORLEVEL! neq 0 exit 1
 )
 
+:: Initialize the policy value in this configure and nested try_compile projects.
+set "CMAKE_POLICY_VERSION_MINIMUM=3.5"
+
 :: Link against the netlib libraries
 cmake -LAH -G Ninja .. ^
     "-DBLAS_LIBRARIES=blas.lib;cblas.lib" ^
