@@ -66,7 +66,7 @@ requirements:
     # only get installed by the build scripts, since they must be installed in a
     # different environment (otherwise there'd be a variant collision)! The build
     # script will link to those netlib libraries and set up the netlib test suite.
-    # For the different blas variants, build_pkg.{sh|bat} will then point those
+    # For the different blas variants, install_pkg.{sh|bat} will then point those
     # links to the respective libraries of the desired variant, and *then* run
     # the test suite (in test_blas.{sh|bat}) to see that everything works correctly.
     # Note: These libraries are built in the lapack-feedstock.
@@ -77,8 +77,8 @@ requirements:
 
 outputs:
   - name: libblas
-    script: build_pkg.sh     # [unix]
-    script: build_pkg.bat    # [win]
+    script: install_pkg.sh      # [unix]
+    script: install_pkg.bat     # [win]
     build:
       string: {{ build_num }}_h{{ PKG_HASH }}_{{ blas_impl }}
       run_exports:
@@ -137,8 +137,8 @@ outputs:
         - if not exist %LIBRARY_BIN%/libblas.dll exit 1           # [win]
 
   - name: libcblas
-    script: build_pkg.sh     # [unix]
-    script: build_pkg.bat    # [win]
+    script: install_pkg.sh      # [unix]
+    script: install_pkg.bat     # [win]
     build:
       string: {{ build_num }}_h{{ PKG_HASH }}_{{ blas_impl }}
       run_exports:
@@ -169,8 +169,8 @@ outputs:
         - if not exist %LIBRARY_BIN%/libcblas.dll exit 1           # [win]
 
   - name: liblapack
-    script: build_pkg.sh            # [unix]
-    script: build_pkg.bat           # [win]
+    script: install_pkg.sh      # [unix]
+    script: install_pkg.bat     # [win]
     build:
       skip: true  # [blas_impl == 'blis']
       string: {{ build_num }}_h{{ PKG_HASH }}_{{ blas_impl }}
@@ -205,8 +205,8 @@ outputs:
         - if not exist %LIBRARY_BIN%/liblapack.dll exit 1           # [win]
 
   - name: liblapacke
-    script: build_pkg.sh            # [unix]
-    script: build_pkg.bat           # [win]
+    script: install_pkg.sh      # [unix]
+    script: install_pkg.bat     # [win]
     build:
       skip: true  # [blas_impl == 'blis']
       string: {{ build_num }}_h{{ PKG_HASH }}_{{ blas_impl }}
