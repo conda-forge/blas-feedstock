@@ -7,7 +7,7 @@ blas_impl:
 - openblas
 - openblas                 # [win]
 - mkl                      # [x86_64 and not osx]
-- blis                     # [x86_64 or arm64 or aarch64]
+- blis                     # [x86_64 or aarch64 or osx]
 - accelerate               # [osx]
 - newaccelerate            # [osx]
 - nvpl                     # [linux and aarch64]
@@ -51,8 +51,8 @@ lapack_impl_lib:
 - libnvpl_lapack_lp64_gomp.so.0  # [linux and aarch64]
 
 blas_default_impl:
-- openblas                 # [not win]
-- mkl                      # [win]
+- openblas                 # [not win64]
+- mkl                      # [win64]
 
 MACOSX_SDK_VERSION:
 # openblas
