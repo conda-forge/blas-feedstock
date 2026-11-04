@@ -1,3 +1,5 @@
+DOCKER_PLATFORM:
+- linux/aarch64
 blas_default_impl:
 - openblas
 blas_impl:
